@@ -1,0 +1,28 @@
+package com.sflpro.identity.api.common.dtos.identity;
+
+import javax.validation.constraints.NotEmpty;
+
+/**
+ * Company: SFL LLC
+ * Created on 27/11/2017
+ *
+ * @author Davit Harutyunyan
+ */
+public class IdentityUpdateRequestDto {
+
+    @NotEmpty
+    private String description;
+
+    public IdentityUpdateRequestDto() {
+        super();
+    }
+
+    public String getDescription() {
+        return description;
+    }
+
+    public void setDescription(String description) {
+        this.description = description;
+    }
+
+}

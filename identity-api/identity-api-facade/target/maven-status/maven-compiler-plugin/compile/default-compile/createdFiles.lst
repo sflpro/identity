@@ -1,0 +1,17 @@
+com/sflpro/identity/api/utils/ApiResponseInfoService.class
+com/sflpro/identity/api/endpoints/PermissionEndpoint.class
+com/sflpro/identity/api/config/errorhandling/JsonMappingExceptionMapper.class
+com/sflpro/identity/api/utils/impl/ApiResponseInfoServiceImpl.class
+com/sflpro/identity/api/config/errorhandling/ApplicationExceptionMapper.class
+com/sflpro/identity/api/config/CorsFilter.class
+com/sflpro/identity/api/endpoints/RoleEndpoint.class
+com/sflpro/identity/api/config/errorhandling/DtoValidationExceptionMapper.class
+com/sflpro/identity/api/config/GenericJerseyConfig.class
+com/sflpro/identity/api/config/SwaggerConfig.class
+com/sflpro/identity/api/config/errorhandling/JsonParseExceptionMapper.class
+com/sflpro/identity/api/mapper/BeanMapper.class
+com/sflpro/identity/api/IdentityJerseyConfig.class
+com/sflpro/identity/api/endpoints/StatusEndpoint.class
+com/sflpro/identity/api/endpoints/AuthenticationEndpoint.class
+com/sflpro/identity/api/utils/ApiResponseInfoAspect.class
+com/sflpro/identity/api/endpoints/IdentityEndpoint.class

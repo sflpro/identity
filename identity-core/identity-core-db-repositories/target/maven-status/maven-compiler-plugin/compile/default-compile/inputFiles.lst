@@ -1,0 +1,8 @@
+/Users/yervand/Workspace/identity/identity-core/identity-core-db-repositories/src/main/java/com/sflpro/identity/core/db/repositories/TokenRepository.java
+/Users/yervand/Workspace/identity/identity-core/identity-core-db-repositories/src/main/java/com/sflpro/identity/core/db/repositories/RoleRepository.java
+/Users/yervand/Workspace/identity/identity-core/identity-core-db-repositories/src/main/java/com/sflpro/identity/core/db/HibernateEhCacheConfigLocator.java
+/Users/yervand/Workspace/identity/identity-core/identity-core-db-repositories/src/main/java/com/sflpro/identity/core/db/repositories/PrincipalRepository.java
+/Users/yervand/Workspace/identity/identity-core/identity-core-db-repositories/src/main/java/com/sflpro/identity/core/db/repositories/IdentityRepository.java
+/Users/yervand/Workspace/identity/identity-core/identity-core-db-repositories/src/main/java/com/sflpro/identity/core/db/repositories/AuthenticationAttemptRepository.java
+/Users/yervand/Workspace/identity/identity-core/identity-core-db-repositories/src/main/java/com/sflpro/identity/core/db/repositories/PermissionRepository.java
+/Users/yervand/Workspace/identity/identity-core/identity-core-db-repositories/src/main/java/com/sflpro/identity/core/db/repositories/CredentialRepository.java

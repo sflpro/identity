@@ -1,0 +1,6 @@
+target
+.DS_Store
+
+### IntelliJ IDEA ###
+.idea
+src/main/main.iml

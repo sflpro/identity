@@ -1,0 +1,17 @@
+/Users/yervand/Workspace/identity/identity-api/identity-api-facade/src/main/java/com/sflpro/identity/api/mapper/BeanMapper.java
+/Users/yervand/Workspace/identity/identity-api/identity-api-facade/src/main/java/com/sflpro/identity/api/config/errorhandling/JsonMappingExceptionMapper.java
+/Users/yervand/Workspace/identity/identity-api/identity-api-facade/src/main/java/com/sflpro/identity/api/IdentityJerseyConfig.java
+/Users/yervand/Workspace/identity/identity-api/identity-api-facade/src/main/java/com/sflpro/identity/api/config/errorhandling/DtoValidationExceptionMapper.java
+/Users/yervand/Workspace/identity/identity-api/identity-api-facade/src/main/java/com/sflpro/identity/api/utils/impl/ApiResponseInfoServiceImpl.java
+/Users/yervand/Workspace/identity/identity-api/identity-api-facade/src/main/java/com/sflpro/identity/api/config/GenericJerseyConfig.java
+/Users/yervand/Workspace/identity/identity-api/identity-api-facade/src/main/java/com/sflpro/identity/api/endpoints/AuthenticationEndpoint.java
+/Users/yervand/Workspace/identity/identity-api/identity-api-facade/src/main/java/com/sflpro/identity/api/endpoints/IdentityEndpoint.java
+/Users/yervand/Workspace/identity/identity-api/identity-api-facade/src/main/java/com/sflpro/identity/api/utils/ApiResponseInfoService.java
+/Users/yervand/Workspace/identity/identity-api/identity-api-facade/src/main/java/com/sflpro/identity/api/endpoints/StatusEndpoint.java
+/Users/yervand/Workspace/identity/identity-api/identity-api-facade/src/main/java/com/sflpro/identity/api/config/errorhandling/JsonParseExceptionMapper.java
+/Users/yervand/Workspace/identity/identity-api/identity-api-facade/src/main/java/com/sflpro/identity/api/utils/ApiResponseInfoAspect.java
+/Users/yervand/Workspace/identity/identity-api/identity-api-facade/src/main/java/com/sflpro/identity/api/endpoints/RoleEndpoint.java
+/Users/yervand/Workspace/identity/identity-api/identity-api-facade/src/main/java/com/sflpro/identity/api/config/errorhandling/ApplicationExceptionMapper.java
+/Users/yervand/Workspace/identity/identity-api/identity-api-facade/src/main/java/com/sflpro/identity/api/config/SwaggerConfig.java
+/Users/yervand/Workspace/identity/identity-api/identity-api-facade/src/main/java/com/sflpro/identity/api/endpoints/PermissionEndpoint.java
+/Users/yervand/Workspace/identity/identity-api/identity-api-facade/src/main/java/com/sflpro/identity/api/config/CorsFilter.java

@@ -1,0 +1,84 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:context="http://www.springframework.org/schema/context"
+       xmlns:jpa="http://www.springframework.org/schema/data/jpa"
+       xmlns:tx="http://www.springframework.org/schema/tx"
+       xsi:schemaLocation="http://www.springframework.org/schema/data/jpa
+        http://www.springframework.org/schema/data/jpa/spring-jpa.xsd
+        http://www.springframework.org/schema/beans
+        http://www.springframework.org/schema/beans/spring-beans.xsd
+        http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context.xsd
+        http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx.xsd">
+
+    <import resource="identity-context-core-db-entities.xml"/>
+
+    <context:component-scan base-package="com.sflpro.identity.core.db"/>
+    <context:annotation-config/>
+
+    <context:property-placeholder location="classpath:com/sflpro/identity/repositories.properties"
+                                  local-override="false"
+                                  ignore-unresolvable="true"/>
+
+    <jpa:repositories base-package="com.sflpro.identity.core.db"/>
+
+    <bean id="jpaVendorAdapter" class="org.springframework.orm.jpa.vendor.HibernateJpaVendorAdapter"/>
+
+    <bean class="org.springframework.orm.jpa.JpaTransactionManager" id="transactionManager">
+        <property name="entityManagerFactory" ref="entityManagerFactory"/>
+        <qualifier value="pagTransactionManager"/>
+    </bean>
+
+    <bean id="ehCacheUri" factory-bean="hibernateEhCacheConfigLocator" factory-method="getconfigUri"/>
+
+    <tx:annotation-driven mode="proxy" transaction-manager="transactionManager"/>
+
+    <beans profile="!test">
+        <bean id="flyway" class="org.flywaydb.core.Flyway" init-method="migrate">
+            <property name="dataSource" ref="dataSource"/>
+            <property name="baselineOnMigrate" value="true"/>
+            <property name="baselineVersionAsString" value="0"/>
+        </bean>
+
+        <bean id="hikariConfig" class="com.zaxxer.hikari.HikariConfig">
+            <property name="poolName" value="springHikariCP"/>
+            <property name="connectionTestQuery" value="SELECT 1"/>
+            <property name="driverClassName" value="${spring.datasource.driver-class-name}"/>
+            <property name="jdbcUrl" value="${spring.datasource.url}"/>
+            <property name="maximumPoolSize" value="${spring.datasource.maxConnections}"/>
+            <property name="minimumIdle" value="${spring.datasource.minConnections}"/>
+            <property name="dataSourceProperties">
+                <props>
+                    <prop key="url">${spring.datasource.url}</prop>
+                    <prop key="user">${spring.datasource.username}</prop>
+                    <prop key="password">${spring.datasource.password}</prop>
+                </props>
+            </property>
+        </bean>
+
+        <bean id="dataSource" class="com.zaxxer.hikari.HikariDataSource" destroy-method="close">
+            <constructor-arg ref="hikariConfig"/>
+        </bean>
+
+        <bean id="entityManagerFactory" class="org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean">
+            <property name="dataSource" ref="dataSource"/>
+            <property name="packagesToScan" value="com.sflpro.identity.core.db"/>
+            <property name="jpaVendorAdapter" ref="jpaVendorAdapter"/>
+            <property name="jpaProperties">
+                <map>
+                    <entry key="hibernate.dialect" value="org.hibernate.dialect.PostgreSQL95Dialect"/>
+                    <entry key="hibernate.show_sql" value="${hibernate.show_sql}"/>
+                    <entry key="hibernate.hbm2ddl.auto" value="${hibernate.hbm2ddl.auto}"/>
+                    <entry key="hibernate.globally_quoted_identifiers" value="true"/>
+                    <entry key="hibernate.cache.use_query_cache" value="true"/>
+                    <entry key="hibernate.cache.region.factory_class"
+                           value="org.hibernate.cache.jcache.JCacheRegionFactory"/>
+                    <entry key="hibernate.javax.cache.provider" value="org.ehcache.jsr107.EhcacheCachingProvider"/>
+                    <entry key="hibernate.javax.cache.uri" value-ref="ehCacheUri"/>
+                    <!-- TODO check with Yervand -->
+                    <entry key="hibernate.jdbc.lob.non_contextual_creation" value="true"/>
+                </map>
+            </property>
+        </bean>
+    </beans>
+</beans>

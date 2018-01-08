@@ -1,0 +1,7 @@
+/Users/yervand/Workspace/identity/identity-core/identity-core-db-entities/src/main/java/com/sflpro/identity/core/db/entities/AuthenticationAttempt.java
+/Users/yervand/Workspace/identity/identity-core/identity-core-db-entities/src/main/java/com/sflpro/identity/core/db/entities/Identity.java
+/Users/yervand/Workspace/identity/identity-core/identity-core-db-entities/src/main/java/com/sflpro/identity/core/db/entities/Principal.java
+/Users/yervand/Workspace/identity/identity-core/identity-core-db-entities/src/main/java/com/sflpro/identity/core/db/entities/Permission.java
+/Users/yervand/Workspace/identity/identity-core/identity-core-db-entities/src/main/java/com/sflpro/identity/core/db/entities/Credential.java
+/Users/yervand/Workspace/identity/identity-core/identity-core-db-entities/src/main/java/com/sflpro/identity/core/db/entities/Role.java
+/Users/yervand/Workspace/identity/identity-core/identity-core-db-entities/src/main/java/com/sflpro/identity/core/db/entities/Token.java
