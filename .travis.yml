@@ -1,6 +1,10 @@
 language: java
+script: .travis/build.sh
 cache:
   directories:
-  - $HOME/.m2
+  - "$HOME/.m2"
 jdk:
-  - oraclejdk9
+- oraclejdk9
+env:
+  global:
+    secure: tS4b4O47yRy1mywEjkj+flC7Ywc0H5otef9Uo01+V4lKtMRdQUxAxmXdBTk4S99imZpoD610mGpDsA5zrboJ4/2gZBV+XuN0kDA3VXOy5GMAT7iuzRwD5vBw/H33P+yp23E82vspJcvssErrLDBB0EKjB1rD40p5eO43aJcyse/6FuMllh5PiJxduzoabupe2p0AUAq3F4vCF63GUB2jNz544J2nBH3WluwYidYV+vVqEWirb1CivSWOLaEyWPceOvrxKhfpLc6QM4MaI98zUYi95gWDAuAZ9MksB/mq4/9GzdU6tnVWyLBXcLi32lSbAqseASRg4Gg/WpUxrigTilOYzS0bLY3ySDGfzrOSuVJotCiyzFVpgcbOqDHBBLHqLiN7fI/7hf605oTbMIBAwRCTrlrG2B0hWkoEAHcGBYLDW/tcx/Ei3neNmkoIC/SocfEjERN1dGJ8kjCemplwHYZXPLd2TGwXFtArxHDFHaEx6ACiSRMpeE3JvVVcMILFXhXvuPJqZoVObcrFxDhyvk6mYvVH4Z2JBn9Y4qnS3K050DceXyU+rPh8799zv/T1248azAXQnsXy9U7zRzqv1k4UcdqDJwJdXUL+UG9W6bRPeKPXjPgn4Yrz4BdyyOiYvwOjXlnyrZEW47MUPO+DBegeUOI2dpP5Q+Ci3+zebls=
