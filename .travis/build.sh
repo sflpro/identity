@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-if [ $TRAVIS_BRANCH == 'develop' ]
+if [ "$TRAVIS_BRANCH" == "develop" ] && [ "$TRAVIS_PULL_REQUEST" == "false" ]
 then
     echo "Running develop branch build and analysis. Snapshots will be published. All issues/stats will be saved to Sonar database."
     mvn clean org.jacoco:jacoco-maven-plugin:prepare-agent verify sonar:sonar -B \
