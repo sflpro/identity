@@ -1,3 +1,5 @@
+[![Build status](https://api.travis-ci.org/sflpro/identity.svg?branch=develop)](https://travis-ci.org/sflpro/identity) [![Quality Gate](https://sonarcloud.io/api/badges/gate?key=com.sflpro.identity:identity)](https://sonarcloud.io/dashboard?id=com.sflpro.identity:identity)
+
 # Docker build
 
 To run docker build specify the context.
