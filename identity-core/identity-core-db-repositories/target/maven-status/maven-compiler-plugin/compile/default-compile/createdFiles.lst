@@ -1,8 +1,0 @@
-com/sflpro/identity/core/db/HibernateEhCacheConfigLocator.class
-com/sflpro/identity/core/db/repositories/RoleRepository.class
-com/sflpro/identity/core/db/repositories/AuthenticationAttemptRepository.class
-com/sflpro/identity/core/db/repositories/TokenRepository.class
-com/sflpro/identity/core/db/repositories/PermissionRepository.class
-com/sflpro/identity/core/db/repositories/CredentialRepository.class
-com/sflpro/identity/core/db/repositories/IdentityRepository.class
-com/sflpro/identity/core/db/repositories/PrincipalRepository.class

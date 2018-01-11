@@ -1,7 +1,0 @@
-com/sflpro/identity/core/db/entities/Credential.class
-com/sflpro/identity/core/db/entities/Role.class
-com/sflpro/identity/core/db/entities/Token.class
-com/sflpro/identity/core/db/entities/Identity.class
-com/sflpro/identity/core/db/entities/Principal.class
-com/sflpro/identity/core/db/entities/AuthenticationAttempt.class
-com/sflpro/identity/core/db/entities/Permission.class
