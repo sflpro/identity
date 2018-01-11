@@ -7,34 +7,27 @@ package com.sflpro.identity.core.services.identity.reset;
  * @author Davit Harutyunyan
  */
 public class SecretResetRequest {
-
-    private String tokenType;
     private String token;
-    private String password;
-    private String details;
+    private String secret;
 
-    public SecretResetRequest(String tokenType, String token, String password) {
+    public SecretResetRequest(String token, String secret) {
         this.token = token;
-        this.password = password;
-    }
-
-    public String getTokenType() {
-        return tokenType;
+        this.secret = secret;
     }
 
     public String getToken() {
         return token;
     }
 
-    public String getPassword() {
-        return password;
+    public String getSecret() {
+        return secret;
     }
 
     public void setToken(final String token) {
         this.token = token;
     }
 
-    public void setPassword(final String password) {
-        this.password = password;
+    public void setPassword(final String secret) {
+        this.secret = secret;
     }
 }

@@ -1,5 +1,6 @@
 package com.sflpro.identity.core.services.token;
 
+import com.sflpro.identity.core.datatypes.TokenType;
 import com.sflpro.identity.core.db.entities.Token;
 
 import java.util.List;
@@ -19,7 +20,7 @@ public interface TokenService {
      * @param tokenValue the value of the token
      * @return founder entity
      */
-    Token get(final String tokenType, final String tokenValue);
+    Token get(final TokenType tokenType, final String tokenValue);
 
     /**
      * Creates new token

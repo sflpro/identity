@@ -1,6 +1,7 @@
 package com.sflpro.identity.core.services.token.impl;
 
 import com.sflpro.identity.core.datatypes.CredentialType;
+import com.sflpro.identity.core.datatypes.TokenType;
 import com.sflpro.identity.core.db.entities.Credential;
 import com.sflpro.identity.core.db.entities.Token;
 import com.sflpro.identity.core.db.repositories.TokenRepository;
@@ -35,7 +36,7 @@ public class TokenServiceImpl implements TokenService {
     private TokenGenerator tokenGenerator;
 
     @Override
-    public Token get(final String tokenType, final String tokenValue) {
+    public Token get(final TokenType tokenType, final String tokenValue) {
         return tokenRepository.findByTokenTypeAndValue(tokenType, tokenValue)
                 .orElseThrow(() -> new ResourceNotFoundException(String.format("Token with type: %s and value: %s not found", tokenType, tokenValue)));
     }
@@ -102,7 +103,7 @@ public class TokenServiceImpl implements TokenService {
         return tokenRepository.save(existingValidToken);
     }
 
-    private Token getExistingValidToken(final String tokenValue, final String tokenType, final LocalDateTime requestLocalDateTime) throws InvalidTokenException {
+    private Token getExistingValidToken(final String tokenValue, final TokenType tokenType, final LocalDateTime requestLocalDateTime) throws InvalidTokenException {
         Assert.notNull(tokenValue, "tokenValue should not be null.");
         Assert.notNull(tokenType, "tokenType should not be null.");
         Assert.notNull(requestLocalDateTime, "requestLocalDateTime should not be null.");

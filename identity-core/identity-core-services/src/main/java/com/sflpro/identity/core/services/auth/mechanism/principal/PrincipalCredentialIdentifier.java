@@ -15,6 +15,7 @@ import javax.validation.constraints.NotNull;
  */
 public final class PrincipalCredentialIdentifier extends CredentialIdentifier<Principal> {
 
+    @NotNull
     private final PrincipalType principalType;
 
     @NotNull

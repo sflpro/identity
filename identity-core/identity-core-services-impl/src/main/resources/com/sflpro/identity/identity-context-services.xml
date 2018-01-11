@@ -2,8 +2,9 @@
 <beans xmlns="http://www.springframework.org/schema/beans"
        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
        xmlns:context="http://www.springframework.org/schema/context"
+       xmlns:util="http://www.springframework.org/schema/util"
        xsi:schemaLocation="http://www.springframework.org/schema/beans
-        http://www.springframework.org/schema/beans/spring-beans.xsd http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context.xsd">
+        http://www.springframework.org/schema/beans/spring-beans.xsd http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context.xsd http://www.springframework.org/schema/util http://www.springframework.org/schema/util/spring-util.xsd">
 
     <import resource="identity-context-db-repositories.xml"/>
 
@@ -13,5 +14,33 @@
 
     <context:property-placeholder location="classpath:/com/sflpro/identity/services.properties" local-override="false"
                                   ignore-unresolvable="true"/>
+
+    <!--Jersey client-->
+    <bean id="jerseyClientBuilder" class="com.sflpro.identity.core.services.notification.JerseyClientBuilderImpl"/>
+    <bean id="jerseyClient" class="javax.ws.rs.client.Client" factory-bean="jerseyClientBuilder" factory-method="buildClient">
+        <constructor-arg>
+            <util:properties>
+                <prop key="readTimeOutInMilliseconds">${microservice.http.client.readTimeoutMilliseconds}</prop>
+                <prop key="connectTimeOutInMilliseconds">${microservice.http.client.connectTimeoutMilliseconds}</prop>
+                <prop key="connectionMaxCount">${microservice.http.client.connectionMaxCount}</prop>
+                <prop key="connectionMaxCountPerRoute">${microservice.http.client.connectionMaxCountPerRoute}</prop>
+            </util:properties>
+        </constructor-arg>
+    </bean>
+
+    <!--Notification communicator service-->
+    <bean id="applicationNotificationProcessorResourceClient"
+          class="com.sfl.nms.api.internal.client.rest.notification.email.template.impl.ApplicationNotificationProcessorResourceClientImpl">
+        <property name="client" ref="jerseyClient"/>
+        <property name="apiPath" value="${microservice.notification.url}"/>
+    </bean>
+    <bean id="emailNotificationResourceClient" class="com.sfl.nms.api.internal.client.rest.notification.email.impl.EmailNotificationResourceClientImpl">
+        <property name="client" ref="jerseyClient"/>
+        <property name="apiPath" value="${microservice.notification.url}"/>
+    </bean>
+    <bean id="notificationCommunicationService"
+          class="com.sflpro.identity.core.services.notification.NotificationCommunicationServiceImpl">
+        <property name="applicationNotificationProcessorResourceClient" ref="applicationNotificationProcessorResourceClient"/>
+    </bean>
 
 </beans>

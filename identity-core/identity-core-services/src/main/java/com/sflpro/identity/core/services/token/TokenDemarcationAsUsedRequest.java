@@ -1,5 +1,7 @@
 package com.sflpro.identity.core.services.token;
 
+import com.sflpro.identity.core.datatypes.TokenType;
+
 /**
  * Company: SFL LLC
  * Created on 03/12/2017
@@ -8,17 +10,17 @@ package com.sflpro.identity.core.services.token;
  */
 public class TokenDemarcationAsUsedRequest {
 
-    private String tokenType;
+    private TokenType tokenType;
     private String tokenValue;
     private String tokenOwnerID;
 
-    public TokenDemarcationAsUsedRequest(String tokenType, String tokenValue, String tokenOwnerID) {
+    public TokenDemarcationAsUsedRequest(TokenType tokenType, String tokenValue, String tokenOwnerID) {
         this.tokenType = tokenType;
         this.tokenValue = tokenValue;
         this.tokenOwnerID = tokenOwnerID;
     }
 
-    public String getTokenType() {
+    public TokenType getTokenType() {
         return tokenType;
     }
 

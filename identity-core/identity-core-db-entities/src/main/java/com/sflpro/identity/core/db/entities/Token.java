@@ -1,6 +1,6 @@
 package com.sflpro.identity.core.db.entities;
 
-import com.sflpro.identity.core.datatypes.CredentialType;
+import com.sflpro.identity.core.datatypes.TokenType;
 import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
 import org.apache.commons.lang3.builder.ToStringBuilder;
@@ -27,8 +27,9 @@ public class Token extends Credential {
     @Column(name = "value")
     private String value;
 
+    @Enumerated(EnumType.STRING)
     @Column(name = "token_type")
-    private String tokenType;
+    private TokenType tokenType;
 
     @Column(name = "expiration_date")
     private LocalDateTime expirationDate;
@@ -41,7 +42,8 @@ public class Token extends Credential {
         super();
     }
 
-    public Token(Credential credential, String value, String tokenType, LocalDateTime expirationDate, Credential issuedBy) {
+    public Token(Credential credential, String value, TokenType tokenType,
+                 LocalDateTime expirationDate, Credential issuedBy) {
         super(credential);
         this.value = value;
         this.tokenType = tokenType;
@@ -57,11 +59,11 @@ public class Token extends Credential {
         this.value = value;
     }
 
-    public String getTokenType() {
+    public TokenType getTokenType() {
         return tokenType;
     }
 
-    public void setTokenType(String tokenType) {
+    public void setTokenType(TokenType tokenType) {
         this.tokenType = tokenType;
     }
 
@@ -87,13 +89,14 @@ public class Token extends Credential {
 
         if (o == null || getClass() != o.getClass()) return false;
 
-        Token token1 = (Token) o;
+        Token token = (Token) o;
 
         return new EqualsBuilder()
                 .appendSuper(super.equals(o))
-                .append(value, token1.value)
-                .append(expirationDate, token1.expirationDate)
-                .append(issuedBy, token1.issuedBy)
+                .append(value, token.value)
+                .append(tokenType, token.tokenType)
+                .append(expirationDate, token.expirationDate)
+                .append(issuedBy, token.issuedBy)
                 .isEquals();
     }
 
@@ -102,6 +105,7 @@ public class Token extends Credential {
         return new HashCodeBuilder(17, 37)
                 .appendSuper(super.hashCode())
                 .append(value)
+                .append(tokenType)
                 .append(expirationDate)
                 .append(issuedBy)
                 .toHashCode();
@@ -110,9 +114,9 @@ public class Token extends Credential {
     @Override
     public String toString() {
         return new ToStringBuilder(this)
-                .appendSuper(super.toString())
                 .append("value", value)
-                .append("expiration_date", expirationDate)
+                .append("tokenType", tokenType)
+                .append("expirationDate", expirationDate)
                 .append("issuedBy", issuedBy)
                 .toString();
     }
