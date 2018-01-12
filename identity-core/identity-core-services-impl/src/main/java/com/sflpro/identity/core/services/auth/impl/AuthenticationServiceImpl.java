@@ -1,9 +1,11 @@
 package com.sflpro.identity.core.services.auth.impl;
 
 import com.sflpro.identity.core.datatypes.AuthenticationStatus;
+import com.sflpro.identity.core.datatypes.PrincipalType;
 import com.sflpro.identity.core.db.entities.Credential;
 import com.sflpro.identity.core.db.entities.Token;
 import com.sflpro.identity.core.services.auth.*;
+import com.sflpro.identity.core.services.principal.PrincipalService;
 import com.sflpro.identity.core.services.token.TokenService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -26,11 +28,14 @@ public class AuthenticationServiceImpl implements AuthenticationService {
 
     private final AuthenticatorRegistry authenticatorRegistry;
 
+    private final PrincipalService principalService;
+
     private final TokenService tokenService;
 
     @Autowired
-    public AuthenticationServiceImpl(AuthenticatorRegistry authenticatorRegistry, TokenService tokenService) {
+    public AuthenticationServiceImpl(AuthenticatorRegistry authenticatorRegistry, PrincipalService principalService, TokenService tokenService) {
         this.authenticatorRegistry = authenticatorRegistry;
+        this.principalService = principalService;
         this.tokenService = tokenService;
     }
 
@@ -48,10 +53,12 @@ public class AuthenticationServiceImpl implements AuthenticationService {
             throw new IllegalStateException(String.format("Not supported credential type for request %s", request.getCredentialType()));
         }
         AuthenticationResponse authenticationResponse = authenticator.authenticate(credential, details);
-        if (authenticationResponse.getStatus() == AuthenticationStatus.AUTHENTICATED
-                && request.getTokenRequests().size() > 0) {
-            List<Token> tokens = tokenService.createNewTokens(request.getTokenRequests(), credential.getId());
-            authenticationResponse.setTokens(tokens);
+        if (authenticationResponse.getStatus() == AuthenticationStatus.AUTHENTICATED) {
+            authenticationResponse.setPrincipal(principalService.getByIdentityAndType(credential.getIdentity(), PrincipalType.MAIL));
+            if (request.getTokenRequests().size() > 0) {
+                List<Token> tokens = tokenService.createNewTokens(request.getTokenRequests(), credential);
+                authenticationResponse.setTokens(tokens);
+            }
         }
         authenticationResponse.setCredentialTypeUsed(credential.getType());
         authenticationResponse.setIdentity(credential.getIdentity());

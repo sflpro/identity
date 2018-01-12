@@ -4,6 +4,7 @@ import com.sflpro.identity.core.datatypes.AuthenticationStatus;
 import com.sflpro.identity.core.datatypes.CredentialType;
 import com.sflpro.identity.core.db.entities.Credential;
 import com.sflpro.identity.core.db.entities.Identity;
+import com.sflpro.identity.core.db.entities.Principal;
 import com.sflpro.identity.core.db.entities.Token;
 
 import java.util.List;
@@ -19,6 +20,8 @@ public class AuthenticationResponse {
     private CredentialType credentialTypeUsed;
 
     private Identity identity;
+
+    private Principal principal;
 
     private List<String> permissions;
 
@@ -48,6 +51,14 @@ public class AuthenticationResponse {
 
     public void setIdentity(Identity identity) {
         this.identity = identity;
+    }
+
+    public Principal getPrincipal() {
+        return principal;
+    }
+
+    public void setPrincipal(Principal principal) {
+        this.principal = principal;
     }
 
     public List<String> getPermissions() {

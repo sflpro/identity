@@ -27,8 +27,6 @@ public class IdentityDto {
     @NotNull
     private IdentityStatus status;
 
-    private Set<CredentialDto> credentials;
-
     public IdentityDto() {
         super();
     }
@@ -63,13 +61,5 @@ public class IdentityDto {
 
     public void setStatus(IdentityStatus status) {
         this.status = status;
-    }
-
-    public Set<CredentialDto> getCredentials() {
-        return credentials;
-    }
-
-    public void setCredentials(Set<CredentialDto> credentials) {
-        this.credentials = credentials;
     }
 }

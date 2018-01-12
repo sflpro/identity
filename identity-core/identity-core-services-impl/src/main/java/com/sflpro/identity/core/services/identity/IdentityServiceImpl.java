@@ -83,7 +83,7 @@ public class IdentityServiceImpl implements IdentityService {
         Assert.notNull(identity, "identity can not be null.");
 
         Token token = tokenService.createNewToken(
-                new TokenRequest(TokenType.SECRET_RESET, resetRequest.getExpiresInHours()), credential.getId()
+                new TokenRequest(TokenType.SECRET_RESET, resetRequest.getExpiresInHours()), credential
         );
 
         // TODO Send email with reset token

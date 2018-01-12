@@ -1,7 +1,7 @@
 package com.sflpro.identity.core.db.repositories;
 
 import com.sflpro.identity.core.datatypes.PrincipalType;
-import com.sflpro.identity.core.db.entities.Credential;
+import com.sflpro.identity.core.db.entities.Identity;
 import com.sflpro.identity.core.db.entities.Principal;
 import org.springframework.data.jpa.repository.JpaRepository;
 
@@ -18,4 +18,6 @@ public interface PrincipalRepository extends JpaRepository<Principal, String> {
     Optional<Principal> findByDeletedIsNullAndNameAndPrincipalType(String name, PrincipalType type);
 
     Optional<Principal> findByDeletedIsNullAndIdAndPrincipalType(String credentialId, PrincipalType type);
+
+    Optional<Principal> findByDeletedIsNullAndIdentityAndPrincipalType(Identity identity, PrincipalType type);
 }

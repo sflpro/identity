@@ -6,12 +6,10 @@ import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
 import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.hibernate.annotations.GenericGenerator;
-import org.hibernate.annotations.Where;
 
 import javax.persistence.*;
 import java.time.LocalDateTime;
 import java.util.List;
-import java.util.Set;
 
 /**
  * Company: SFL LLC
@@ -44,10 +42,6 @@ public class Identity {
     @Enumerated(EnumType.STRING)
     @Column(name = "status")
     private IdentityStatus status;
-
-    @OneToMany(mappedBy = "identity", fetch = FetchType.LAZY)
-    @Where(clause = "deleted is null and type = 'PRINCIPAL'")
-    private Set<Credential> credentials;
 
     @ManyToMany(fetch = FetchType.LAZY)
     @JoinTable(name = "identity_role",
@@ -135,14 +129,6 @@ public class Identity {
 
     public void setDeleted(LocalDateTime deleted) {
         this.deleted = deleted;
-    }
-
-    public Set<Credential> getCredentials() {
-        return credentials;
-    }
-
-    public void setCredentials(Set<Credential> credentials) {
-        this.credentials = credentials;
     }
 
     @PrePersist

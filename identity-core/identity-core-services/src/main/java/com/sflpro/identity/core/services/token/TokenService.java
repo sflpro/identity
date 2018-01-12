@@ -1,6 +1,7 @@
 package com.sflpro.identity.core.services.token;
 
 import com.sflpro.identity.core.datatypes.TokenType;
+import com.sflpro.identity.core.db.entities.Credential;
 import com.sflpro.identity.core.db.entities.Token;
 
 import java.util.List;
@@ -26,19 +27,19 @@ public interface TokenService {
      * Creates new token
      *
      * @param tokenRequest token data to be generated
-     * @param credentialId the id of credential token are issued by
+     * @param credential the credential token are issued by
      * @return created entity
      */
-    Token createNewToken(final TokenRequest tokenRequest, final String credentialId);
+    Token createNewToken(final TokenRequest tokenRequest, final Credential credential);
 
     /**
      * Creates new token
      *
      * @param tokens the list of the tokens requested to be created
-     * @param credentialId the id of credential tokens are issued by
+     * @param credential the credential tokens are issued by
      * @return created entity
      */
-    List<Token> createNewTokens(final List<TokenRequest> tokens, final String credentialId);
+    List<Token> createNewTokens(final List<TokenRequest> tokens, final Credential credential);
 
     /**
      * Check token for existence and validates it
