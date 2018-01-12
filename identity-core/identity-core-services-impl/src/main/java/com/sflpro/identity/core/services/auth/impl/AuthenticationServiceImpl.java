@@ -54,7 +54,7 @@ public class AuthenticationServiceImpl implements AuthenticationService {
             authenticationResponse.setTokens(tokens);
         }
         authenticationResponse.setCredentialTypeUsed(credential.getType());
-        authenticationResponse.setIdentityId(credential.getIdentity().getId());
+        authenticationResponse.setIdentity(credential.getIdentity());
         // authenticationResponse.setPermissions(credential.getIdentity().getRoles().get(0).getPermissions()); TODO work on this
         return authenticationResponse;
     }

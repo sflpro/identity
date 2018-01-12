@@ -20,7 +20,7 @@ public class CredentialDto {
 
     private String id;
 
-    private IdentityDto identity;
+    // private IdentityDto identity;
 
     private CredentialType type;
 
@@ -43,13 +43,13 @@ public class CredentialDto {
         this.id = id;
     }
 
-    public IdentityDto getIdentity() {
+    /*public IdentityDto getIdentity() {
         return identity;
     }
 
     public void setIdentity(IdentityDto identity) {
         this.identity = identity;
-    }
+    }*/
 
     public CredentialType getType() {
         return type;

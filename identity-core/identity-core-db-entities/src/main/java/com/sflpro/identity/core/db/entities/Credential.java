@@ -190,7 +190,6 @@ public class Credential {
     public String toString() {
         return new ToStringBuilder(this)
                 .append("id", id)
-                .append("identity", identity)
                 .append("type", type)
                 .append("failedAttempts", failedAttempts)
                 .append("details", details)

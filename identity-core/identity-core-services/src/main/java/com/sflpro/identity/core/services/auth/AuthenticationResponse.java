@@ -18,7 +18,7 @@ public class AuthenticationResponse {
 
     private CredentialType credentialTypeUsed;
 
-    private String identityId;
+    private Identity identity;
 
     private List<String> permissions;
 
@@ -31,7 +31,7 @@ public class AuthenticationResponse {
 
     public AuthenticationResponse(Credential credentialsUsed, Identity identity) {
         this.credentialTypeUsed = credentialsUsed.getType();
-        this.identityId = identity.getId();
+        this.identity = identity;
     }
 
     public CredentialType getCredentialTypeUsed() {
@@ -42,12 +42,12 @@ public class AuthenticationResponse {
         this.credentialTypeUsed = credentialTypeUsed;
     }
 
-    public String getIdentityId() {
-        return identityId;
+    public Identity getIdentity() {
+        return identity;
     }
 
-    public void setIdentityId(String identityId) {
-        this.identityId = identityId;
+    public void setIdentity(Identity identity) {
+        this.identity = identity;
     }
 
     public List<String> getPermissions() {

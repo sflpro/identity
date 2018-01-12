@@ -61,9 +61,11 @@ public class TokenServiceImpl implements TokenService {
             tokenRepository.saveAll(existingTokens);
         }
 
-        credential.setType(CredentialType.TOKEN); // TODO pay attention to this part MR
-        Token token = new Token(credential, tokenGenerator.generate(), tokenRequest.getTokenType(),
+        // credential.setType(CredentialType.TOKEN); // TODO pay attention to this part MR
+        Token token = new Token(/*credential,*/ tokenGenerator.generate(), tokenRequest.getTokenType(),
                 currentLocalDateTime.plus(Duration.ofHours(tokenRequest.getExpiresInHours())), credential);
+        token.setType(CredentialType.TOKEN);
+        token.setIdentity(credential.getIdentity());
 
         tokenRepository.save(token);
 

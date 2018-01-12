@@ -18,7 +18,7 @@ public class AuthenticationResponseDto extends AbstractApiResponse {
 
     private CredentialType credentialTypeUsed;
 
-    private String identityId;
+    private IdentityDto identity;
 
     private List<String> permissions;
 
@@ -34,12 +34,12 @@ public class AuthenticationResponseDto extends AbstractApiResponse {
         this.credentialTypeUsed = credentialTypeUsed;
     }
 
-    public String getIdentityId() {
-        return identityId;
+    public IdentityDto getIdentity() {
+        return identity;
     }
 
-    public void setIdentityId(String identityId) {
-        this.identityId = identityId;
+    public void setIdentity(IdentityDto identity) {
+        this.identity = identity;
     }
 
     public List<String> getPermissions() {
