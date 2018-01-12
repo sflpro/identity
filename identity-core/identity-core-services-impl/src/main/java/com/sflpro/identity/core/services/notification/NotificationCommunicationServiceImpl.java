@@ -1,15 +1,15 @@
 package com.sflpro.identity.core.services.notification;
 
-import com.sfl.nms.api.internal.client.rest.notification.email.template.ApplicationNotificationProcessorResourceClient;
-import com.sfl.nms.core.api.internal.model.common.result.ResultResponseModel;
-import com.sfl.nms.core.api.internal.model.email.response.CreateEmailNotificationResponse;
-import com.sfl.nms.core.api.internal.model.email.template.forgotpassword.ResetPasswordEmailClientModel;
-import com.sfl.nms.core.api.internal.model.email.template.request.ForgotPasswordRequest;
 import com.sflpro.identity.core.datatypes.PrincipalType;
 import com.sflpro.identity.core.db.entities.Principal;
 import com.sflpro.identity.core.db.entities.Token;
 import com.sflpro.identity.core.services.identity.IdentityServiceException;
 import com.sflpro.identity.core.services.principal.PrincipalService;
+import com.sflpro.notifier.api.internal.client.rest.notification.email.template.ApplicationNotificationProcessorResourceClient;
+import com.sflpro.notifier.core.api.internal.model.common.result.ResultResponseModel;
+import com.sflpro.notifier.core.api.internal.model.email.response.CreateEmailNotificationResponse;
+import com.sflpro.notifier.core.api.internal.model.email.template.forgotpassword.ResetPasswordEmailClientModel;
+import com.sflpro.notifier.core.api.internal.model.email.template.request.ForgotPasswordRequest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.util.Assert;

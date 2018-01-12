@@ -30,11 +30,11 @@
 
     <!--Notification communicator service-->
     <bean id="applicationNotificationProcessorResourceClient"
-          class="com.sfl.nms.api.internal.client.rest.notification.email.template.impl.ApplicationNotificationProcessorResourceClientImpl">
+          class="com.sflpro.notifier.api.internal.client.rest.notification.email.template.impl.ApplicationNotificationProcessorResourceClientImpl">
         <property name="client" ref="jerseyClient"/>
         <property name="apiPath" value="${microservice.notification.url}"/>
     </bean>
-    <bean id="emailNotificationResourceClient" class="com.sfl.nms.api.internal.client.rest.notification.email.impl.EmailNotificationResourceClientImpl">
+    <bean id="emailNotificationResourceClient" class="com.sflpro.notifier.api.internal.client.rest.notification.email.impl.EmailNotificationResourceClientImpl">
         <property name="client" ref="jerseyClient"/>
         <property name="apiPath" value="${microservice.notification.url}"/>
     </bean>

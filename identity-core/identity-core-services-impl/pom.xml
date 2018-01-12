@@ -28,7 +28,7 @@
             <version>0.0.1-SNAPSHOT</version>
         </dependency>
         <dependency>
-            <groupId>com.sfl.ms.notification.api.internal</groupId>
+            <groupId>com.sflpro.notifier.api.internal</groupId>
             <artifactId>api-internal-client</artifactId>
             <version>${sfl.notifier.version}</version>
         </dependency>
