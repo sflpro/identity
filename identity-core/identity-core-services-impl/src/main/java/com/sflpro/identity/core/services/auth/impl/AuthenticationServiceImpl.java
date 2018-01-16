@@ -6,7 +6,9 @@ import com.sflpro.identity.core.db.entities.Credential;
 import com.sflpro.identity.core.db.entities.Token;
 import com.sflpro.identity.core.services.auth.*;
 import com.sflpro.identity.core.services.principal.PrincipalService;
+import com.sflpro.identity.core.services.token.TokenInvalidationRequest;
 import com.sflpro.identity.core.services.token.TokenService;
+import com.sflpro.identity.core.services.token.TokenServiceException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -64,5 +66,11 @@ public class AuthenticationServiceImpl implements AuthenticationService {
         authenticationResponse.setIdentity(credential.getIdentity());
         // authenticationResponse.setPermissions(credential.getIdentity().getRoles().get(0).getPermissions()); TODO work on this
         return authenticationResponse;
+    }
+
+    @Override
+    @Transactional
+    public void invalidateToken(TokenInvalidationRequest tokenRequest) throws TokenServiceException {
+        tokenService.invalidateToken(tokenRequest);
     }
 }

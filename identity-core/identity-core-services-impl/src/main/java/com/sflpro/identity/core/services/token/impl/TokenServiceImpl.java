@@ -6,7 +6,6 @@ import com.sflpro.identity.core.db.entities.Credential;
 import com.sflpro.identity.core.db.entities.Token;
 import com.sflpro.identity.core.db.repositories.TokenRepository;
 import com.sflpro.identity.core.services.ResourceNotFoundException;
-import com.sflpro.identity.core.services.credential.CredentialService;
 import com.sflpro.identity.core.services.token.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -61,7 +60,6 @@ public class TokenServiceImpl implements TokenService {
 
         token.setType(CredentialType.TOKEN);
         token.setIdentity(credential.getIdentity());
-        token.setEnabled(true);
         token.setFailedAttempts(0); // TODO work here
 
         tokenRepository.save(token);
@@ -88,12 +86,12 @@ public class TokenServiceImpl implements TokenService {
     }
 
     @Override
-    public Token demarkTokenAsUsed(final TokenDemarcationAsUsedRequest tokenDemarcationAsUsedRequest) throws TokenServiceException {
+    public Token invalidateToken(final TokenInvalidationRequest tokenInvalidationRequest) throws TokenServiceException {
         LocalDateTime currentLocalDateTime = LocalDateTime.now();
 
         Token existingValidToken = this.getExistingValidToken(
-                tokenDemarcationAsUsedRequest.getTokenValue(),
-                tokenDemarcationAsUsedRequest.getTokenType(),
+                tokenInvalidationRequest.getToken(),
+                tokenInvalidationRequest.getTokenType(),
                 currentLocalDateTime
         );
 

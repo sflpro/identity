@@ -52,8 +52,8 @@ public interface TokenService {
     /**
      * Mark token as used
      *
-     * @param tokenDemarcationAsUsedRequest the details for token
+     * @param tokenInvalidationRequest the details for token
      * @return demarked token entity
      */
-    Token demarkTokenAsUsed(final TokenDemarcationAsUsedRequest tokenDemarcationAsUsedRequest) throws TokenServiceException;
+    Token invalidateToken(final TokenInvalidationRequest tokenInvalidationRequest) throws TokenServiceException;
 }

@@ -15,7 +15,7 @@ public class InvalidTokenException extends TokenServiceException {
     private final InvalidTokenState tokenState;
 
     public InvalidTokenException(Token token, InvalidTokenState tokenState) {
-        super("Token is invalid state.");
+        super("Token is in invalid state.");
 
         this.token = token;
         this.tokenState = tokenState;

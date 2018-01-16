@@ -121,11 +121,10 @@ public class IdentityServiceImpl implements IdentityService {
         }
 
         try {
-            tokenService.demarkTokenAsUsed(
-                    new TokenDemarcationAsUsedRequest(
+            tokenService.invalidateToken(
+                    new TokenInvalidationRequest(
                             token.getTokenType(),
-                            token.getValue(),
-                            identity.getId()
+                            token.getValue()
                     )
             );
         } catch (TokenServiceException e) {
