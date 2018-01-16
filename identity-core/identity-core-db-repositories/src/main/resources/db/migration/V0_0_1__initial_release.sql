@@ -13,7 +13,6 @@ create table credential (
   id character(36) not null constraint pk_credential primary key,
   identity_id character(36),
   type varchar(50),
-  enabled boolean,
   failed_attempts integer,
   details varchar(300),
   created timestamp not null,
