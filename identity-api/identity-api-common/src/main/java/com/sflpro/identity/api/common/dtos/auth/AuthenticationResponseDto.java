@@ -2,6 +2,7 @@ package com.sflpro.identity.api.common.dtos.auth;
 
 import com.sflpro.identity.api.common.dtos.AbstractApiResponse;
 import com.sflpro.identity.api.common.dtos.identity.IdentityDto;
+import com.sflpro.identity.api.common.dtos.principal.PrincipalDto;
 import com.sflpro.identity.api.common.dtos.token.TokenDto;
 import com.sflpro.identity.core.datatypes.AuthenticationStatus;
 import com.sflpro.identity.core.datatypes.CredentialType;
@@ -18,7 +19,9 @@ public class AuthenticationResponseDto extends AbstractApiResponse {
 
     private CredentialType credentialTypeUsed;
 
-    private String identityId;
+    private IdentityDto identity;
+
+    private PrincipalDto principal;
 
     private List<String> permissions;
 
@@ -34,12 +37,20 @@ public class AuthenticationResponseDto extends AbstractApiResponse {
         this.credentialTypeUsed = credentialTypeUsed;
     }
 
-    public String getIdentityId() {
-        return identityId;
+    public IdentityDto getIdentity() {
+        return identity;
     }
 
-    public void setIdentityId(String identityId) {
-        this.identityId = identityId;
+    public void setIdentity(IdentityDto identity) {
+        this.identity = identity;
+    }
+
+    public PrincipalDto getPrincipal() {
+        return principal;
+    }
+
+    public void setPrincipal(PrincipalDto principal) {
+        this.principal = principal;
     }
 
     public List<String> getPermissions() {

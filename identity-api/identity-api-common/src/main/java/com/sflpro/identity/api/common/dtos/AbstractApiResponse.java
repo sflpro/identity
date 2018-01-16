@@ -20,6 +20,14 @@ public abstract class AbstractApiResponse {
         super();
     }
 
+    public long getTimeSpent() {
+        return timeSpent;
+    }
+
+    public String getApiVersion() {
+        return apiVersion;
+    }
+
     public void setTimeSpent(long timeSpent) {
         this.timeSpent = timeSpent;
     }

@@ -1,5 +1,6 @@
 package com.sflpro.identity.core.db.repositories;
 
+import com.sflpro.identity.core.datatypes.TokenType;
 import com.sflpro.identity.core.db.entities.Credential;
 import com.sflpro.identity.core.db.entities.Token;
 import org.springframework.data.repository.CrudRepository;
@@ -14,7 +15,7 @@ import java.util.Optional;
  */
 public interface TokenRepository extends CrudRepository<Token, String> {
 
-    Optional<Token> findByTokenTypeAndValue(String tokenType, String tokenValue);
+    Optional<Token> findByTokenTypeAndValue(TokenType tokenType, String tokenValue);
 
-    Iterable<Token> findAllByTokenTypeAndIssuedBy(String tokenType, Credential issuedBy);
+    Iterable<Token> findAllByTokenTypeAndIssuedBy(TokenType tokenType, Credential issuedBy);
 }

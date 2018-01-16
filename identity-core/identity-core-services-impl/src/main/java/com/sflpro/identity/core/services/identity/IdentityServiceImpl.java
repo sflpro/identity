@@ -1,6 +1,8 @@
 package com.sflpro.identity.core.services.identity;
 
 import com.sflpro.identity.core.datatypes.IdentityStatus;
+import com.sflpro.identity.core.datatypes.PrincipalType;
+import com.sflpro.identity.core.datatypes.TokenType;
 import com.sflpro.identity.core.db.entities.Credential;
 import com.sflpro.identity.core.db.entities.Identity;
 import com.sflpro.identity.core.db.entities.Token;
@@ -9,7 +11,8 @@ import com.sflpro.identity.core.services.auth.SecretHashHelper;
 import com.sflpro.identity.core.services.credential.CredentialService;
 import com.sflpro.identity.core.services.identity.reset.RequestSecretResetRequest;
 import com.sflpro.identity.core.services.identity.reset.SecretResetRequest;
-import com.sflpro.identity.core.services.identity.reset.ValidateSecretResetTokenRequest;
+import com.sflpro.identity.core.services.notification.NotificationCommunicationService;
+import com.sflpro.identity.core.services.principal.PrincipalService;
 import com.sflpro.identity.core.services.token.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -34,6 +37,9 @@ public class IdentityServiceImpl implements IdentityService {
     private TokenService tokenService;
 
     @Autowired
+    private PrincipalService principalService;
+
+    @Autowired
     private CredentialService credentialService;
 
     @Autowired
@@ -41,6 +47,9 @@ public class IdentityServiceImpl implements IdentityService {
 
     @Autowired
     private SecretHashHelper secretHashHelper;
+
+    @Autowired
+    private NotificationCommunicationService notificationCommunicationService;
 
     @Override
     public Identity create(final IdentityCreationRequest identityCreationRequest) {
@@ -64,41 +73,23 @@ public class IdentityServiceImpl implements IdentityService {
     @Override
     @Transactional
     public void requestSecretReset(RequestSecretResetRequest resetRequest) {
-        Assert.notNull(resetRequest.getCredentialId(), "request.id can not be null.");
+        Assert.notNull(resetRequest.getEmail(), "request.id can not be null.");
 
-        logger.debug("Reset password requested for user {}", resetRequest.getCredentialId());
+        logger.debug("Reset password requested for user {}", resetRequest.getEmail());
 
-        Credential credential = credentialService.getCredentialById(resetRequest.getCredentialId());
+        Credential credential = principalService.get(resetRequest.getEmail(), PrincipalType.MAIL);
         Identity identity = credential.getIdentity();
 
         Assert.notNull(identity, "identity can not be null.");
 
         Token token = tokenService.createNewToken(
-                new TokenRequest(resetRequest.getTokenType(), resetRequest.getExpiresIn()), resetRequest.getCredentialId()
+                new TokenRequest(TokenType.SECRET_RESET, resetRequest.getExpiresInHours()), credential
         );
 
         // TODO Send email with reset token
+        notificationCommunicationService.sendSecretResetEmail(resetRequest.getEmail(), token);
 
         logger.debug("Email sent to User {} for password reset.", identity);
-    }
-
-    @Override
-    public void validateSecretResetToken(ValidateSecretResetTokenRequest secretResetTokenRequest) {
-        Assert.notNull(secretResetTokenRequest.getTokenType(), "request.tokenType can not be null.");
-        Assert.notNull(secretResetTokenRequest.getTokenValue(), "request.tokenValue can not be null.");
-
-        logger.debug("Validate password reset token ({}).", secretResetTokenRequest.getTokenValue());
-
-        try {
-            tokenService.getExistingToken(
-                    new TokenExistenceCheckRequest(
-                            secretResetTokenRequest.getTokenType(),
-                            secretResetTokenRequest.getTokenValue()
-                    )
-            );
-        } catch (TokenServiceException e) {
-            throw new IdentityServiceException(String.format("Could not validate the token: %s", secretResetTokenRequest.getTokenValue()), e);
-        }
     }
 
     @Override
@@ -112,7 +103,7 @@ public class IdentityServiceImpl implements IdentityService {
         try {
             token = tokenService.getExistingToken(
                     new TokenExistenceCheckRequest(
-                            secretReset.getTokenType(),
+                            TokenType.SECRET_RESET,
                             secretReset.getToken()
                     )
             );
@@ -122,7 +113,7 @@ public class IdentityServiceImpl implements IdentityService {
 
         Identity identity = token.getIssuedBy().getIdentity();
         if (identity != null) {
-            changePassword(identity, secretReset.getPassword());
+            changeSecret(identity, secretReset.getSecret());
         } else {
             logger.error("Token Owner was not found!");
 
@@ -145,7 +136,7 @@ public class IdentityServiceImpl implements IdentityService {
     }
 
     @Transactional
-    protected Identity changePassword(final Identity identity, final String newSecret) {
+    protected Identity changeSecret(final Identity identity, final String newSecret) {
         identity.setSecret(secretHashHelper.hashSecret(newSecret));
         return identityRepository.save(identity);
     }

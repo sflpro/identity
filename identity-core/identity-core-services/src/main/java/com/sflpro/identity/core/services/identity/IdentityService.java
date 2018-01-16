@@ -3,7 +3,6 @@ package com.sflpro.identity.core.services.identity;
 import com.sflpro.identity.core.db.entities.Identity;
 import com.sflpro.identity.core.services.identity.reset.RequestSecretResetRequest;
 import com.sflpro.identity.core.services.identity.reset.SecretResetRequest;
-import com.sflpro.identity.core.services.identity.reset.ValidateSecretResetTokenRequest;
 
 /**
  * Company: SFL LLC
@@ -27,13 +26,6 @@ public interface IdentityService {
      * @param resetRequest identity identifier details
      */
     void requestSecretReset(RequestSecretResetRequest resetRequest);
-
-    /**
-     * Validates reset secret tokens
-     *
-     * @param secretResetTokenRequest identity identifier details
-     */
-    void validateSecretResetToken(ValidateSecretResetTokenRequest secretResetTokenRequest);
 
     /**
      * Reset secret

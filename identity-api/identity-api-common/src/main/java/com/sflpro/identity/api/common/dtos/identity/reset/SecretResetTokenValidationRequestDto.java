@@ -1,6 +1,9 @@
 package com.sflpro.identity.api.common.dtos.identity.reset;
 
+import com.sflpro.identity.core.datatypes.TokenType;
+
 import javax.validation.constraints.NotEmpty;
+import javax.validation.constraints.NotNull;
 
 /**
  * Company: SFL LLC
@@ -10,8 +13,8 @@ import javax.validation.constraints.NotEmpty;
  */
 public class SecretResetTokenValidationRequestDto {
 
-    @NotEmpty
-    private String tokenType;
+    @NotNull
+    private TokenType tokenType;
 
     @NotEmpty
     private String token;
@@ -20,7 +23,7 @@ public class SecretResetTokenValidationRequestDto {
         super();
     }
 
-    public String getTokenType() {
+    public TokenType getTokenType() {
         return tokenType;
     }
 

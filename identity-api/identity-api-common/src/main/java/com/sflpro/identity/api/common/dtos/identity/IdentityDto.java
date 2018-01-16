@@ -1,10 +1,12 @@
 package com.sflpro.identity.api.common.dtos.identity;
 
+import com.sflpro.identity.api.common.dtos.credential.CredentialDto;
 import com.sflpro.identity.core.datatypes.IdentityContactMethod;
 import com.sflpro.identity.core.datatypes.IdentityStatus;
 
 import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
+import java.util.Set;
 
 /**
  * Company: SFL LLC

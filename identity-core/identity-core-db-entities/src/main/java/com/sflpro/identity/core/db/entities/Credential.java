@@ -54,19 +54,6 @@ public class Credential {
     @Column(name = "deleted")
     private LocalDateTime deleted;
 
-    public Credential() {
-        super();
-    }
-
-    public Credential(Credential other) {
-        this();
-        this.identity = other.getIdentity();
-        this.type = other.getType();
-        this.failedAttempts = other.getFailedAttempts();
-        this.details = other.getDetails();
-        this.enabled = other.isEnabled();
-    }
-
     public String getId() {
         return id;
     }
@@ -190,7 +177,6 @@ public class Credential {
     public String toString() {
         return new ToStringBuilder(this)
                 .append("id", id)
-                .append("identity", identity)
                 .append("type", type)
                 .append("failedAttempts", failedAttempts)
                 .append("details", details)

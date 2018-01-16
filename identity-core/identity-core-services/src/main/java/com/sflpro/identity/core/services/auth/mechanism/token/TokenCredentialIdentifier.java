@@ -1,6 +1,7 @@
 package com.sflpro.identity.core.services.auth.mechanism.token;
 
 import com.sflpro.identity.core.datatypes.CredentialType;
+import com.sflpro.identity.core.datatypes.TokenType;
 import com.sflpro.identity.core.db.entities.Token;
 import com.sflpro.identity.core.services.auth.CredentialIdentifier;
 
@@ -15,18 +16,18 @@ import javax.validation.constraints.NotNull;
 public class TokenCredentialIdentifier extends CredentialIdentifier<Token> {
 
     @NotNull
-    private final String tokenType;
+    private final TokenType tokenType;
 
     @NotNull
     private final String token;
 
-    public TokenCredentialIdentifier(@NotNull String tokenType, @NotNull String token) {
+    public TokenCredentialIdentifier(@NotNull TokenType tokenType, @NotNull String token) {
         super(CredentialType.TOKEN);
         this.tokenType = tokenType;
         this.token = token;
     }
 
-    public String getTokenType() {
+    public TokenType getTokenType() {
         return tokenType;
     }
 

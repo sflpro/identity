@@ -1,5 +1,7 @@
 package com.sflpro.identity.api.common.dtos.token;
 
+import com.sflpro.identity.core.datatypes.TokenType;
+
 /**
  * Company: SFL LLC
  * Created on 30/11/2017
@@ -8,15 +10,15 @@ package com.sflpro.identity.api.common.dtos.token;
  */
 public class TokenRequestDto {
 
-    private String tokenType;
+    private TokenType tokenType;
 
     private Integer expiresInHours;
 
-    public String getTokenType() {
+    public TokenType getTokenType() {
         return tokenType;
     }
 
-    public void setTokenType(String tokenType) {
+    public void setTokenType(TokenType tokenType) {
         this.tokenType = tokenType;
     }
 

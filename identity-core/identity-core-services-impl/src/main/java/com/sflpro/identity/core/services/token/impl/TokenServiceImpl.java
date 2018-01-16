@@ -1,6 +1,7 @@
 package com.sflpro.identity.core.services.token.impl;
 
 import com.sflpro.identity.core.datatypes.CredentialType;
+import com.sflpro.identity.core.datatypes.TokenType;
 import com.sflpro.identity.core.db.entities.Credential;
 import com.sflpro.identity.core.db.entities.Token;
 import com.sflpro.identity.core.db.repositories.TokenRepository;
@@ -26,25 +27,20 @@ import java.util.stream.Collectors;
 public class TokenServiceImpl implements TokenService {
 
     @Autowired
-    private CredentialService credentialService;
-
-    @Autowired
     private TokenRepository tokenRepository;
 
     @Autowired
     private TokenGenerator tokenGenerator;
 
     @Override
-    public Token get(final String tokenType, final String tokenValue) {
+    public Token get(final TokenType tokenType, final String tokenValue) {
         return tokenRepository.findByTokenTypeAndValue(tokenType, tokenValue)
                 .orElseThrow(() -> new ResourceNotFoundException(String.format("Token with type: %s and value: %s not found", tokenType, tokenValue)));
     }
 
     @Override
-    public Token createNewToken(final TokenRequest tokenRequest, final String credentialId) {
+    public Token createNewToken(final TokenRequest tokenRequest, final Credential credential) {
         LocalDateTime currentLocalDateTime = LocalDateTime.now();
-
-        Credential credential = credentialService.getCredentialById(credentialId);
 
         Iterable<Token> existingTokens = tokenRepository.findAllByTokenTypeAndIssuedBy(
                 tokenRequest.getTokenType(),
@@ -60,9 +56,13 @@ public class TokenServiceImpl implements TokenService {
             tokenRepository.saveAll(existingTokens);
         }
 
-        credential.setType(CredentialType.TOKEN); // TODO pay attention to this part MR
-        Token token = new Token(credential, tokenGenerator.generate(), tokenRequest.getTokenType(),
+        Token token = new Token(tokenGenerator.generate(), tokenRequest.getTokenType(),
                 currentLocalDateTime.plus(Duration.ofHours(tokenRequest.getExpiresInHours())), credential);
+
+        token.setType(CredentialType.TOKEN);
+        token.setIdentity(credential.getIdentity());
+        token.setEnabled(true);
+        token.setFailedAttempts(0); // TODO work here
 
         tokenRepository.save(token);
 
@@ -70,9 +70,9 @@ public class TokenServiceImpl implements TokenService {
     }
 
     @Override
-    public List<Token> createNewTokens(final List<TokenRequest> tokens, final String credentialId) {
+    public List<Token> createNewTokens(final List<TokenRequest> tokens, final Credential credential) {
         return tokens.stream()
-                .map(tokenRequest -> createNewToken(tokenRequest, credentialId))
+                .map(tokenRequest -> createNewToken(tokenRequest, credential))
                 .collect(Collectors.toList());
     }
 
@@ -102,7 +102,7 @@ public class TokenServiceImpl implements TokenService {
         return tokenRepository.save(existingValidToken);
     }
 
-    private Token getExistingValidToken(final String tokenValue, final String tokenType, final LocalDateTime requestLocalDateTime) throws InvalidTokenException {
+    private Token getExistingValidToken(final String tokenValue, final TokenType tokenType, final LocalDateTime requestLocalDateTime) throws InvalidTokenException {
         Assert.notNull(tokenValue, "tokenValue should not be null.");
         Assert.notNull(tokenType, "tokenType should not be null.");
         Assert.notNull(requestLocalDateTime, "requestLocalDateTime should not be null.");
