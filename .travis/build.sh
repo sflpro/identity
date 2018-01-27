@@ -1,5 +1,7 @@
 #!/usr/bin/env bash
 
+docker login -u "$DOCKER_USER" -p "$DOCKER_PASS"
+
 if [ "$TRAVIS_BRANCH" == "develop" ] && [ "$TRAVIS_PULL_REQUEST" == "false" ]
 then
     echo "Running develop branch build and analysis. Snapshots will be published. All issues/stats will be saved to Sonar database."
