@@ -28,9 +28,12 @@
             <version>0.0.1-SNAPSHOT</version>
         </dependency>
         <dependency>
-            <groupId>com.sflpro.notifier.api.internal</groupId>
-            <artifactId>api-internal-client</artifactId>
-            <version>${sfl.notifier.version}</version>
+            <groupId>com.sflpro.notifier</groupId>
+            <artifactId>api-client-library</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>com.sflpro.notifier</groupId>
+            <artifactId>api-model</artifactId>
         </dependency>
         <dependency>
             <groupId>com.sflpro.identity</groupId>

@@ -51,7 +51,7 @@
         <java.version>1.9</java.version>
 
         <!-- utilities -->
-        <sfl.notifier.version>1.0</sfl.notifier.version>
+        <sfl.notifier.version>1.1</sfl.notifier.version>
         <jackson.version>2.9.2</jackson.version>
         <logback.version>1.2.3</logback.version>
         <javax.ws.rs-api.version>2.1</javax.ws.rs-api.version>
@@ -294,8 +294,14 @@
     <dependencyManagement>
         <dependencies>
             <dependency>
-                <groupId>com.sfl.ms.notification.api.internal</groupId>
-                <artifactId>api-internal-client</artifactId>
+                <groupId>com.sflpro.notifier</groupId>
+                <artifactId>api-client-library</artifactId>
+                <version>${sfl.notifier.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>com.sflpro.notifier</groupId>
+                <artifactId>api-model</artifactId>
                 <version>${sfl.notifier.version}</version>
             </dependency>
 
