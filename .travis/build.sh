@@ -1,11 +1,11 @@
 #!/usr/bin/env bash
 
-# docker login -u "$DOCKER_USER" -p "$DOCKER_PASS"
+docker login -u yervand -p $DOCKERHUB_PASS
 
 if [ "$TRAVIS_BRANCH" == "develop" ] && [ "$TRAVIS_PULL_REQUEST" == "false" ]
 then
     echo "Running develop branch build and analysis. Snapshots will be published. All issues/stats will be saved to Sonar database."
-    mvn -P snapshot clean org.jacoco:jacoco-maven-plugin:prepare-agent verify sonar:sonar -B \
+    mvn -P snapshot clean org.jacoco:jacoco-maven-plugin:prepare-agent deploy sonar:sonar -B \
     -Dsonar.host.url=https://sonarcloud.io \
     -Dsonar.organization=sfl \
     -Dsonar.login=$SONARCLOUD_KEY
