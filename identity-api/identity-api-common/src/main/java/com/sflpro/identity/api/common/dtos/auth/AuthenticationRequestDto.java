@@ -1,5 +1,6 @@
 package com.sflpro.identity.api.common.dtos.auth;
 
+import com.sflpro.identity.api.common.dtos.resource.ResourceRequestDto;
 import com.sflpro.identity.api.common.dtos.token.TokenRequestDto;
 
 import javax.validation.constraints.NotNull;
@@ -18,6 +19,8 @@ public class AuthenticationRequestDto<T extends AuthenticationRequestDetailsDto>
 
     private List<TokenRequestDto> tokenRequests;
 
+    private List<ResourceRequestDto> resourceRequests;
+
     public T getDetails() {
         return details;
     }
@@ -32,5 +35,13 @@ public class AuthenticationRequestDto<T extends AuthenticationRequestDetailsDto>
 
     public void setTokenRequests(List<TokenRequestDto> tokenRequests) {
         this.tokenRequests = tokenRequests;
+    }
+
+    public List<ResourceRequestDto> getResourceRequests() {
+        return resourceRequests;
+    }
+
+    public void setResourceRequests(List<ResourceRequestDto> resourceRequests) {
+        this.resourceRequests = resourceRequests;
     }
 }

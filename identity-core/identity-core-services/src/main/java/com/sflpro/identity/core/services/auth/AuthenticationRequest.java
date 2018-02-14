@@ -2,6 +2,7 @@ package com.sflpro.identity.core.services.auth;
 
 import com.sflpro.identity.core.datatypes.CredentialType;
 import com.sflpro.identity.core.db.entities.Credential;
+import com.sflpro.identity.core.services.resource.ResourceRequest;
 import com.sflpro.identity.core.services.token.TokenRequest;
 
 import javax.validation.constraints.NotNull;
@@ -21,9 +22,12 @@ public final class AuthenticationRequest<T extends Credential, E extends Credent
 
     private final List<TokenRequest> tokenRequests;
 
-    public AuthenticationRequest(@NotNull S details, @NotNull List<TokenRequest> tokenRequests) {
+    private final List<ResourceRequest> resourceRequests;
+
+    public AuthenticationRequest(@NotNull S details, List<TokenRequest> tokenRequests, List<ResourceRequest> resourceRequests) {
         this.details = details;
         this.tokenRequests = tokenRequests;
+        this.resourceRequests = resourceRequests;
     }
 
     public CredentialType getCredentialType() {
@@ -40,5 +44,9 @@ public final class AuthenticationRequest<T extends Credential, E extends Credent
         return new ArrayList<>(tokenRequests);
     }
 
-
+    public List<ResourceRequest> getResourceRequests() {
+        if (resourceRequests == null)
+            return new ArrayList<>();
+        return resourceRequests;
+    }
 }

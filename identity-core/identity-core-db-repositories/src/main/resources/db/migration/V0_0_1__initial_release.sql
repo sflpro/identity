@@ -43,6 +43,7 @@ create table role (
   deleted timestamp,
   constraint uk_role_name unique (name, deleted)
 );
+create unique index if not exists uk_role_name_on_null_deleted on role (name) where deleted is null;
 
 create table permission (
   id bigint not null constraint pk_permission primary key,
@@ -53,6 +54,7 @@ create table permission (
   deleted timestamp,
   constraint uk_permission_name unique (name, deleted)
 );
+create unique index if not exists uk_permission_name_on_null_deleted on permission (name) where deleted is null;
 
 create table role_permission (
   role_id bigint not null,
