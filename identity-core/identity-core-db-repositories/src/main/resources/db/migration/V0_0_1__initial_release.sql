@@ -1,3 +1,6 @@
+create sequence seq_permission start 1 increment 50;
+create sequence seq_role start 1 increment 50;
+
 create table identity (
   id character(36) not null constraint pk_identity primary key,
   description varchar(255) not null,

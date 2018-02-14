@@ -50,6 +50,13 @@ public class Identity {
     )
     private List<Role> roles;
 
+    @ManyToMany(fetch = FetchType.LAZY)
+    @JoinTable(name = "identity_resource",
+            joinColumns = {@JoinColumn(name = "identity_id")},
+            inverseJoinColumns = {@JoinColumn(name = "resource_id")}
+    )
+    private List<Resource> resources;
+
     @Column(name = "created", nullable = false)
     private LocalDateTime created;
 
@@ -107,6 +114,14 @@ public class Identity {
         this.roles = roles;
     }
 
+    public List<Resource> getResources() {
+        return resources;
+    }
+
+    public void setResources(List<Resource> resources) {
+        this.resources = resources;
+    }
+
     public LocalDateTime getCreated() {
         return created;
     }
@@ -157,6 +172,7 @@ public class Identity {
                 .append(contactMethod, identity.contactMethod)
                 .append(status, identity.status)
                 .append(roles, identity.roles)
+                .append(resources, identity.resources)
                 .append(created, identity.created)
                 .append(updated, identity.updated)
                 .append(deleted, identity.deleted)
@@ -172,6 +188,7 @@ public class Identity {
                 .append(contactMethod)
                 .append(status)
                 .append(roles)
+                .append(resources)
                 .append(created)
                 .append(updated)
                 .append(deleted)
@@ -187,6 +204,7 @@ public class Identity {
                 .append("contactMethod", contactMethod)
                 .append("status", status)
                 .append("roles", roles)
+                .append("resources", resources)
                 .append("created", created)
                 .append("updated", updated)
                 .append("deleted", deleted)
