@@ -29,9 +29,7 @@ public class ResourceServiceImpl implements ResourceService {
     public List<Resource> get(List<ResourceRequest> resourceRequests, Identity identity) {
         logger.debug("Attempting get resources identity {'{}'}.", identity);
         List<Resource> resources = new ArrayList<>();
-        resourceRequests.forEach(r -> {
-            resources.addAll(identityResourceRepository.search(identity.getId(), resourceRequests.get(0).getType(), resourceRequests.get(0).getIdentifier()));
-        });
+        resourceRequests.forEach(r -> resources.addAll(identityResourceRepository.search(identity.getId(), resourceRequests.get(0).getType(), resourceRequests.get(0).getIdentifier())));
         logger.trace("Complete getting resources for identity {}.", identity);
         return resources;
     }
