@@ -6,37 +6,33 @@ import org.apache.commons.lang3.builder.ToStringBuilder;
 
 import javax.persistence.*;
 import java.time.LocalDateTime;
-import java.util.List;
 
 /**
  * Company: SFL LLC
- * Created on 20/11/2017
+ * Created on 14/02/2018
  *
  * @author Davit Harutyunyan
  */
 @Entity
 @Table(
-        name = "role",
+        name = "resource",
         uniqueConstraints = {
-                @UniqueConstraint(name = "uk_role_name", columnNames = {"name", "deleted"})
+                @UniqueConstraint(name = "uk_resource_type_identifier", columnNames = {"type", "identifier", "deleted"})
         }
 )
-public class Role {
+public class Resource {
 
     @Id
-    @SequenceGenerator(name = "seq_role", sequenceName = "seq_role")
-    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "seq_role")
+    @SequenceGenerator(name = "seq_resource", sequenceName = "seq_resource")
+    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "seq_resource")
     @Column(name = "id", unique = true, nullable = false, updatable = false)
     private Long id;
 
-    @Column(name = "name", nullable = false)
-    private String name;
+    @Column(name = "type", nullable = false)
+    private String type;
 
-    @ManyToMany(fetch = FetchType.LAZY)
-    @JoinTable(name = "role_permission",
-            joinColumns = {@JoinColumn(name = "role_id")},
-            inverseJoinColumns = {@JoinColumn(name = "permission_id")})
-    private List<Permission> permissions;
+    @Column(name = "identifier", nullable = false)
+    private String identifier;
 
     @Column(name = "created", nullable = false)
     private LocalDateTime created;
@@ -47,28 +43,35 @@ public class Role {
     @Column(name = "deleted")
     private LocalDateTime deleted;
 
+    @PrePersist
+    protected void onCreate() {
+        created = LocalDateTime.now();
+        updated = created;
+    }
+
+    @PreUpdate
+    protected void onUpdate() {
+        updated = LocalDateTime.now();
+    }
+
     public Long getId() {
         return id;
     }
 
-    public void setId(Long id) {
-        this.id = id;
+    public String getType() {
+        return type;
     }
 
-    public String getName() {
-        return name;
+    public void setType(String type) {
+        this.type = type;
     }
 
-    public void setName(String name) {
-        this.name = name;
+    public String getIdentifier() {
+        return identifier;
     }
 
-    public List<Permission> getPermissions() {
-        return permissions;
-    }
-
-    public void setPermissions(List<Permission> permissions) {
-        this.permissions = permissions;
+    public void setIdentifier(String identifier) {
+        this.identifier = identifier;
     }
 
     public LocalDateTime getCreated() {
@@ -95,32 +98,21 @@ public class Role {
         this.deleted = deleted;
     }
 
-    @PrePersist
-    protected void onCreate() {
-        created = LocalDateTime.now();
-        updated = created;
-    }
-
-    @PreUpdate
-    protected void onUpdate() {
-        updated = LocalDateTime.now();
-    }
-
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
 
         if (o == null || getClass() != o.getClass()) return false;
 
-        Role role = (Role) o;
+        Resource resource = (Resource) o;
 
         return new EqualsBuilder()
-                .append(id, role.id)
-                .append(name, role.name)
-                .append(permissions, role.permissions)
-                .append(created, role.created)
-                .append(updated, role.updated)
-                .append(deleted, role.deleted)
+                .append(id, resource.id)
+                .append(type, resource.type)
+                .append(identifier, resource.identifier)
+                .append(created, resource.created)
+                .append(updated, resource.updated)
+                .append(deleted, resource.deleted)
                 .isEquals();
     }
 
@@ -128,8 +120,8 @@ public class Role {
     public int hashCode() {
         return new HashCodeBuilder(17, 37)
                 .append(id)
-                .append(name)
-                .append(permissions)
+                .append(type)
+                .append(identifier)
                 .append(created)
                 .append(updated)
                 .append(deleted)
@@ -140,8 +132,8 @@ public class Role {
     public String toString() {
         return new ToStringBuilder(this)
                 .append("id", id)
-                .append("name", name)
-                .append("permissions", permissions)
+                .append("type", type)
+                .append("identifier", identifier)
                 .append("created", created)
                 .append("updated", updated)
                 .append("deleted", deleted)
