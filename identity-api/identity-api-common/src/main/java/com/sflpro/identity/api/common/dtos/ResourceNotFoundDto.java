@@ -6,7 +6,7 @@ package com.sflpro.identity.api.common.dtos;
  *
  * @author Yervand Aghababyan
  */
-public class ResourceNotFoundDto extends IdentityApiException {
+public class ResourceNotFoundDto extends IdentityApiExceptionDto {
     public ResourceNotFoundDto(String message, Exception cause) {
         super(IdentityApiError.NOT_FOUND, message, cause);
     }

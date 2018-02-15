@@ -5,6 +5,8 @@ import com.fasterxml.jackson.databind.MapperFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.module.SimpleModule;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
+import com.sflpro.identity.api.common.dtos.ApiError;
+import com.sflpro.identity.api.common.dtos.IdentityApiError;
 import org.glassfish.jersey.CommonProperties;
 import org.glassfish.jersey.client.ClientConfig;
 import org.glassfish.jersey.client.filter.EncodingFilter;
@@ -37,7 +39,7 @@ public class ApiClientImpl implements ApiClient {
         mapper.registerModule(new JavaTimeModule());
 
         SimpleModule module = new SimpleModule("apiErrorMapper", Version.unknownVersion());
-        //module.addAbstractTypeMapping(WeadaptApiError.class, WeadaptInternalApiError.class);
+        module.addAbstractTypeMapping(ApiError.class, IdentityApiError.class);
         mapper.registerModule(module);
         mapper.configure(MapperFeature.INFER_CREATOR_FROM_CONSTRUCTOR_PROPERTIES, false);
 

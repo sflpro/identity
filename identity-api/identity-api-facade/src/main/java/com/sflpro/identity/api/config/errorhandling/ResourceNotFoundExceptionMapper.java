@@ -1,7 +1,7 @@
 package com.sflpro.identity.api.config.errorhandling;
 
 import com.sflpro.identity.api.common.dtos.IdentityApiError;
-import com.sflpro.identity.api.common.dtos.IdentityApiException;
+import com.sflpro.identity.api.common.dtos.IdentityApiExceptionDto;
 import com.sflpro.identity.core.services.ResourceNotFoundException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -25,7 +25,7 @@ public class ResourceNotFoundExceptionMapper implements ExceptionMapper<Resource
     @Override
     public Response toResponse(final ResourceNotFoundException e) {
         logger.trace("Handling ResourceNotFoundException...");
-        final Response response = createResponse(new IdentityApiException(IdentityApiError.NOT_FOUND, e.getMessage(), e), MediaType.APPLICATION_JSON_TYPE);
+        final Response response = createResponse(new IdentityApiExceptionDto(IdentityApiError.NOT_FOUND, e.getMessage(), e), MediaType.APPLICATION_JSON_TYPE);
         logger.debug("Done handling ResourceNotFoundException.");
         return response;
     }

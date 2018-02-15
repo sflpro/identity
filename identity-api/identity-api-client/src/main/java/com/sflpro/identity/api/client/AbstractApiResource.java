@@ -1,5 +1,7 @@
 package com.sflpro.identity.api.client;
 
+import com.sflpro.identity.api.common.dtos.IdentityApiError;
+import com.sflpro.identity.api.common.dtos.IdentityApiExceptionDto;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -241,28 +243,28 @@ public class AbstractApiResource {
     }
 
     private void checkResponseError(final Response response, final WebTarget target) {
-        /*if (response.getStatus() < 200 || response.getStatus() >= 300) {
+        if (response.getStatus() < 200 || response.getStatus() >= 300) {
             try {
                 response.bufferEntity();
 
                 logger.warn("Error(statusCode:{}) during http request to {}", response.getStatus(), target.getUri());
 
-                WeadaptApiExceptionDto originalException = response.readEntity(WeadaptApiExceptionDto.class);
-                Class<? extends WeadaptApiExceptionDto> exp = WeadaptInternalApiError.getExceptionClass(originalException.getApplicationErrorCode());
+                IdentityApiExceptionDto originalException = response.readEntity(IdentityApiExceptionDto.class);
+                Class<? extends IdentityApiExceptionDto> exp = IdentityApiError.getExceptionClass(originalException.getApplicationErrorCode());
 
                 if (exp != null) {
                     throw response.readEntity(exp);
                 }
 
                 throw originalException;
-            } catch (WeadaptApiExceptionDto e) {
+            } catch (IdentityApiExceptionDto e) {
                 throw e;
             } catch (ProcessingException e) {
-                throw new WeadaptApiExceptionDto(WeadaptInternalApiError.FAILED_TO_PARSE_RESPONSE, e);
+                throw new IdentityApiExceptionDto(IdentityApiError.FAILED_TO_PARSE_RESPONSE, e);
             } catch (Exception e) {
-                throw new WeadaptApiExceptionDto(WeadaptInternalApiError.UNKNOWN_CLIENT_ERROR, e);
+                throw new IdentityApiExceptionDto(IdentityApiError.UNKNOWN_CLIENT_ERROR, e);
             }
-        }*/
+        }
     }
 
     private void closeResponse(final Response r) {
