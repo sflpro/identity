@@ -5,6 +5,7 @@ import com.sflpro.identity.core.datatypes.PrincipalType;
 import com.sflpro.identity.core.datatypes.TokenType;
 import com.sflpro.identity.core.db.entities.Credential;
 import com.sflpro.identity.core.db.entities.Identity;
+import com.sflpro.identity.core.db.entities.Principal;
 import com.sflpro.identity.core.db.entities.Token;
 import com.sflpro.identity.core.db.repositories.IdentityRepository;
 import com.sflpro.identity.core.services.ResourceNotFoundException;
@@ -22,6 +23,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.util.Assert;
 
 import javax.transaction.Transactional;
+import java.util.List;
+import java.util.Set;
 
 /**
  * Company: SFL LLC
@@ -85,6 +88,27 @@ public class IdentityServiceImpl implements IdentityService {
         credentialService.store(identity, identityCreationRequest.getCredentials());
 
         return identity;
+    }
+
+    @Override
+    public Identity checkMailAvailability(final IdentityCheckPrincipalRequest request) {
+        Assert.notNull(request, "Request cannot be null");
+        Assert.notNull(request.getIdentityId(), "Request identityId cannot be null");
+        Assert.notNull(request.getPrincipalType(), "Request type cannot be null");
+        Assert.notNull(request.getPrincipalName(), "Request name cannot be null");
+        logger.trace("Getting principal with type {} and name {}", request.getPrincipalType(), request.getPrincipalName());
+        final List<Principal> principals = principalService.getByIdentity(get(request.getIdentityId()));
+        Principal principal = principals
+                .stream()
+                .filter(p -> p.getPrincipalType() == request.getPrincipalType() && p.getName() == request.getPrincipalName())
+                .findAny()
+                .orElseThrow(() -> {
+                    final String message = String.format("Principal with type = %s and name = %s not found", request.getPrincipalType(), request.getPrincipalName());
+                    logger.debug(message);
+                    throw new ResourceNotFoundException(message);
+                });
+        logger.debug("Done getting principal with type {} and name {}", request.getPrincipalType(), request.getPrincipalName());
+        return principal.getIdentity();
     }
 
     @Override

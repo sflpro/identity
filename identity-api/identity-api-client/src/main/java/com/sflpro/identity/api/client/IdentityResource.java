@@ -1,5 +1,6 @@
 package com.sflpro.identity.api.client;
 
+import com.sflpro.identity.api.common.dtos.identity.IdentityCheckPrincipalRequestDto;
 import com.sflpro.identity.api.common.dtos.identity.IdentityDto;
 
 import javax.ws.rs.client.Client;
@@ -19,5 +20,9 @@ public class IdentityResource extends AbstractApiResource {
 
     public IdentityDto getIdentity(String id) {
         return doGet(id, IdentityDto.class);
+    }
+
+    public IdentityDto checkIfPrincipalBusy(final IdentityCheckPrincipalRequestDto requestDto) {
+        return doPost("/check-principal", requestDto, IdentityDto.class);
     }
 }

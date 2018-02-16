@@ -1,11 +1,14 @@
 package com.sflpro.identity.api.endpoints;
 
 import com.sflpro.identity.api.common.dtos.ApiResponseDto;
+import com.sflpro.identity.api.common.dtos.ResourceNotFoundDto;
 import com.sflpro.identity.api.common.dtos.identity.*;
 import com.sflpro.identity.api.common.dtos.identity.reset.RequestSecretResetRequestDto;
 import com.sflpro.identity.api.common.dtos.identity.reset.SecretResetRequestDto;
 import com.sflpro.identity.api.mapper.BeanMapper;
 import com.sflpro.identity.core.db.entities.Identity;
+import com.sflpro.identity.core.services.ResourceNotFoundException;
+import com.sflpro.identity.core.services.identity.IdentityCheckPrincipalRequest;
 import com.sflpro.identity.core.services.identity.IdentityCreationRequest;
 import com.sflpro.identity.core.services.identity.IdentityService;
 import com.sflpro.identity.core.services.identity.reset.RequestSecretResetRequest;
@@ -19,6 +22,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.Assert;
 
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
@@ -84,6 +88,24 @@ public class IdentityEndpoint {
     @Path("/{identityId}")
     public IdentityUpdateResponseDto delete(@NotNull @PathParam("identityId") final String identityId) {
         return new IdentityUpdateResponseDto();
+    }
+
+    @ApiOperation("Check principal's name availability by type and name")
+    @POST
+    @Path(("/check-principal"))
+    @Transactional(readOnly = true)
+    public IdentityDto checkPrincipalAvailability(@NotNull @Valid final IdentityCheckPrincipalRequestDto requestDto) {
+        Assert.notNull(requestDto, "requestDto cannot be null");
+        logger.debug("Checking identity name availability :{}...", requestDto);
+        try {
+            IdentityCheckPrincipalRequest checkMailRequest = mapper.map(requestDto, IdentityCheckPrincipalRequest.class);
+            Identity identity = identityService.checkMailAvailability(checkMailRequest);
+            logger.info("Done checking identity name availability :{}.", requestDto.getPrincipalName());
+            return mapper.map(identity, IdentityDto.class);
+        } catch (ResourceNotFoundException e) {
+            throw new ResourceNotFoundDto(String.format("Identity with type = %s, name = %s not found",
+                    requestDto.getPrincipalType(), requestDto.getPrincipalName()), e);
+        }
     }
 
     @ApiOperation("Request for secret reset")
