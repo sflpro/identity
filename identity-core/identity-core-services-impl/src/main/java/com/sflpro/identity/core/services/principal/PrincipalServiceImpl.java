@@ -10,6 +10,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.util.Assert;
 
+import java.util.List;
+
 /**
  * Company: SFL LLC
  * Created on 24/11/2017
@@ -37,10 +39,13 @@ public class PrincipalServiceImpl implements PrincipalService {
     }
 
     @Override
-    public Principal getByIdentityAndType(Identity identity, PrincipalType principalType) {
+    public List<Principal> getByIdentity(final Identity identity) {
         Assert.notNull(identity, "identity cannot be null");
         Assert.notNull(identity.getId(), "identity id cannot be null");
-        return principalRepository.findByDeletedIsNullAndIdentityAndPrincipalType(identity, principalType)
-                .orElseThrow(() -> new ResourceNotFoundException(String.format("Principal with identity:%s not found", identity.getId())));
+        List<Principal> principals = principalRepository.findAllByDeletedIsNullAndIdentity(identity);
+        if (principals.isEmpty()) {
+            throw new ResourceNotFoundException(String.format("Principal with identity:%s not found", identity.getId()));
+        }
+        return principals;
     }
 }

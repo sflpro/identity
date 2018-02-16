@@ -51,8 +51,10 @@ public class IdentityEndpoint {
     @GET
     @Path("/{identityId}")
     @Transactional(readOnly = true)
-    public IdentityDto getIdentityDetails(@NotNull @PathParam("identityId") final String identityId) {
-        return new IdentityDto();
+    public IdentityDto get(@NotNull @PathParam("identityId") final String identityId) {
+        Identity identity = identityService.get(identityId);
+        logger.info("Got identity:'{}'.", identity.getId());
+        return mapper.map(identity, IdentityDto.class);
     }
 
     @ApiOperation("Creates identity")
