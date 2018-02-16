@@ -1,7 +1,7 @@
 package com.sflpro.identity.api.config.errorhandling;
 
 import com.sflpro.identity.api.common.dtos.IdentityApiError;
-import com.sflpro.identity.api.common.dtos.IdentityApiException;
+import com.sflpro.identity.api.common.dtos.IdentityApiExceptionDto;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -38,7 +38,7 @@ public class DtoValidationExceptionMapper implements ExceptionMapper<ConstraintV
         });
 
         return ApplicationExceptionMapper.createResponse(
-                new IdentityApiException(
+                new IdentityApiExceptionDto(
                         IdentityApiError.INVALID_REQUEST_DATA,
                         message.toString(),
                         null

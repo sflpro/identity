@@ -1,11 +1,11 @@
 package com.sflpro.identity.api.endpoints;
 
 import com.sflpro.identity.api.common.dtos.ApiResponseDto;
-import com.sflpro.identity.api.common.dtos.auth.AuthenticationExceptionDto;
+import com.sflpro.identity.api.common.dtos.auth.AuthenticationExceptionDtoDto;
 import com.sflpro.identity.api.common.dtos.auth.AuthenticationRequestDetailsDto;
 import com.sflpro.identity.api.common.dtos.auth.AuthenticationRequestDto;
 import com.sflpro.identity.api.common.dtos.auth.AuthenticationResponseDto;
-import com.sflpro.identity.api.common.dtos.identity.InactiveIdentityExceptionDto;
+import com.sflpro.identity.api.common.dtos.identity.InactiveIdentityExceptionDtoDto;
 import com.sflpro.identity.api.common.dtos.token.TokenInvalidationRequestDto;
 import com.sflpro.identity.api.mapper.BeanMapper;
 import com.sflpro.identity.core.services.auth.AuthenticationRequest;
@@ -72,10 +72,10 @@ public class AuthenticationEndpoint {
             return mapper.map(authResponse, AuthenticationResponseDto.class);
         } catch (InactiveIdentityException e) {
             logger.warn("Authentication failed for inactive identity request:'{}'.", requestDto);
-            throw new InactiveIdentityExceptionDto(e);
+            throw new InactiveIdentityExceptionDtoDto(e);
         } catch (AuthenticationServiceException e) {
             logger.warn("Authentication failed for request:'{}'.", requestDto);
-            throw new AuthenticationExceptionDto(e.getMessage(), e);
+            throw new AuthenticationExceptionDtoDto(e.getMessage(), e);
         }
     }
 
@@ -97,7 +97,7 @@ public class AuthenticationEndpoint {
             return new ApiResponseDto();
         } catch (TokenServiceException e) {
             logger.warn("Invalidating token failed for request:'{}'.", requestDto);
-            throw new AuthenticationExceptionDto(e.getMessage(), e);
+            throw new AuthenticationExceptionDtoDto(e.getMessage(), e);
         }
     }
 }

@@ -13,6 +13,7 @@
     <packaging>pom</packaging>
 
     <modules>
+        <module>identity-api-client</module>
         <module>identity-api-common</module>
         <module>identity-api-facade</module>
         <module>identity-api-web</module>
@@ -20,13 +21,13 @@
 
     <build>
         <plugins>
-            <!--<plugin>-->
-                <!--<groupId>org.apache.maven.plugins</groupId>-->
-                <!--<artifactId>maven-deploy-plugin</artifactId>-->
-                <!--<configuration>-->
-                    <!--<skip>false</skip>-->
-                <!--</configuration>-->
-            <!--</plugin>-->
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-deploy-plugin</artifactId>
+                <configuration>
+                    <skip>false</skip>
+                </configuration>
+            </plugin>
         </plugins>
     </build>
 </project>
