@@ -63,11 +63,11 @@ public class AuthenticationServiceImpl implements AuthenticationService {
         AuthenticationResponse authenticationResponse = authenticator.authenticate(credential, details);
         if (authenticationResponse.getStatus() == AuthenticationStatus.AUTHENTICATED) {
             authenticationResponse.setPrincipal(principalService.getByIdentityAndType(credential.getIdentity(), PrincipalType.MAIL));
-            if (request.getTokenRequests().isEmpty()) {
+            if (!request.getTokenRequests().isEmpty()) {
                 List<Token> tokens = tokenService.createNewTokens(request.getTokenRequests(), credential);
                 authenticationResponse.setTokens(tokens);
             }
-            if (request.getResourceRequests().isEmpty()) {
+            if (!request.getResourceRequests().isEmpty()) {
                 List<Resource> resources = resourceService.get(request.getResourceRequests(), credential.getIdentity());
                 authenticationResponse.setResources(resources);
             }
