@@ -22,8 +22,6 @@ public class AuthenticationResponseDto extends AbstractApiResponse {
 
     private IdentityDto identity;
 
-    private PrincipalDto principal;
-
     private List<String> permissions;
 
     private List<TokenDto> tokens;
@@ -46,14 +44,6 @@ public class AuthenticationResponseDto extends AbstractApiResponse {
 
     public void setIdentity(IdentityDto identity) {
         this.identity = identity;
-    }
-
-    public PrincipalDto getPrincipal() {
-        return principal;
-    }
-
-    public void setPrincipal(PrincipalDto principal) {
-        this.principal = principal;
     }
 
     public List<String> getPermissions() {

@@ -5,6 +5,8 @@ import com.sflpro.identity.core.db.entities.Credential;
 import com.sflpro.identity.core.db.entities.Identity;
 import com.sflpro.identity.core.db.entities.Principal;
 
+import java.util.List;
+
 /**
  * Company: SFL LLC
  * Created on 24/11/2017
@@ -35,5 +37,5 @@ public interface PrincipalService {
      * @param identity identity
      * @return principal details
      */
-    Principal getByIdentityAndType(final Identity identity, final PrincipalType principalType);
+    List<Principal> getByIdentity(final Identity identity);
 }

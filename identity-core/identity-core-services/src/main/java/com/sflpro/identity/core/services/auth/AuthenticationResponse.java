@@ -18,8 +18,6 @@ public class AuthenticationResponse {
 
     private Identity identity;
 
-    private Principal principal;
-
     private List<String> permissions;
 
     private List<Token> tokens;
@@ -52,13 +50,7 @@ public class AuthenticationResponse {
         this.identity = identity;
     }
 
-    public Principal getPrincipal() {
-        return principal;
-    }
 
-    public void setPrincipal(Principal principal) {
-        this.principal = principal;
-    }
 
     public List<String> getPermissions() {
         return permissions;

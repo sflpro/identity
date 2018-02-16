@@ -1,12 +1,10 @@
 package com.sflpro.identity.core.services.auth.impl;
 
 import com.sflpro.identity.core.datatypes.AuthenticationStatus;
-import com.sflpro.identity.core.datatypes.PrincipalType;
 import com.sflpro.identity.core.db.entities.Credential;
 import com.sflpro.identity.core.db.entities.Resource;
 import com.sflpro.identity.core.db.entities.Token;
 import com.sflpro.identity.core.services.auth.*;
-import com.sflpro.identity.core.services.principal.PrincipalService;
 import com.sflpro.identity.core.services.resource.ResourceService;
 import com.sflpro.identity.core.services.token.TokenInvalidationRequest;
 import com.sflpro.identity.core.services.token.TokenService;
@@ -32,17 +30,14 @@ public class AuthenticationServiceImpl implements AuthenticationService {
 
     private final AuthenticatorRegistry authenticatorRegistry;
 
-    private final PrincipalService principalService;
-
     private final TokenService tokenService;
 
     private final ResourceService resourceService;
 
     @Autowired
-    public AuthenticationServiceImpl(AuthenticatorRegistry authenticatorRegistry, PrincipalService principalService,
-                                     TokenService tokenService, ResourceService resourceService) {
+    public AuthenticationServiceImpl(AuthenticatorRegistry authenticatorRegistry, TokenService tokenService,
+                                     ResourceService resourceService) {
         this.authenticatorRegistry = authenticatorRegistry;
-        this.principalService = principalService;
         this.tokenService = tokenService;
         this.resourceService = resourceService;
     }
@@ -62,7 +57,6 @@ public class AuthenticationServiceImpl implements AuthenticationService {
         }
         AuthenticationResponse authenticationResponse = authenticator.authenticate(credential, details);
         if (authenticationResponse.getStatus() == AuthenticationStatus.AUTHENTICATED) {
-            authenticationResponse.setPrincipal(principalService.getByIdentityAndType(credential.getIdentity(), PrincipalType.MAIL));
             if (!request.getTokenRequests().isEmpty()) {
                 List<Token> tokens = tokenService.createNewTokens(request.getTokenRequests(), credential);
                 authenticationResponse.setTokens(tokens);
