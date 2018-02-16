@@ -8,7 +8,7 @@ import java.io.Closeable;
  *
  * @author Davit Harutyunyan
  */
-public interface ApiClient extends Closeable {
+public interface IdentityApiClient extends Closeable {
 
     IdentityResource identity();
 }

@@ -23,7 +23,7 @@ import javax.ws.rs.client.WebTarget;
  *
  * @author Davit Harutyunyan
  */
-public class ApiClientImpl implements ApiClient {
+public class IdentityApiClientImpl implements IdentityApiClient {
 
     private final Client client;
     private final WebTarget rootTarget;
@@ -35,7 +35,7 @@ public class ApiClientImpl implements ApiClient {
     /**
      * @param apiUrl The fully qualified URL of the internal API (e.g. http://10.89.1.7:89/rest )
      */
-    public ApiClientImpl(String apiUrl) {
+    public IdentityApiClientImpl(String apiUrl) {
         mapper.registerModule(new JavaTimeModule());
 
         SimpleModule module = new SimpleModule("apiErrorMapper", Version.unknownVersion());
