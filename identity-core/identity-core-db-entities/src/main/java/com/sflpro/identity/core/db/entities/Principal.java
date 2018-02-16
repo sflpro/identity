@@ -1,5 +1,6 @@
 package com.sflpro.identity.core.db.entities;
 
+import com.sflpro.identity.core.datatypes.PrincipalStatus;
 import com.sflpro.identity.core.datatypes.PrincipalType;
 import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
@@ -30,6 +31,10 @@ public class Principal extends Credential {
     @Column(name = "principal_type")
     private PrincipalType principalType;
 
+    @Enumerated(EnumType.STRING)
+    @Column(name = "principal_status")
+    private PrincipalStatus principalStatus;
+
     public String getName() {
         return name;
     }
@@ -46,6 +51,14 @@ public class Principal extends Credential {
         this.principalType = principalType;
     }
 
+    public PrincipalStatus getPrincipalStatus() {
+        return principalStatus;
+    }
+
+    public void setPrincipalStatus(PrincipalStatus principalStatus) {
+        this.principalStatus = principalStatus;
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
@@ -58,6 +71,7 @@ public class Principal extends Credential {
                 .appendSuper(super.equals(o))
                 .append(name, principal.name)
                 .append(principalType, principal.principalType)
+                .append(principalStatus, principal.principalStatus)
                 .isEquals();
     }
 
@@ -67,6 +81,7 @@ public class Principal extends Credential {
                 .appendSuper(super.hashCode())
                 .append(name)
                 .append(principalType)
+                .append(principalStatus)
                 .toHashCode();
     }
 
@@ -75,6 +90,7 @@ public class Principal extends Credential {
         return new ToStringBuilder(this)
                 .append("name", name)
                 .append("principalType", principalType)
+                .append("principalStatus", principalStatus)
                 .toString();
     }
 }

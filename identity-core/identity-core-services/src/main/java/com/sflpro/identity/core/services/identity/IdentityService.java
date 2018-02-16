@@ -13,6 +13,14 @@ import com.sflpro.identity.core.services.identity.reset.SecretResetRequest;
 public interface IdentityService {
 
     /**
+     * Gets new identity
+     *
+     * @param identityId identity's id
+     * @return details of the identity
+     */
+    Identity get(final String identityId);
+
+    /**
      * Creates new identity
      *
      * @param identityCreationRequest identity creation request model

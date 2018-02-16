@@ -7,6 +7,7 @@ import com.sflpro.identity.core.db.entities.Credential;
 import com.sflpro.identity.core.db.entities.Identity;
 import com.sflpro.identity.core.db.entities.Token;
 import com.sflpro.identity.core.db.repositories.IdentityRepository;
+import com.sflpro.identity.core.services.ResourceNotFoundException;
 import com.sflpro.identity.core.services.auth.SecretHashHelper;
 import com.sflpro.identity.core.services.credential.CredentialService;
 import com.sflpro.identity.core.services.identity.reset.RequestSecretResetRequest;
@@ -50,6 +51,22 @@ public class IdentityServiceImpl implements IdentityService {
 
     @Autowired
     private NotificationCommunicationService notificationCommunicationService;
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public Identity get(final String identityId) {
+        Assert.notNull(identityId, "identityId can not be null.");
+
+        logger.debug("Getting identity by id  {}", identityId);
+
+        Identity identity = identityRepository.findByDeletedIsNullAndId(identityId)
+                .orElseThrow(() -> new ResourceNotFoundException(String.format("Identity with id: %s not found", identityId)));
+        Assert.notNull(identity, "identity can not be null.");
+        logger.trace("Complete getting identity by id {}.", identity);
+        return identity;
+    }
 
     @Override
     public Identity create(final IdentityCreationRequest identityCreationRequest) {
