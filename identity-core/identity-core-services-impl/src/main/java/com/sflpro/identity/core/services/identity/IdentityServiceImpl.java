@@ -5,10 +5,10 @@ import com.sflpro.identity.core.datatypes.PrincipalType;
 import com.sflpro.identity.core.datatypes.TokenType;
 import com.sflpro.identity.core.db.entities.Credential;
 import com.sflpro.identity.core.db.entities.Identity;
-import com.sflpro.identity.core.db.entities.Principal;
 import com.sflpro.identity.core.db.entities.Token;
 import com.sflpro.identity.core.db.repositories.IdentityRepository;
 import com.sflpro.identity.core.services.ResourceNotFoundException;
+import com.sflpro.identity.core.services.auth.AuthenticationServiceException;
 import com.sflpro.identity.core.services.auth.SecretHashHelper;
 import com.sflpro.identity.core.services.credential.CredentialService;
 import com.sflpro.identity.core.services.identity.reset.RequestSecretResetRequest;
@@ -23,8 +23,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.util.Assert;
 
 import javax.transaction.Transactional;
-import java.util.List;
-import java.util.Set;
+import javax.validation.constraints.NotNull;
 
 /**
  * Company: SFL LLC
@@ -71,7 +70,11 @@ public class IdentityServiceImpl implements IdentityService {
         return identity;
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
+    @Deprecated
     public Identity create(final IdentityCreationRequest identityCreationRequest) {
         Assert.notNull(identityCreationRequest, "Identity creation request cannot be null");
         Assert.notEmpty(identityCreationRequest.getCredentials(), "Credentials can not be null");
@@ -90,18 +93,49 @@ public class IdentityServiceImpl implements IdentityService {
         return identity;
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
+    @Transactional
+    public Identity update(@NotNull final String identityId, @NotNull final IdentityUpdateRequest updateRequest) throws AuthenticationServiceException {
+        Assert.notNull(identityId, "identityId cannot be null");
+        Assert.notNull(updateRequest, "updateRequest cannot be null");
+        logger.debug("Updating identity by id {}", identityId);
+        Identity identity = get(identityId);
+
+        identity.setDescription(updateRequest.getDescription());
+        // Change secret
+        if (secretHashHelper.isSecretCorrect(updateRequest.getSecret(), identity.getSecret())) {
+            changeSecret(identity, updateRequest.getNewSecret());
+        } else {
+            throw new AuthenticationServiceException("Invalid credentials"); // TODO check with Mr. Smith
+        }
+        // Update principals
+        // TODO every time we are updating MAIN statues to SECONDARY, which is weird
+        updateRequest.getPrincipals().forEach(principalUpdateRequest -> principalService.upsert(identity, principalUpdateRequest));
+
+        logger.trace("Complete updating identity by id {}.", identityId);
+        return identity;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    /*@Override
     public Identity checkMailAvailability(final IdentityCheckPrincipalRequest request) {
         Assert.notNull(request, "Request cannot be null");
         Assert.notNull(request.getIdentityId(), "Request identityId cannot be null");
         Assert.notNull(request.getPrincipalType(), "Request type cannot be null");
         Assert.notNull(request.getPrincipalName(), "Request name cannot be null");
         logger.trace("Getting principal with type {} and name {}", request.getPrincipalType(), request.getPrincipalName());
-        final List<Principal> principals = principalService.getByIdentity(get(request.getIdentityId()));
+        final Set<Credential> principals = get(request.getIdentityId()).getPrincipals();
         Principal principal = principals
                 .stream()
-                .filter(p -> p.getPrincipalType() == request.getPrincipalType() && p.getName() == request.getPrincipalName())
+                .filter(p -> ((Principal) p).getPrincipalType() == request.getPrincipalType()
+                        && ((Principal) p).getName() == request.getPrincipalName())
                 .findAny()
+                .map(p -> (Principal) p)
                 .orElseThrow(() -> {
                     final String message = String.format("Principal with type = %s and name = %s not found", request.getPrincipalType(), request.getPrincipalName());
                     logger.debug(message);
@@ -109,8 +143,11 @@ public class IdentityServiceImpl implements IdentityService {
                 });
         logger.debug("Done getting principal with type {} and name {}", request.getPrincipalType(), request.getPrincipalName());
         return principal.getIdentity();
-    }
+    }*/
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     @Transactional
     public void requestSecretReset(RequestSecretResetRequest resetRequest) {
@@ -133,6 +170,9 @@ public class IdentityServiceImpl implements IdentityService {
         logger.debug("Email sent to User {} for password reset.", identity);
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     @Transactional
     public void secretReset(SecretResetRequest secretReset) {

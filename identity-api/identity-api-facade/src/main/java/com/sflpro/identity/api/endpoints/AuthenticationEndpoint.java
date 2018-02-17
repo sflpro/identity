@@ -1,7 +1,7 @@
 package com.sflpro.identity.api.endpoints;
 
 import com.sflpro.identity.api.common.dtos.ApiResponseDto;
-import com.sflpro.identity.api.common.dtos.auth.AuthenticationExceptionDtoDto;
+import com.sflpro.identity.api.common.dtos.auth.AuthenticationExceptionDto;
 import com.sflpro.identity.api.common.dtos.auth.AuthenticationRequestDetailsDto;
 import com.sflpro.identity.api.common.dtos.auth.AuthenticationRequestDto;
 import com.sflpro.identity.api.common.dtos.auth.AuthenticationResponseDto;
@@ -75,7 +75,7 @@ public class AuthenticationEndpoint {
             throw new InactiveIdentityExceptionDtoDto(e);
         } catch (AuthenticationServiceException e) {
             logger.warn("Authentication failed for request:'{}'.", requestDto);
-            throw new AuthenticationExceptionDtoDto(e.getMessage(), e);
+            throw new AuthenticationExceptionDto(e.getMessage(), e);
         }
     }
 
@@ -97,7 +97,7 @@ public class AuthenticationEndpoint {
             return new ApiResponseDto();
         } catch (TokenServiceException e) {
             logger.warn("Invalidating token failed for request:'{}'.", requestDto);
-            throw new AuthenticationExceptionDtoDto(e.getMessage(), e);
+            throw new AuthenticationExceptionDto(e.getMessage(), e);
         }
     }
 }

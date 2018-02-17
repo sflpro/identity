@@ -1,16 +1,16 @@
 package com.sflpro.identity.core.services.principal;
 
+import com.sflpro.identity.core.datatypes.CredentialType;
+import com.sflpro.identity.core.datatypes.PrincipalStatus;
 import com.sflpro.identity.core.datatypes.PrincipalType;
-import com.sflpro.identity.core.db.entities.Credential;
 import com.sflpro.identity.core.db.entities.Identity;
 import com.sflpro.identity.core.db.entities.Principal;
 import com.sflpro.identity.core.db.repositories.PrincipalRepository;
 import com.sflpro.identity.core.services.ResourceNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.Assert;
-
-import java.util.List;
 
 /**
  * Company: SFL LLC
@@ -31,21 +31,48 @@ public class PrincipalServiceImpl implements PrincipalService {
     }
 
     @Override
-    public Principal getByCredentialAndType(Credential credential, PrincipalType principalType) {
-        Assert.notNull(credential, "credential cannot be null");
-        Assert.notNull(credential.getId(), "credential id cannot be null");
-        return principalRepository.findByDeletedIsNullAndIdAndPrincipalType(credential.getId(), principalType)
-                .orElseThrow(() -> new ResourceNotFoundException(String.format("Principal with credential:%s not found", credential.getId())));
+    @Transactional
+    public Principal upsert(final Identity identity, final PrincipalUpdateRequest updateRequest) {
+        Assert.notNull(identity, "identity cannot be null");
+        Assert.notNull(updateRequest, "updateRequest cannot be null");
+        try {
+            Principal principal = get(updateRequest.getPrincipalName(), updateRequest.getPrincipalType());
+            if (!principal.getIdentity().equals(identity)) {
+                throw new PrincipalNameBusyException(updateRequest.getPrincipalType(), updateRequest.getPrincipalName());
+            }
+            if (updateRequest.getPrincipalStatus() == PrincipalStatus.MAIN) {
+                setStatusSecondaryByType(identity, updateRequest.getPrincipalType());
+            }
+            principal.setName(updateRequest.getPrincipalName());
+            principal.setPrincipalType(updateRequest.getPrincipalType());
+            principal.setPrincipalStatus(updateRequest.getPrincipalStatus());
+            return principalRepository.save(principal);
+        } catch (ResourceNotFoundException e) {
+            if (updateRequest.getPrincipalStatus() == PrincipalStatus.MAIN) {
+                setStatusSecondaryByType(identity, updateRequest.getPrincipalType());
+            }
+            Principal newInstance = new Principal();
+            newInstance.setName(updateRequest.getPrincipalName());
+            newInstance.setPrincipalType(updateRequest.getPrincipalType());
+            newInstance.setPrincipalStatus(updateRequest.getPrincipalStatus());
+            newInstance.setIdentity(identity);
+            newInstance.setType(CredentialType.PRINCIPAL);
+            return principalRepository.save(newInstance);
+        }
     }
 
-    @Override
-    public List<Principal> getByIdentity(final Identity identity) {
-        Assert.notNull(identity, "identity cannot be null");
-        Assert.notNull(identity.getId(), "identity id cannot be null");
-        List<Principal> principals = principalRepository.findAllByDeletedIsNullAndIdentity(identity);
-        if (principals.isEmpty()) {
-            throw new ResourceNotFoundException(String.format("Principal with identity:%s not found", identity.getId()));
-        }
-        return principals;
+    /**
+     * If there are any MAIN principal types for the identity, change them all to secondary, before applying new MAIN principal     *
+     * @param identity identity
+     */
+    private void setStatusSecondaryByType(final Identity identity, final PrincipalType principalType) {
+        identity.getPrincipals().forEach(p -> {
+            Principal changeStatus = (Principal) p;
+            if (changeStatus.getPrincipalType() == principalType
+                    && changeStatus.getPrincipalStatus() == PrincipalStatus.MAIN) {
+                changeStatus.setPrincipalStatus(PrincipalStatus.SECONDARY);
+                principalRepository.save(changeStatus);
+            }
+        });
     }
 }

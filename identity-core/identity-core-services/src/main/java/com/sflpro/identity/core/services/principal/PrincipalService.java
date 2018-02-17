@@ -1,11 +1,8 @@
 package com.sflpro.identity.core.services.principal;
 
 import com.sflpro.identity.core.datatypes.PrincipalType;
-import com.sflpro.identity.core.db.entities.Credential;
 import com.sflpro.identity.core.db.entities.Identity;
 import com.sflpro.identity.core.db.entities.Principal;
-
-import java.util.List;
 
 /**
  * Company: SFL LLC
@@ -23,19 +20,9 @@ public interface PrincipalService {
      */
     Principal get(final String name, final PrincipalType type);
 
-    /**
-     * Gets principal by credential
-     *
-     * @param credential credential
-     * @return principal details
-     */
-    Principal getByCredentialAndType(final Credential credential, final PrincipalType principalType);
-
-    /**
-     * Gets principal by identity
-     *
+    /** Updates existing principal or inserts a new one if principal absent
      * @param identity identity
-     * @return principal details
+     * @param updateRequest update data
      */
-    List<Principal> getByIdentity(final Identity identity);
+    Principal upsert(final Identity identity, final PrincipalUpdateRequest updateRequest);;
 }
