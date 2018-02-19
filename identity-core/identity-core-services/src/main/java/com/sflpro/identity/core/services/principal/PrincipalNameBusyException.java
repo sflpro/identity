@@ -11,7 +11,7 @@ import com.sflpro.identity.core.services.identity.IdentityServiceException;
  */
 public class PrincipalNameBusyException extends IdentityServiceException {
 
-    private String name;
+    private final String name;
 
     public PrincipalNameBusyException(PrincipalType principalType, String name) {
         super(String.format("Princpal type %s with name %s already exists.", principalType, name));
