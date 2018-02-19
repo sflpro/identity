@@ -52,17 +52,6 @@
         <developerConnection>scm:git:ssh://github.com:sflpro/identity.git</developerConnection>
         <url>http://github.com/sflpro/identity/tree/master</url>
     </scm>
-
-    <distributionManagement>
-        <snapshotRepository>
-            <id>ossrh</id>
-            <url>https://oss.sonatype.org/content/repositories/snapshots</url>
-        </snapshotRepository>
-        <repository>
-            <id>ossrh</id>
-            <url>https://oss.sonatype.org/service/local/staging/deploy/maven2/</url>
-        </repository>
-    </distributionManagement>
     <!-- End of nformation required by maven central -->
 
     <profiles>
@@ -97,17 +86,7 @@
                             </execution>
                         </executions>
                     </plugin>
-                    <plugin>
-                        <groupId>org.sonatype.plugins</groupId>
-                        <artifactId>nexus-staging-maven-plugin</artifactId>
-                        <version>1.6.7</version>
-                        <extensions>true</extensions>
-                        <configuration>
-                            <skipStaging>true</skipStaging>
-                            <skipNexusStagingDeployMojo>true</skipNexusStagingDeployMojo>
-                            <autoReleaseAfterClose>true</autoReleaseAfterClose>
-                        </configuration>
-                    </plugin>
+
                     <!-- end of maven central stuff -->
                 </plugins>
             </build>
@@ -318,6 +297,17 @@
                     <groupId>org.apache.maven.plugins</groupId>
                     <artifactId>maven-site-plugin</artifactId>
                     <version>${maven.site.plugin.version}</version>
+                </plugin>
+                <plugin>
+                    <groupId>org.sonatype.plugins</groupId>
+                    <artifactId>nexus-staging-maven-plugin</artifactId>
+                    <version>1.6.7</version>
+                    <extensions>true</extensions>
+                    <configuration>
+                        <skipStaging>true</skipStaging>
+                        <skipNexusStagingDeployMojo>true</skipNexusStagingDeployMojo>
+                        <autoReleaseAfterClose>true</autoReleaseAfterClose>
+                    </configuration>
                 </plugin>
             </plugins>
         </pluginManagement>
