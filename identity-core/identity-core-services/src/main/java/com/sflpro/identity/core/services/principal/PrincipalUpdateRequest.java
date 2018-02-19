@@ -1,43 +1,32 @@
 package com.sflpro.identity.core.services.principal;
 
-import com.sflpro.identity.core.datatypes.PrincipalStatus;
-import com.sflpro.identity.core.datatypes.PrincipalType;
+import java.util.List;
 
 /**
  * Company: SFL LLC
- * Created on 17/02/2018
+ * Created on 19/02/2018
  *
  * @author Davit Harutyunyan
  */
 public class PrincipalUpdateRequest {
 
-    private PrincipalType principalType;
+    private String secret;
 
-    private PrincipalStatus principalStatus;
+    private List<PrincipalUpdateDetailsRequest> updateDetailsRequests;
 
-    private String principalName;
-
-    public PrincipalType getPrincipalType() {
-        return principalType;
+    public String getSecret() {
+        return secret;
     }
 
-    public void setPrincipalType(PrincipalType principalType) {
-        this.principalType = principalType;
+    public void setSecret(String secret) {
+        this.secret = secret;
     }
 
-    public PrincipalStatus getPrincipalStatus() {
-        return principalStatus;
+    public List<PrincipalUpdateDetailsRequest> getUpdateDetailsRequests() {
+        return updateDetailsRequests;
     }
 
-    public void setPrincipalStatus(PrincipalStatus principalStatus) {
-        this.principalStatus = principalStatus;
-    }
-
-    public String getPrincipalName() {
-        return principalName;
-    }
-
-    public void setPrincipalName(String principalName) {
-        this.principalName = principalName;
+    public void setUpdateDetailsRequests(List<PrincipalUpdateDetailsRequest> updateDetailsRequests) {
+        this.updateDetailsRequests = updateDetailsRequests;
     }
 }

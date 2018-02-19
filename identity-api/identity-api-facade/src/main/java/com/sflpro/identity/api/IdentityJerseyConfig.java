@@ -20,6 +20,7 @@ public class IdentityJerseyConfig extends GenericJerseyConfig {
         // Endpoints
         register(AuthenticationEndpoint.class);
         register(IdentityEndpoint.class);
+        register(PrincipalEndpoint.class);
         register(PermissionEndpoint.class);
         register(RoleEndpoint.class);
         register(StatusEndpoint.class);

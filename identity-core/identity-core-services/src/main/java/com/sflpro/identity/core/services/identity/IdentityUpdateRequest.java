@@ -1,6 +1,6 @@
 package com.sflpro.identity.core.services.identity;
 
-import com.sflpro.identity.core.services.principal.PrincipalUpdateRequest;
+import com.sflpro.identity.core.services.principal.PrincipalUpdateDetailsRequest;
 
 import java.util.List;
 
@@ -18,7 +18,7 @@ public class IdentityUpdateRequest {
 
     private String newSecret;
 
-    private List<PrincipalUpdateRequest> principals;
+    private List<PrincipalUpdateDetailsRequest> principals;
 
     public String getDescription() {
         return description;
@@ -44,11 +44,11 @@ public class IdentityUpdateRequest {
         this.newSecret = newSecret;
     }
 
-    public List<PrincipalUpdateRequest> getPrincipals() {
+    public List<PrincipalUpdateDetailsRequest> getPrincipals() {
         return principals;
     }
 
-    public void setPrincipals(List<PrincipalUpdateRequest> principals) {
+    public void setPrincipals(List<PrincipalUpdateDetailsRequest> principals) {
         this.principals = principals;
     }
 }

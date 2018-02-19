@@ -4,12 +4,12 @@ import com.sflpro.identity.core.datatypes.AuthenticationStatus;
 import com.sflpro.identity.core.datatypes.CredentialType;
 import com.sflpro.identity.core.db.entities.Identity;
 import com.sflpro.identity.core.db.entities.Principal;
-import com.sflpro.identity.core.services.auth.*;
+import com.sflpro.identity.core.services.auth.AuthenticationResponse;
+import com.sflpro.identity.core.services.auth.AuthenticationServiceException;
 import com.sflpro.identity.core.services.auth.impl.AbstractAuthenticatorImpl;
 import com.sflpro.identity.core.services.auth.mechanism.principal.PrincipalAuthenticationRequestDetails;
 import com.sflpro.identity.core.services.auth.mechanism.principal.PrincipalCredentialIdentifier;
 import com.sflpro.identity.core.services.identity.IdentityService;
-import com.sflpro.identity.core.services.identity.InactiveIdentityException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -28,9 +28,6 @@ public class PrincipalAuthenticatorImpl extends AbstractAuthenticatorImpl<Princi
     private static final Logger logger = LoggerFactory.getLogger(PrincipalAuthenticatorImpl.class);
 
     @Autowired
-    private SecretHashHelper secretHashHelper;
-
-    @Autowired
     private IdentityService identityService;
 
     public PrincipalAuthenticatorImpl() {
@@ -47,13 +44,7 @@ public class PrincipalAuthenticatorImpl extends AbstractAuthenticatorImpl<Princi
         final Identity identity = principal.getIdentity();
         logger.trace("Found identity {}.", identity);
         AuthenticationResponse authenticationResponse = new AuthenticationResponse(principal, identity);
-        if (!secretHashHelper.isSecretCorrect(authenticationRequestDetails.getSecret(), identity.getSecret())) {
-            logger.debug("Invalid secret was supplied for identity {}.", identity);
-            throw new AuthenticationServiceException("Invalid credentials"); // TODO check with Mr. Smith
-        } else if (!identityService.isIdentityActive(identity)) {
-            logger.debug("Authenticating identity {} is Inactive.", identity);
-            throw new InactiveIdentityException(identity);
-        }
+        identityService.chkSecretCorrectAndIdentityActive(identity, authenticationRequestDetails.getSecret());
         logger.trace("Authenticating identity {}'s secret is correct.", identity);
         authenticationResponse.setStatus(AuthenticationStatus.AUTHENTICATED);
         return authenticationResponse;

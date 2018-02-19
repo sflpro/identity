@@ -1,9 +1,6 @@
 package com.sflpro.identity.api.common.dtos.identity;
 
-import com.sflpro.identity.api.common.dtos.principal.PrincipalUpdateRequestDto;
-
 import javax.validation.constraints.NotEmpty;
-import java.util.List;
 
 /**
  * Company: SFL LLC
@@ -16,11 +13,11 @@ public class IdentityUpdateRequestDto {
     @NotEmpty
     private String description;
 
+    @NotEmpty
     private String secret;
 
+    @NotEmpty
     private String newSecret;
-
-    private List<PrincipalUpdateRequestDto> principals;
 
     public IdentityUpdateRequestDto() {
         super();
@@ -48,13 +45,5 @@ public class IdentityUpdateRequestDto {
 
     public void setNewSecret(String newSecret) {
         this.newSecret = newSecret;
-    }
-
-    public List<PrincipalUpdateRequestDto> getPrincipals() {
-        return principals;
-    }
-
-    public void setPrincipals(List<PrincipalUpdateRequestDto> principals) {
-        this.principals = principals;
     }
 }

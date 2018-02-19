@@ -106,13 +106,8 @@ public class IdentityServiceImpl implements IdentityService {
 
         identity.setDescription(updateRequest.getDescription());
         // Change secret
-        if (secretHashHelper.isSecretCorrect(updateRequest.getSecret(), identity.getSecret())) {
-            changeSecret(identity, updateRequest.getNewSecret());
-        } else {
-            throw new AuthenticationServiceException("Invalid credentials"); // TODO check with Mr. Smith
-        }
-        // Update principals
-        principalService.upsert(identity, updateRequest.getPrincipals());
+        chkSecretCorrectAndIdentityActive(identity, updateRequest.getSecret());
+        changeSecret(identity, updateRequest.getNewSecret());
 
         logger.trace("Complete updating identity by id {}.", identityId);
         return identity;
@@ -192,6 +187,18 @@ public class IdentityServiceImpl implements IdentityService {
     protected Identity changeSecret(final Identity identity, final String newSecret) {
         identity.setSecret(secretHashHelper.hashSecret(newSecret));
         return identityRepository.save(identity);
+    }
+
+    @Override
+    public boolean chkSecretCorrectAndIdentityActive(final Identity identity, final String secret) throws AuthenticationServiceException {
+        if (!secretHashHelper.isSecretCorrect(secret, identity.getSecret())) {
+            logger.debug("Invalid secret was supplied for identity {}.", identity);
+            throw new AuthenticationServiceException("Invalid credentials");
+        } else if (!(identity.getStatus() == IdentityStatus.ACTIVE)) {
+            logger.debug("Authenticating identity {} is Inactive.", identity);
+            throw new InactiveIdentityException(identity);
+        }
+        return true;
     }
 
     @Override

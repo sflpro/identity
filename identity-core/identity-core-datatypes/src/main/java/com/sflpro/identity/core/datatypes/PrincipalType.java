@@ -7,5 +7,15 @@ package com.sflpro.identity.core.datatypes;
  * @author Davit Harutyunyan
  */
 public enum PrincipalType {
-    MAIL, PHONE
+    MAIL(true), PHONE(true);
+
+    private final boolean mainStatusRequired;
+
+    PrincipalType(boolean mainStatusRequired) {
+        this.mainStatusRequired = mainStatusRequired;
+    }
+
+    public boolean isMainStatusRequired() {
+        return mainStatusRequired;
+    }
 }

@@ -5,8 +5,6 @@ import com.sflpro.identity.core.services.auth.AuthenticationServiceException;
 import com.sflpro.identity.core.services.identity.reset.RequestSecretResetRequest;
 import com.sflpro.identity.core.services.identity.reset.SecretResetRequest;
 
-import javax.transaction.Transactional;
-
 /**
  * Company: SFL LLC
  * Created on 23/11/2017
@@ -30,7 +28,6 @@ public interface IdentityService {
      * @return id and details of the created identity
      */
     @Deprecated
-    @Transactional
     Identity create(final IdentityCreationRequest identityCreationRequest);
 
     /**
@@ -39,7 +36,6 @@ public interface IdentityService {
      * @param updateRequest identity update request model
      * @return id and details of the created identity
      */
-    @Transactional
     Identity update(final String identityId, final IdentityUpdateRequest updateRequest) throws AuthenticationServiceException;
 
     /**
@@ -47,16 +43,23 @@ public interface IdentityService {
      *
      * @param resetRequest identity identifier details
      */
-    @Transactional
-    void requestSecretReset(RequestSecretResetRequest resetRequest);
+    void requestSecretReset(final RequestSecretResetRequest resetRequest);
 
     /**
      * Reset secret
      *
      * @param secretReset token and secret to be reseted
      */
-    @Transactional
-    void secretReset(SecretResetRequest secretReset);
+    void secretReset(final SecretResetRequest secretReset);
+
+    /**
+     * Check if the secret is correct and identity status is ACTIVE
+     *
+     * @param identity identity
+     * @param secret secret of identity
+     * @return true if identity status is ACTIVE, false for other statuses
+     */
+    boolean chkSecretCorrectAndIdentityActive(final Identity identity, final String secret) throws AuthenticationServiceException;
 
     /**
      * Check if the identity status is ACTIVE

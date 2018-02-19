@@ -1,8 +1,8 @@
 package com.sflpro.identity.core.services.principal;
 
 import com.sflpro.identity.core.datatypes.PrincipalType;
-import com.sflpro.identity.core.db.entities.Identity;
 import com.sflpro.identity.core.db.entities.Principal;
+import com.sflpro.identity.core.services.auth.AuthenticationServiceException;
 
 import java.util.List;
 
@@ -24,8 +24,8 @@ public interface PrincipalService {
     Principal get(final PrincipalType type, final String name);
 
     /** Updates existing principal or inserts a new one if principal absent
-     * @param identity identity
-     * @param updateRequest set of principal update data
+     * @param identityId identity id
+     * @param updateRequest principal update data
      */
-    void upsert(final Identity identity, final List<PrincipalUpdateRequest> updateRequest);
+    List<Principal> update(final String identityId, final PrincipalUpdateRequest updateRequest) throws AuthenticationServiceException;
 }
