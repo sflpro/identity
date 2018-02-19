@@ -100,27 +100,10 @@ public class IdentityEndpoint {
     @ApiOperation("Delete identity")
     @DELETE
     @Path("/{identityId}")
+    @Deprecated
     public IdentityDto delete(@NotNull @PathParam("identityId") final String identityId) {
         return new IdentityDto();
     }
-
-    /*@ApiOperation("Check principal's name availability by type and name")
-    @POST
-    @Path(("/check-principal"))
-    @Transactional(readOnly = true)
-    public IdentityDto checkPrincipalAvailability(@NotNull @Valid final IdentityCheckPrincipalRequestDto requestDto) {
-        Assert.notNull(requestDto, "requestDto cannot be null");
-        logger.debug("Checking identity name availability :{}...", requestDto);
-        try {
-            IdentityCheckPrincipalRequest checkMailRequest = mapper.map(requestDto, IdentityCheckPrincipalRequest.class);
-            Identity identity = identityService.checkMailAvailability(checkMailRequest);
-            logger.info("Done checking identity name availability :{}.", requestDto.getPrincipalName());
-            return mapper.map(identity, IdentityDto.class);
-        } catch (ResourceNotFoundException e) {
-            throw new ResourceNotFoundDto(String.format("Identity with type = %s, name = %s not found",
-                    requestDto.getPrincipalType(), requestDto.getPrincipalName()), e);
-        }
-    }*/
 
     @ApiOperation("Request for secret reset")
     @PUT

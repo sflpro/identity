@@ -43,14 +43,6 @@ public interface IdentityService {
     Identity update(final String identityId, final IdentityUpdateRequest updateRequest) throws AuthenticationServiceException;
 
     /**
-     * Gets principal by type mail name
-     *
-     * @param identityCheckPrincipalRequest check mail request
-     * @return details of the campaign
-     */
-    /*Identity checkMailAvailability(final IdentityCheckPrincipalRequest identityCheckPrincipalRequest);*/
-
-    /**
      * Request for secret reset, sending secret request token by other channel to the identity
      *
      * @param resetRequest identity identifier details

@@ -9,8 +9,10 @@ import com.sflpro.identity.core.db.repositories.PrincipalRepository;
 import com.sflpro.identity.core.services.ResourceNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.Assert;
+
+import javax.transaction.Transactional;
+import java.util.List;
 
 /**
  * Company: SFL LLC
@@ -32,7 +34,16 @@ public class PrincipalServiceImpl implements PrincipalService {
 
     @Override
     @Transactional
-    public Principal upsert(final Identity identity, final PrincipalUpdateRequest updateRequest) {
+    public void upsert(Identity identity, List<PrincipalUpdateRequest> updateRequest) {
+        updateRequest.forEach(principalUpdateRequest -> {
+            if (principalUpdateRequest.getPrincipalStatus() == PrincipalStatus.MAIN) {
+                setStatusSecondaryByType(identity, principalUpdateRequest.getPrincipalType());
+            }
+        });
+        updateRequest.forEach(principalUpdateRequest -> upsert(identity, principalUpdateRequest));
+    }
+
+    private Principal upsert(final Identity identity, final PrincipalUpdateRequest updateRequest) {
         Assert.notNull(identity, "identity cannot be null");
         Assert.notNull(updateRequest, "updateRequest cannot be null");
         try {
@@ -40,17 +51,11 @@ public class PrincipalServiceImpl implements PrincipalService {
             if (!principal.getIdentity().equals(identity)) {
                 throw new PrincipalNameBusyException(updateRequest.getPrincipalType(), updateRequest.getPrincipalName());
             }
-            if (updateRequest.getPrincipalStatus() == PrincipalStatus.MAIN) {
-                setStatusSecondaryByType(identity, updateRequest.getPrincipalType());
-            }
             principal.setName(updateRequest.getPrincipalName());
             principal.setPrincipalType(updateRequest.getPrincipalType());
             principal.setPrincipalStatus(updateRequest.getPrincipalStatus());
             return principalRepository.save(principal);
         } catch (ResourceNotFoundException e) {
-            if (updateRequest.getPrincipalStatus() == PrincipalStatus.MAIN) {
-                setStatusSecondaryByType(identity, updateRequest.getPrincipalType());
-            }
             Principal newInstance = new Principal();
             newInstance.setName(updateRequest.getPrincipalName());
             newInstance.setPrincipalType(updateRequest.getPrincipalType());

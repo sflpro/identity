@@ -112,38 +112,11 @@ public class IdentityServiceImpl implements IdentityService {
             throw new AuthenticationServiceException("Invalid credentials"); // TODO check with Mr. Smith
         }
         // Update principals
-        // TODO every time we are updating MAIN statues to SECONDARY, which is weird
-        updateRequest.getPrincipals().forEach(principalUpdateRequest -> principalService.upsert(identity, principalUpdateRequest));
+        principalService.upsert(identity, updateRequest.getPrincipals());
 
         logger.trace("Complete updating identity by id {}.", identityId);
         return identity;
     }
-
-    /**
-     * {@inheritDoc}
-     */
-    /*@Override
-    public Identity checkMailAvailability(final IdentityCheckPrincipalRequest request) {
-        Assert.notNull(request, "Request cannot be null");
-        Assert.notNull(request.getIdentityId(), "Request identityId cannot be null");
-        Assert.notNull(request.getPrincipalType(), "Request type cannot be null");
-        Assert.notNull(request.getPrincipalName(), "Request name cannot be null");
-        logger.trace("Getting principal with type {} and name {}", request.getPrincipalType(), request.getPrincipalName());
-        final Set<Credential> principals = get(request.getIdentityId()).getPrincipals();
-        Principal principal = principals
-                .stream()
-                .filter(p -> ((Principal) p).getPrincipalType() == request.getPrincipalType()
-                        && ((Principal) p).getName() == request.getPrincipalName())
-                .findAny()
-                .map(p -> (Principal) p)
-                .orElseThrow(() -> {
-                    final String message = String.format("Principal with type = %s and name = %s not found", request.getPrincipalType(), request.getPrincipalName());
-                    logger.debug(message);
-                    throw new ResourceNotFoundException(message);
-                });
-        logger.debug("Done getting principal with type {} and name {}", request.getPrincipalType(), request.getPrincipalName());
-        return principal.getIdentity();
-    }*/
 
     /**
      * {@inheritDoc}
