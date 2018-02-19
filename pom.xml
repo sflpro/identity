@@ -70,11 +70,11 @@
             </build>
             <distributionManagement>
                 <repository>
-                    <id>oss-sonatype</id>
+                    <id>ossrh</id>
                     <url>https://oss.sonatype.org/service/local/staging/deploy/maven2/</url>
                 </repository>
                 <snapshotRepository>
-                    <id>oss-sonatype-snapshot</id>
+                    <id>ossrh</id>
                     <url>https://oss.sonatype.org/content/repositories/snapshots/</url>
                 </snapshotRepository>
             </distributionManagement>

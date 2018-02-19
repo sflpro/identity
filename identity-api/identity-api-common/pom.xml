@@ -32,6 +32,7 @@
 			</build>
 		</profile>
 	</profiles>
+
 	<build>
 		<plugins>
 			<plugin>
