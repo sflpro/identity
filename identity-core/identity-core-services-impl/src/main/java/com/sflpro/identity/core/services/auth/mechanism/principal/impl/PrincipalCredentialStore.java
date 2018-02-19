@@ -1,6 +1,5 @@
 package com.sflpro.identity.core.services.auth.mechanism.principal.impl;
 
-import com.sflpro.identity.core.datatypes.PrincipalType;
 import com.sflpro.identity.core.db.entities.Principal;
 import com.sflpro.identity.core.services.auth.CredentialStore;
 import com.sflpro.identity.core.services.auth.mechanism.principal.PrincipalCredentialIdentifier;
@@ -25,8 +24,8 @@ public class PrincipalCredentialStore implements CredentialStore<Principal, Prin
     }
 
     @Override
-    public Principal get(PrincipalCredentialIdentifier identifier) {
-        return principalService.get(identifier.getPrincipal(), identifier.getPrincipalType());
+    public Principal get(final PrincipalCredentialIdentifier identifier) {
+        return principalService.get(identifier.getPrincipalType(), identifier.getPrincipal());
     }
 
     @Override

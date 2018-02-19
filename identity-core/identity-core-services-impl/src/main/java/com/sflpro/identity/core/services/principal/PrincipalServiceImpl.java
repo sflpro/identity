@@ -27,7 +27,7 @@ public class PrincipalServiceImpl implements PrincipalService {
     private PrincipalRepository principalRepository;
 
     @Override
-    public Principal get(final String name, final PrincipalType type) throws ResourceNotFoundException {
+    public Principal get(final PrincipalType type, final String name) throws ResourceNotFoundException {
         return principalRepository.findByDeletedIsNullAndNameAndPrincipalType(name, type)
                 .orElseThrow(() -> new ResourceNotFoundException(String.format("Principal with name:%s not found", name)));
     }
@@ -47,7 +47,7 @@ public class PrincipalServiceImpl implements PrincipalService {
         Assert.notNull(identity, "identity cannot be null");
         Assert.notNull(updateRequest, "updateRequest cannot be null");
         try {
-            Principal principal = get(updateRequest.getPrincipalName(), updateRequest.getPrincipalType());
+            Principal principal = get(updateRequest.getPrincipalType(), updateRequest.getPrincipalName());
             if (!principal.getIdentity().equals(identity)) {
                 throw new PrincipalNameBusyException(updateRequest.getPrincipalType(), updateRequest.getPrincipalName());
             }

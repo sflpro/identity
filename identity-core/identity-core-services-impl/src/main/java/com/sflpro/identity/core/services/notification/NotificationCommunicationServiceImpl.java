@@ -46,7 +46,7 @@ public class NotificationCommunicationServiceImpl implements NotificationCommuni
         ResetPasswordEmailClientModel templateModel = new ResetPasswordEmailClientModel();
         // templateModel.setToken(token.getValue());
         templateModel.setVerificationToken(token.getValue());
-        Principal principal = principalService.get(email, PrincipalType.MAIL);
+        Principal principal = principalService.get(PrincipalType.MAIL, email);
         templateModel.setEmail(principal.getName());
         templateModel.setName(token.getIdentity().getDescription());
         forgotPasswordRequest.setTemplateModel(templateModel);

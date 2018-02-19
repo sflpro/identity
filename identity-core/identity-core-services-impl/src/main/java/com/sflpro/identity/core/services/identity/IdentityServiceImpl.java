@@ -128,7 +128,7 @@ public class IdentityServiceImpl implements IdentityService {
 
         logger.debug("Reset password requested for user {}", resetRequest.getEmail());
 
-        Credential credential = principalService.get(resetRequest.getEmail(), PrincipalType.MAIL);
+        Credential credential = principalService.get(PrincipalType.MAIL, resetRequest.getEmail());
         Identity identity = credential.getIdentity();
 
         Assert.notNull(identity, "identity can not be null.");

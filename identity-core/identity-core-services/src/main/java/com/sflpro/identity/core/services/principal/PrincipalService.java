@@ -17,10 +17,11 @@ public interface PrincipalService {
     /**
      * Gets principal by name
      *
+     * @param type principal type
      * @param name principal name
      * @return principal details
      */
-    Principal get(final String name, final PrincipalType type);
+    Principal get(final PrincipalType type, final String name);
 
     /** Updates existing principal or inserts a new one if principal absent
      * @param identity identity
