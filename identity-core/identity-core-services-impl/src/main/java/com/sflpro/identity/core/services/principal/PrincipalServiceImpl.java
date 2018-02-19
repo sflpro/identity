@@ -27,7 +27,7 @@ public class PrincipalServiceImpl implements PrincipalService {
     private PrincipalRepository principalRepository;
 
     @Override
-    public Principal get(final PrincipalType type, final String name) throws ResourceNotFoundException {
+    public Principal get(final PrincipalType type, final String name) {
         return principalRepository.findByDeletedIsNullAndNameAndPrincipalType(name, type)
                 .orElseThrow(() -> new ResourceNotFoundException(String.format("Principal with name:%s not found", name)));
     }
