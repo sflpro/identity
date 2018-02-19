@@ -13,15 +13,31 @@
     <artifactId>identity-api-client</artifactId>
     <packaging>jar</packaging>
 
+    <profiles>
+        <profile>
+            <id>central</id>
+            <build>
+                <plugins>
+                    <!-- maven central stuff -->
+                    <plugin>
+                        <groupId>org.sonatype.plugins</groupId>
+                        <artifactId>nexus-staging-maven-plugin</artifactId>
+                        <version>1.6.7</version>
+                        <extensions>true</extensions>
+                        <configuration>
+                            <skipStaging>true</skipStaging>
+                            <skipNexusStagingDeployMojo>true</skipNexusStagingDeployMojo>
+                            <autoReleaseAfterClose>true</autoReleaseAfterClose>
+                        </configuration>
+                    </plugin>
+                    <!-- end of maven central stuff -->
+                </plugins>
+            </build>
+        </profile>
+    </profiles>
+
     <build>
         <plugins>
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-deploy-plugin</artifactId>
-                <configuration>
-                    <skip>false</skip>
-                </configuration>
-            </plugin>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-surefire-plugin</artifactId>
