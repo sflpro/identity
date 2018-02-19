@@ -20,15 +20,29 @@
         <module>identity-core-services-impl</module>
     </modules>
 
-    <build>
-        <plugins>
-            <!--<plugin>-->
-                <!--<groupId>org.apache.maven.plugins</groupId>-->
-                <!--<artifactId>maven-deploy-plugin</artifactId>-->
-                <!--<configuration>-->
-                    <!--<skip>false</skip>-->
-                <!--</configuration>-->
-            <!--</plugin>-->
-        </plugins>
-    </build>
+    <profiles>
+        <profile>
+            <id>central</id>
+            <build>
+                <plugins>
+                    <!-- maven central stuff -->
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-gpg-plugin</artifactId>
+                        <version>${maven.gpg.plugin.version}</version>
+                        <executions>
+                            <execution>
+                                <id>sign-artifacts</id>
+                                <phase>verify</phase>
+                                <goals>
+                                    <goal>sign</goal>
+                                </goals>
+                            </execution>
+                        </executions>
+                    </plugin>
+                    <!-- end of maven central stuff -->
+                </plugins>
+            </build>
+        </profile>
+    </profiles>
 </project>
