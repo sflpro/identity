@@ -194,7 +194,7 @@ public class IdentityServiceImpl implements IdentityService {
         if (!secretHashHelper.isSecretCorrect(secret, identity.getSecret())) {
             logger.debug("Invalid secret was supplied for identity {}.", identity);
             throw new AuthenticationServiceException("Invalid credentials");
-        } else if (!(identity.getStatus() == IdentityStatus.ACTIVE)) {
+        } else if (identity.getStatus() != IdentityStatus.ACTIVE) {
             logger.debug("Authenticating identity {} is Inactive.", identity);
             throw new InactiveIdentityException(identity);
         }

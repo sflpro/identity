@@ -87,8 +87,8 @@ public class IdentityEndpoint {
         Assert.notNull(updateRequestDto, "updateRequestDto cannot be null");
         logger.debug("Updating identity id {} with data :{}...", identityId, updateRequestDto);
         try {
-            IdentityUpdateRequest checkMailRequest = mapper.map(updateRequestDto, IdentityUpdateRequest.class);
-            Identity identity = identityService.update(identityId, checkMailRequest);
+            IdentityUpdateRequest updateRequest = mapper.map(updateRequestDto, IdentityUpdateRequest.class);
+            Identity identity = identityService.update(identityId, updateRequest);
             logger.info("Done updating identity id {} with data :{}....", identityId, updateRequestDto);
             return mapper.map(identity, IdentityDto.class);
         } catch (AuthenticationServiceException e) {
