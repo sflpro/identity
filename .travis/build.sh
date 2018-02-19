@@ -17,7 +17,8 @@ then
     mvn -P snapshot -P central -s settings.xml clean org.jacoco:jacoco-maven-plugin:prepare-agent deploy sonar:sonar -B \
     -Dsonar.host.url=https://sonarcloud.io \
     -Dsonar.organization=sfl \
-    -Dsonar.login=$SONARCLOUD_KEY
+    -Dsonar.login=$SONARCLOUD_KEY\
+    -Dgpg.passphrase=$TRAVIS_GPG_KEY_PASS
 elif [ $TRAVIS_BRANCH == 'master' ] && [ "$TRAVIS_PULL_REQUEST" == "false" ]
 then
     init_central_auth
