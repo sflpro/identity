@@ -13,10 +13,10 @@
     <packaging>pom</packaging>
 
     <modules>
-        <module>identity-api-client</module>
         <module>identity-api-common</module>
         <module>identity-api-facade</module>
         <module>identity-api-web</module>
+        <module>identity-api-client</module>
     </modules>
 
     <profiles>
@@ -35,6 +35,20 @@
                             <skipNexusStagingDeployMojo>true</skipNexusStagingDeployMojo>
                             <autoReleaseAfterClose>true</autoReleaseAfterClose>
                         </configuration>
+                    </plugin>
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-gpg-plugin</artifactId>
+                        <version>${maven.gpg.plugin.version}</version>
+                        <executions>
+                            <execution>
+                                <id>sign-artifacts</id>
+                                <phase>verify</phase>
+                                <goals>
+                                    <goal>sign</goal>
+                                </goals>
+                            </execution>
+                        </executions>
                     </plugin>
                     <!-- end of maven central stuff -->
                 </plugins>
