@@ -7,7 +7,6 @@ import com.sflpro.identity.api.common.dtos.principal.PrincipalUpdateRequestDto;
 import javax.ws.rs.client.Client;
 import javax.ws.rs.client.WebTarget;
 import javax.ws.rs.core.GenericType;
-import java.util.List;
 
 /**
  * Company: SFL LLC
