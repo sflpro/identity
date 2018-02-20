@@ -161,8 +161,7 @@ public class IdentityServiceImpl implements IdentityService {
         logger.debug("Secret was successfully reset from identity {}", identity.getId());
     }
 
-    @Transactional
-    protected Identity changeSecret(final Identity identity, final String newSecret) {
+    private Identity changeSecret(final Identity identity, final String newSecret) {
         identity.setSecret(secretHashHelper.hashSecret(newSecret));
         return identityRepository.save(identity);
     }
