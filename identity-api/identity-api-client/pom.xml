@@ -3,7 +3,7 @@
     <parent>
         <groupId>com.sflpro.identity</groupId>
         <artifactId>identity-api</artifactId>
-        <version>0.0.1</version>
+        <version>0.0.2</version>
     </parent>
 
     <modelVersion>4.0.0</modelVersion>
@@ -45,6 +45,14 @@
                             </execution>
                         </executions>
                     </plugin>
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-source-plugin</artifactId>
+                    </plugin>
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-javadoc-plugin</artifactId>
+                    </plugin>
                     <!-- end of maven central stuff -->
                 </plugins>
             </build>
@@ -69,13 +77,13 @@
         <dependency>
             <groupId>com.sflpro.identity</groupId>
             <artifactId>identity-core-datatypes</artifactId>
-            <version>0.0.1</version>
+            <version>0.0.2</version>
         </dependency>
 
         <dependency>
             <groupId>com.sflpro.identity</groupId>
             <artifactId>identity-api-common</artifactId>
-            <version>0.0.1</version>
+            <version>0.0.2</version>
         </dependency>
 
         <dependency>
