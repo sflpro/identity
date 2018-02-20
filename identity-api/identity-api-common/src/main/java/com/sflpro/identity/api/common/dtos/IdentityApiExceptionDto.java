@@ -1,5 +1,8 @@
 package com.sflpro.identity.api.common.dtos;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.annotation.JsonProperty;
+
 import javax.ws.rs.WebApplicationException;
 
 /**
@@ -8,13 +11,19 @@ import javax.ws.rs.WebApplicationException;
  *
  * @author Davit Harutyunyan
  */
+@JsonIgnoreProperties({"response", "cause", "stackTrace", "responseStatusCode",
+        "localizedMessage", "suppressed", "suppressedExceptions", "detailMessage"})
 public class IdentityApiExceptionDto extends WebApplicationException {
+    @JsonProperty("status")
     private final IdentityApiError error;
 
+    @JsonProperty("httpStatus")
     private final int responseStatusCode;
 
+    @JsonProperty("appErrorCode")
     private final long applicationErrorCode;
 
+    @JsonProperty("message")
     private final String message;
 
     public IdentityApiExceptionDto(int responseStatusCode, String message, long applicationErrorCode) {
@@ -32,9 +41,9 @@ public class IdentityApiExceptionDto extends WebApplicationException {
         this(error, message, error.getResponseHttpStatus().getStatusCode(), cause);
     }
 
-    public IdentityApiExceptionDto(IdentityApiError error,
-                                   String message,
-                                   int responseStatusCode) {
+    public IdentityApiExceptionDto(@JsonProperty("status") IdentityApiError error,
+                                  @JsonProperty("message") String message,
+                                  @JsonProperty("httpStatus") int responseStatusCode) {
         super(message, error.getResponseHttpStatus());
         this.applicationErrorCode = error.getErrorCode();
         this.message = message == null ? error.getDefaultMessage() == null ? error.toString() : error.getDefaultMessage() : message;

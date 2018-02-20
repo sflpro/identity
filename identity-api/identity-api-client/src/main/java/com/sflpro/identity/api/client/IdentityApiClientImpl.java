@@ -29,6 +29,7 @@ public class IdentityApiClientImpl implements IdentityApiClient {
     private final WebTarget rootTarget;
 
     private final IdentityResource identityResource;
+    private final PrincipalResource principalResource;
 
     private final ObjectMapper mapper = new ObjectMapper();
 
@@ -55,12 +56,17 @@ public class IdentityApiClientImpl implements IdentityApiClient {
         rootTarget = client.target(apiUrl);
 
         identityResource = new IdentityResource(client, rootTarget);
+        principalResource = new PrincipalResource(client, rootTarget);
     }
 
 
     @Override
     public IdentityResource identity() {
         return identityResource;
+    }
+
+    public PrincipalResource principal() {
+        return principalResource;
     }
 
     @Override

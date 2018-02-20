@@ -8,6 +8,7 @@ import com.sflpro.identity.core.db.entities.Identity;
 import com.sflpro.identity.core.db.entities.Token;
 import com.sflpro.identity.core.db.repositories.IdentityRepository;
 import com.sflpro.identity.core.services.ResourceNotFoundException;
+import com.sflpro.identity.core.services.auth.AuthenticationServiceException;
 import com.sflpro.identity.core.services.auth.SecretHashHelper;
 import com.sflpro.identity.core.services.credential.CredentialService;
 import com.sflpro.identity.core.services.identity.reset.RequestSecretResetRequest;
@@ -19,9 +20,10 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.Assert;
 
-import javax.transaction.Transactional;
+import javax.validation.constraints.NotNull;
 
 /**
  * Company: SFL LLC
@@ -56,6 +58,7 @@ public class IdentityServiceImpl implements IdentityService {
      * {@inheritDoc}
      */
     @Override
+    @Transactional(readOnly = true)
     public Identity get(final String identityId) {
         Assert.notNull(identityId, "identityId can not be null.");
 
@@ -68,7 +71,12 @@ public class IdentityServiceImpl implements IdentityService {
         return identity;
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
+    @Deprecated
+    @Transactional
     public Identity create(final IdentityCreationRequest identityCreationRequest) {
         Assert.notNull(identityCreationRequest, "Identity creation request cannot be null");
         Assert.notEmpty(identityCreationRequest.getCredentials(), "Credentials can not be null");
@@ -87,6 +95,29 @@ public class IdentityServiceImpl implements IdentityService {
         return identity;
     }
 
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    @Transactional
+    public Identity update(@NotNull final String identityId, @NotNull final IdentityUpdateRequest updateRequest) throws AuthenticationServiceException {
+        Assert.notNull(identityId, "identityId cannot be null");
+        Assert.notNull(updateRequest, "updateRequest cannot be null");
+        logger.debug("Updating identity by id {}", identityId);
+        Identity identity = get(identityId);
+
+        identity.setDescription(updateRequest.getDescription());
+        // Change secret
+        chkSecretCorrectAndIdentityActive(identity, updateRequest.getSecret());
+        changeSecret(identity, updateRequest.getNewSecret());
+
+        logger.trace("Complete updating identity by id {}.", identityId);
+        return identity;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
     @Override
     @Transactional
     public void requestSecretReset(RequestSecretResetRequest resetRequest) {
@@ -94,7 +125,7 @@ public class IdentityServiceImpl implements IdentityService {
 
         logger.debug("Reset password requested for user {}", resetRequest.getEmail());
 
-        Credential credential = principalService.get(resetRequest.getEmail(), PrincipalType.MAIL);
+        Credential credential = principalService.get(PrincipalType.MAIL, resetRequest.getEmail());
         Identity identity = credential.getIdentity();
 
         Assert.notNull(identity, "identity can not be null.");
@@ -109,6 +140,9 @@ public class IdentityServiceImpl implements IdentityService {
         logger.debug("Email sent to User {} for password reset.", identity);
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     @Transactional
     public void secretReset(SecretResetRequest secretReset) {
@@ -155,6 +189,18 @@ public class IdentityServiceImpl implements IdentityService {
     protected Identity changeSecret(final Identity identity, final String newSecret) {
         identity.setSecret(secretHashHelper.hashSecret(newSecret));
         return identityRepository.save(identity);
+    }
+
+    @Override
+    public boolean chkSecretCorrectAndIdentityActive(final Identity identity, final String secret) throws AuthenticationServiceException {
+        if (!secretHashHelper.isSecretCorrect(secret, identity.getSecret())) {
+            logger.debug("Invalid secret was supplied for identity {}.", identity);
+            throw new AuthenticationServiceException("Invalid credentials");
+        } else if (identity.getStatus() != IdentityStatus.ACTIVE) {
+            logger.debug("Authenticating identity {} is Inactive.", identity);
+            throw new InactiveIdentityException(identity);
+        }
+        return true;
     }
 
     @Override

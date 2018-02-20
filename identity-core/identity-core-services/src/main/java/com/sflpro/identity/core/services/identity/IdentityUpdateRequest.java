@@ -1,27 +1,24 @@
-package com.sflpro.identity.api.common.dtos.identity;
+package com.sflpro.identity.core.services.identity;
 
-import javax.validation.constraints.NotEmpty;
+import com.sflpro.identity.core.services.principal.PrincipalUpdateDetailsRequest;
+
+import java.util.List;
 
 /**
  * Company: SFL LLC
- * Created on 27/11/2017
+ * Created on 17/02/2018
  *
  * @author Davit Harutyunyan
  */
-public class IdentityUpdateRequestDto {
+public class IdentityUpdateRequest {
 
-    @NotEmpty
     private String description;
 
-    @NotEmpty
     private String secret;
 
-    @NotEmpty
     private String newSecret;
 
-    public IdentityUpdateRequestDto() {
-        super();
-    }
+    private List<PrincipalUpdateDetailsRequest> principals;
 
     public String getDescription() {
         return description;
@@ -45,5 +42,13 @@ public class IdentityUpdateRequestDto {
 
     public void setNewSecret(String newSecret) {
         this.newSecret = newSecret;
+    }
+
+    public List<PrincipalUpdateDetailsRequest> getPrincipals() {
+        return principals;
+    }
+
+    public void setPrincipals(List<PrincipalUpdateDetailsRequest> principals) {
+        this.principals = principals;
     }
 }

@@ -1,5 +1,6 @@
 package com.sflpro.identity.api.common.dtos.auth;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import com.sflpro.identity.api.common.dtos.IdentityApiError;
 import com.sflpro.identity.api.common.dtos.IdentityApiExceptionDto;
 import com.sflpro.identity.api.common.dtos.NonLoggableException;
@@ -10,17 +11,17 @@ import com.sflpro.identity.api.common.dtos.NonLoggableException;
  *
  * @author Davit Harutyunyan
  */
-public class AuthenticationExceptionDtoDto extends IdentityApiExceptionDto implements NonLoggableException {
+public class AuthenticationExceptionDto extends IdentityApiExceptionDto implements NonLoggableException {
 
-    public AuthenticationExceptionDtoDto(String message) {
+    public AuthenticationExceptionDto(@JsonProperty("message") String message) {
         this(message, null);
     }
 
-    public AuthenticationExceptionDtoDto(Exception cause) {
+    public AuthenticationExceptionDto(Exception cause) {
         this(null, cause);
     }
 
-    public AuthenticationExceptionDtoDto(String message, Exception cause) {
+    public AuthenticationExceptionDto(String message, Exception cause) {
         super(IdentityApiError.LOGIN_FAILED, message, cause);
     }
 }
