@@ -7,6 +7,9 @@ import com.fasterxml.jackson.datatype.jsr310.deser.LocalDateTimeDeserializer;
 import com.fasterxml.jackson.datatype.jsr310.ser.LocalDateTimeSerializer;
 import com.sflpro.identity.api.common.dtos.AbstractApiResponse;
 import com.sflpro.identity.core.datatypes.CredentialType;
+import org.apache.commons.lang3.builder.EqualsBuilder;
+import org.apache.commons.lang3.builder.HashCodeBuilder;
+import org.apache.commons.lang3.builder.ToStringBuilder;
 
 import java.time.LocalDateTime;
 
@@ -79,5 +82,49 @@ public class CredentialDto extends AbstractApiResponse {
 
     public void setUpdated(LocalDateTime updated) {
         this.updated = updated;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+
+        if (o == null || getClass() != o.getClass()) return false;
+
+        CredentialDto that = (CredentialDto) o;
+
+        return new EqualsBuilder()
+                .appendSuper(super.equals(o))
+                .append(enabled, that.enabled)
+                .append(id, that.id)
+                .append(type, that.type)
+                .append(failedAttempts, that.failedAttempts)
+                .append(details, that.details)
+                .append(updated, that.updated)
+                .isEquals();
+    }
+
+    @Override
+    public int hashCode() {
+        return new HashCodeBuilder(17, 37)
+                .appendSuper(super.hashCode())
+                .append(id)
+                .append(type)
+                .append(failedAttempts)
+                .append(details)
+                .append(enabled)
+                .append(updated)
+                .toHashCode();
+    }
+
+    @Override
+    public String toString() {
+        return new ToStringBuilder(this)
+                .append("id", id)
+                .append("type", type)
+                .append("failedAttempts", failedAttempts)
+                .append("details", details)
+                .append("enabled", enabled)
+                .append("updated", updated)
+                .toString();
     }
 }
