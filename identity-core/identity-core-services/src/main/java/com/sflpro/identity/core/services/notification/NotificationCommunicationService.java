@@ -15,8 +15,8 @@ public interface NotificationCommunicationService {
   /**
    * Creates new identity
    *
+   * @param email email
    * @param token secret reset token
-   * @return id and details of the created identity
    */
   void sendSecretResetEmail(@NotNull final String email, @NotNull final Token token);
 }
