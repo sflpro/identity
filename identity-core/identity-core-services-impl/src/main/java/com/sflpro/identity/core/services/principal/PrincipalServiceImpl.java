@@ -95,7 +95,7 @@ public class PrincipalServiceImpl implements PrincipalService {
         logger.debug("Deleting principals by identity id {}", identity.getId());
         Iterable<Principal> principals = principalRepository.findAllByIdentity(identity);
         LocalDateTime now = LocalDateTime.now();
-        principals.forEach(p -> p.setDeleted(now)); // TODO chk with Mr. Smith do we need also invalidate tokens issued by this principals
+        principals.forEach(p -> p.setDeleted(now));
         principalRepository.saveAll(principals);
         logger.trace("Complete deleting principals by identity id {}.", identity.getId());
     }
