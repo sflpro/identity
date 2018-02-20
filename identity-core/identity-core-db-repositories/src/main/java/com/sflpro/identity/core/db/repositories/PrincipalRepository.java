@@ -15,7 +15,7 @@ import java.util.Optional;
  */
 public interface PrincipalRepository extends JpaRepository<Principal, String> {
 
-    Optional<Principal> findByDeletedIsNullAndNameAndPrincipalType(String name, PrincipalType type);
+    Optional<Principal> findByDeletedIsNullAndPrincipalTypeAndName(final PrincipalType type, final String name);
 
     Iterable<Principal> findAllByIdentity(final Identity identity);
 }

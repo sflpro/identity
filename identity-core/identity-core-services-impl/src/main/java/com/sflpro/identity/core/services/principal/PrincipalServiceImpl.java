@@ -13,11 +13,12 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Isolation;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.Assert;
 
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
-import javax.transaction.Transactional;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -46,8 +47,9 @@ public class PrincipalServiceImpl implements PrincipalService {
      * {@inheritDoc}
      */
     @Override
+    @Transactional(readOnly = true)
     public Principal get(final PrincipalType type, final String name) {
-        return principalRepository.findByDeletedIsNullAndNameAndPrincipalType(name, type)
+        return principalRepository.findByDeletedIsNullAndPrincipalTypeAndName(type, name)
                 .orElseThrow(() -> new ResourceNotFoundException(String.format("Principal with name:%s not found", name)));
     }
 
@@ -55,26 +57,14 @@ public class PrincipalServiceImpl implements PrincipalService {
      * {@inheritDoc}
      */
     @Override
-    @Transactional
+    @Transactional(isolation = Isolation.SERIALIZABLE)
     public List<Principal> update(final String identityId, final PrincipalUpdateRequest updateRequest) throws AuthenticationServiceException {
         logger.debug("Updating principal by identity id {}", identityId);
         Identity identity = identityService.get(identityId);
 
         identityService.chkSecretCorrectAndIdentityActive(identity, updateRequest.getSecret());
 
-        // Check that each type has only one main contact
-        updateRequest.getUpdateDetailsRequests().stream()
-                .filter(p -> p.getPrincipalStatus() == PrincipalStatus.MAIN)
-                .collect(Collectors.groupingBy(PrincipalUpdateDetailsRequest::getPrincipalType, Collectors.counting()))
-                .entrySet()
-                .stream()
-                .filter(p -> p.getValue() != 1)
-                .findAny()
-                .ifPresent(p -> {
-                    if (p.getKey().isMainStatusRequired()) {
-                        throw new IllegalArgumentException(String.format("Principal with MAIN status should exists and be no more then one for PrincipalType: %s", p.getKey()));
-                    }
-                });
+        chkStatusConstraints(updateRequest.getUpdateDetailsRequests());
 
         deleteAllByIdentity(identity);
         entityManager.flush();
@@ -103,6 +93,10 @@ public class PrincipalServiceImpl implements PrincipalService {
     private Principal insert(final Identity identity, final PrincipalUpdateDetailsRequest updateRequest) {
         Assert.notNull(identity, "identity cannot be null");
         Assert.notNull(updateRequest, "updateRequest cannot be null");
+        Assert.notNull(updateRequest.getPrincipalType(), "updateRequest type cannot be null");
+        Assert.notNull(updateRequest.getPrincipalStatus(), "updateRequest status cannot be null");
+        Assert.notNull(updateRequest.getPrincipalName(), "updateRequest name cannot be null");
+        chkTypeConstraints(updateRequest.getPrincipalType(), updateRequest.getPrincipalName());
         Principal newInstance = new Principal();
         newInstance.setName(updateRequest.getPrincipalName());
         newInstance.setPrincipalType(updateRequest.getPrincipalType());
@@ -111,5 +105,35 @@ public class PrincipalServiceImpl implements PrincipalService {
         newInstance.setType(CredentialType.PRINCIPAL);
         newInstance.setFailedAttempts(0);
         return principalRepository.save(newInstance);
+    }
+
+    /**
+     * Check that each principal type which has main contact required has only one and only one main contact
+     * @param principals  principal update requests
+     */
+    private void chkStatusConstraints(final List<PrincipalUpdateDetailsRequest> principals) {
+        principals.stream()
+                .filter(p -> p.getPrincipalStatus() == PrincipalStatus.MAIN)
+                .collect(Collectors.groupingBy(PrincipalUpdateDetailsRequest::getPrincipalType, Collectors.counting()))
+                .entrySet()
+                .stream()
+                .filter(p -> p.getValue() != 1)
+                .findAny()
+                .ifPresent(p -> {
+                    if (p.getKey().isMainStatusRequired()) {
+                        throw new IllegalArgumentException(String.format("Principal with MAIN status should exists and be no more then one for PrincipalType: %s", p.getKey()));
+                    }
+                });
+    }
+
+    /**
+     * Check principal type and name uniqueness
+     * @param type principal type
+     * @param name principal name
+     */
+    private void chkTypeConstraints(final PrincipalType type, final String name) {
+        principalRepository.findByDeletedIsNullAndPrincipalTypeAndName(type, name).ifPresent(p -> {
+            throw new PrincipalNameBusyException(type, name);
+        });
     }
 }

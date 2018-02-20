@@ -16,10 +16,7 @@ import javax.persistence.*;
  */
 @Entity
 @Table(
-        name = "principal",
-        uniqueConstraints = {
-                @UniqueConstraint(name = "uk_principal_name_type", columnNames = {"name", "principal_type"})
-        }
+        name = "principal"
 )
 @PrimaryKeyJoinColumn(name = "credential_id")
 public class Principal extends Credential {

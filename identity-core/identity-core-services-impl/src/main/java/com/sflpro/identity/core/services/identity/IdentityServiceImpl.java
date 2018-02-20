@@ -20,9 +20,9 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.Assert;
 
-import javax.transaction.Transactional;
 import javax.validation.constraints.NotNull;
 
 /**
@@ -58,6 +58,7 @@ public class IdentityServiceImpl implements IdentityService {
      * {@inheritDoc}
      */
     @Override
+    @Transactional(readOnly = true)
     public Identity get(final String identityId) {
         Assert.notNull(identityId, "identityId can not be null.");
 
@@ -75,6 +76,7 @@ public class IdentityServiceImpl implements IdentityService {
      */
     @Override
     @Deprecated
+    @Transactional
     public Identity create(final IdentityCreationRequest identityCreationRequest) {
         Assert.notNull(identityCreationRequest, "Identity creation request cannot be null");
         Assert.notEmpty(identityCreationRequest.getCredentials(), "Credentials can not be null");
