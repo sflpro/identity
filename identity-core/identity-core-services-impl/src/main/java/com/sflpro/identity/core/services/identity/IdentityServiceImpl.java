@@ -75,30 +75,6 @@ public class IdentityServiceImpl implements IdentityService {
      * {@inheritDoc}
      */
     @Override
-    @Deprecated
-    @Transactional
-    public Identity create(final IdentityCreationRequest identityCreationRequest) {
-        Assert.notNull(identityCreationRequest, "Identity creation request cannot be null");
-        Assert.notEmpty(identityCreationRequest.getCredentials(), "Credentials can not be null");
-        logger.info("Creating identity '{}'", identityCreationRequest.getDescription());
-
-        // Creating identity
-        Identity identity = new Identity();
-        identity.setSecret(identityCreationRequest.getSecret());
-        identity.setStatus(IdentityStatus.ACTIVE);
-        identity.setDescription(identityCreationRequest.getDescription());
-        identity = identityRepository.save(identity);
-
-        // Storing credentials
-        credentialService.store(identity, identityCreationRequest.getCredentials());
-
-        return identity;
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
     @Transactional
     public Identity update(@NotNull final String identityId, @NotNull final IdentityUpdateRequest updateRequest) throws AuthenticationServiceException {
         Assert.notNull(identityId, "identityId cannot be null");

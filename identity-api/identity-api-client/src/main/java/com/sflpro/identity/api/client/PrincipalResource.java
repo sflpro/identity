@@ -1,5 +1,6 @@
 package com.sflpro.identity.api.client;
 
+import com.sflpro.identity.api.common.dtos.ApiGenericListResponse;
 import com.sflpro.identity.api.common.dtos.principal.PrincipalDto;
 import com.sflpro.identity.api.common.dtos.principal.PrincipalUpdateRequestDto;
 
@@ -20,8 +21,8 @@ public class PrincipalResource extends AbstractApiResource {
         super(client, rootTarget, "/principals");
     }
 
-    public List<PrincipalDto> update(final String identitId, final PrincipalUpdateRequestDto requestDto) {
-        return doPut("/" + identitId, requestDto, new GenericType<List<PrincipalDto>>() {
+    public ApiGenericListResponse<PrincipalDto> update(final String identitId, final PrincipalUpdateRequestDto requestDto) {
+        return doPut("/" + identitId, requestDto, new GenericType<ApiGenericListResponse<PrincipalDto>>() {
         });
     }
 }

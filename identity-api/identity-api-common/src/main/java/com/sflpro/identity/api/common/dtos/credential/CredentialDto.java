@@ -5,6 +5,7 @@ import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.fasterxml.jackson.datatype.jsr310.deser.LocalDateTimeDeserializer;
 import com.fasterxml.jackson.datatype.jsr310.ser.LocalDateTimeSerializer;
+import com.sflpro.identity.api.common.dtos.AbstractApiResponse;
 import com.sflpro.identity.core.datatypes.CredentialType;
 
 import java.time.LocalDateTime;
@@ -15,7 +16,7 @@ import java.time.LocalDateTime;
  *
  * @author Davit Harutyunyan
  */
-public class CredentialDto {
+public class CredentialDto extends AbstractApiResponse {
 
     private String id;
 

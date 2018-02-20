@@ -1,11 +1,10 @@
 package com.sflpro.identity.api.common.dtos.identity;
 
+import com.sflpro.identity.api.common.dtos.AbstractApiResponse;
 import com.sflpro.identity.api.common.dtos.principal.PrincipalDto;
 import com.sflpro.identity.core.datatypes.IdentityContactMethod;
 import com.sflpro.identity.core.datatypes.IdentityStatus;
 
-import javax.validation.constraints.NotEmpty;
-import javax.validation.constraints.NotNull;
 import java.util.Set;
 
 /**
@@ -14,17 +13,14 @@ import java.util.Set;
  *
  * @author Davit Harutyunyan
  */
-public class IdentityDto {
+public class IdentityDto extends AbstractApiResponse {
 
-    @NotEmpty
     private String id;
 
-    @NotEmpty
     private String description;
 
     private IdentityContactMethod contactMethod;
 
-    @NotNull
     private IdentityStatus status;
 
     private Set<PrincipalDto> principals;

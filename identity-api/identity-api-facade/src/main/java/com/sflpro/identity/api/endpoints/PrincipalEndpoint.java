@@ -1,5 +1,6 @@
 package com.sflpro.identity.api.endpoints;
 
+import com.sflpro.identity.api.common.dtos.ApiGenericListResponse;
 import com.sflpro.identity.api.common.dtos.auth.AuthenticationExceptionDto;
 import com.sflpro.identity.api.common.dtos.principal.PrincipalDto;
 import com.sflpro.identity.api.common.dtos.principal.PrincipalUpdateRequestDto;
@@ -48,15 +49,16 @@ public class PrincipalEndpoint {
     @ApiOperation("Updates principal's details")
     @PUT
     @Path("/{identityId}")
-    public List<PrincipalDto> update(@NotNull @PathParam("identityId") final String identityId,
-                                     @NotNull final PrincipalUpdateRequestDto updateRequestDto) {
+    public ApiGenericListResponse<PrincipalDto> update(@NotNull @PathParam("identityId") final String identityId,
+                                                       @NotNull final PrincipalUpdateRequestDto updateRequestDto) {
         Assert.notNull(updateRequestDto, "updateRequestDto cannot be null");
         logger.debug("Updating principals with identity id: {}", identityId);
         try {
             PrincipalUpdateRequest updateRequests = mapper.map(updateRequestDto, PrincipalUpdateRequest.class);
             List<Principal> principals = principalService.update(identityId, updateRequests);
             logger.info("Done updating principals with identity id: {}", identityId);
-            return mapper.mapAsList(principals, PrincipalDto.class);
+            List<PrincipalDto> result = mapper.mapAsList(principals, PrincipalDto.class);
+            return new ApiGenericListResponse<>(result.size(), result);
         } catch (AuthenticationServiceException e) {
             logger.warn("Authentication failed for request:'{}'.", updateRequestDto);
             throw new AuthenticationExceptionDto(e.getMessage(), e);

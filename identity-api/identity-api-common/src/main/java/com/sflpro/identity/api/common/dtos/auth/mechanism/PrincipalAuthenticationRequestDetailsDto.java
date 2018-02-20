@@ -1,10 +1,13 @@
 package com.sflpro.identity.api.common.dtos.auth.mechanism;
 
+import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import com.sflpro.identity.api.common.dtos.auth.AuthenticationRequestDetailsDto;
 import com.sflpro.identity.core.datatypes.CredentialType;
 import com.sflpro.identity.core.datatypes.PrincipalType;
 import io.swagger.annotations.ApiModel;
 
+import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
 
 
@@ -17,39 +20,34 @@ import javax.validation.constraints.NotNull;
 @ApiModel(value = "PrincipalDetails", parent = AuthenticationRequestDetailsDto.class)
 public final class PrincipalAuthenticationRequestDetailsDto extends AuthenticationRequestDetailsDto {
 
-    private PrincipalType principalType;
-
     @NotNull
-    private String principal;
+    private final PrincipalType principalType;
 
-    @NotNull
-    private String secret;
+    @NotEmpty
+    private final String principal;
 
-    public PrincipalAuthenticationRequestDetailsDto() {
+    @NotEmpty
+    private final String secret;
+
+    @JsonCreator
+    public PrincipalAuthenticationRequestDetailsDto(@JsonProperty("principalType") final PrincipalType type,
+                                                    @JsonProperty("principal") final String principal,
+                                                    @JsonProperty("secret") final String secret) {
         super(CredentialType.PRINCIPAL);
+        this.principalType = type;
+        this.principal = principal;
+        this.secret = secret;
     }
 
     public PrincipalType getPrincipalType() {
         return principalType;
     }
 
-    public void setPrincipalType(PrincipalType principalType) {
-        this.principalType = principalType;
-    }
-
     public String getPrincipal() {
         return principal;
     }
 
-    public void setPrincipal(String principal) {
-        this.principal = principal;
-    }
-
     public String getSecret() {
         return secret;
-    }
-
-    public void setSecret(String secret) {
-        this.secret = secret;
     }
 }

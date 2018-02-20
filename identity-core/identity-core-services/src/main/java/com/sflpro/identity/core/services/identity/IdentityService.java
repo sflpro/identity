@@ -22,15 +22,6 @@ public interface IdentityService {
     Identity get(final String identityId);
 
     /**
-     * Creates new identity
-     *
-     * @param identityCreationRequest identity creation request model
-     * @return id and details of the created identity
-     */
-    @Deprecated
-    Identity create(final IdentityCreationRequest identityCreationRequest);
-
-    /**
      * Updates identity and principals
      *
      * @param updateRequest identity update request model

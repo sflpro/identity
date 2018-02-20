@@ -19,10 +19,6 @@ public class PermissionUpdateRequestDto {
     @NotNull
     private PermissionType type;
 
-    public PermissionUpdateRequestDto() {
-        super();
-    }
-
     public String getName() {
         return name;
     }

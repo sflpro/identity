@@ -1,10 +1,14 @@
 package com.sflpro.identity.api.common.dtos.auth.mechanism;
 
+import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import com.sflpro.identity.api.common.dtos.auth.AuthenticationRequestDetailsDto;
 import com.sflpro.identity.core.datatypes.CredentialType;
 import com.sflpro.identity.core.datatypes.PrincipalType;
+import com.sflpro.identity.core.datatypes.TokenType;
 import io.swagger.annotations.ApiModel;
 
+import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
 
 
@@ -17,29 +21,25 @@ import javax.validation.constraints.NotNull;
 @ApiModel(value = "TokenDetails", parent = AuthenticationRequestDetailsDto.class)
 public final class TokenAuthenticationRequestDetailsDto extends AuthenticationRequestDetailsDto {
 
-    @NotNull
-    private String tokenType;
+    @NotEmpty
+    private final TokenType tokenType;
 
-    @NotNull
-    private String token;
+    @NotEmpty
+    private final String token;
 
-    public TokenAuthenticationRequestDetailsDto() {
+    @JsonCreator
+    public TokenAuthenticationRequestDetailsDto(@JsonProperty("tokenType") final TokenType tokenType,
+                                                @JsonProperty("token") final String token) {
         super(CredentialType.TOKEN);
-    }
-
-    public String getTokenType() {
-        return tokenType;
-    }
-
-    public void setTokenType(String tokenType) {
         this.tokenType = tokenType;
+        this.token = token;
+    }
+
+    public TokenType getTokenType() {
+        return tokenType;
     }
 
     public String getToken() {
         return token;
-    }
-
-    public void setToken(String token) {
-        this.token = token;
     }
 }
