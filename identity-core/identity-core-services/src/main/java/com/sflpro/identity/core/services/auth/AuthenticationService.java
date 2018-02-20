@@ -28,7 +28,7 @@ public interface AuthenticationService {
      * Invalidate request
      *
      * @param tokenInvalidationRequest auth request details and token request list
-     * @throws AuthenticationServiceException auth service exceptions
+     * @throws TokenServiceException auth service exceptions
      */
      void invalidateToken(TokenInvalidationRequest tokenInvalidationRequest) throws TokenServiceException;
 }
