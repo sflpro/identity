@@ -2,9 +2,13 @@ package com.sflpro.identity.core.services.auth.impl;
 
 import com.sflpro.identity.core.datatypes.AuthenticationStatus;
 import com.sflpro.identity.core.db.entities.Credential;
+import com.sflpro.identity.core.db.entities.Resource;
 import com.sflpro.identity.core.db.entities.Token;
 import com.sflpro.identity.core.services.auth.*;
+import com.sflpro.identity.core.services.resource.ResourceService;
+import com.sflpro.identity.core.services.token.TokenInvalidationRequest;
 import com.sflpro.identity.core.services.token.TokenService;
+import com.sflpro.identity.core.services.token.TokenServiceException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -28,10 +32,14 @@ public class AuthenticationServiceImpl implements AuthenticationService {
 
     private final TokenService tokenService;
 
+    private final ResourceService resourceService;
+
     @Autowired
-    public AuthenticationServiceImpl(AuthenticatorRegistry authenticatorRegistry, TokenService tokenService) {
+    public AuthenticationServiceImpl(AuthenticatorRegistry authenticatorRegistry, TokenService tokenService,
+                                     ResourceService resourceService) {
         this.authenticatorRegistry = authenticatorRegistry;
         this.tokenService = tokenService;
+        this.resourceService = resourceService;
     }
 
     @Override
@@ -48,14 +56,24 @@ public class AuthenticationServiceImpl implements AuthenticationService {
             throw new IllegalStateException(String.format("Not supported credential type for request %s", request.getCredentialType()));
         }
         AuthenticationResponse authenticationResponse = authenticator.authenticate(credential, details);
-        if (authenticationResponse.getStatus() == AuthenticationStatus.AUTHENTICATED
-                && request.getTokenRequests().size() > 0) {
-            List<Token> tokens = tokenService.createNewTokens(request.getTokenRequests(), credential.getId());
-            authenticationResponse.setTokens(tokens);
+        if (authenticationResponse.getStatus() == AuthenticationStatus.AUTHENTICATED) {
+            if (!request.getTokenRequests().isEmpty()) {
+                List<Token> tokens = tokenService.createNewTokens(request.getTokenRequests(), credential);
+                authenticationResponse.setTokens(tokens);
+            }
+            if (!request.getResourceRequests().isEmpty()) {
+                List<Resource> resources = resourceService.get(request.getResourceRequests(), credential.getIdentity());
+                authenticationResponse.setResources(resources);
+            }
         }
         authenticationResponse.setCredentialTypeUsed(credential.getType());
-        authenticationResponse.setIdentityId(credential.getIdentity().getId());
-        // authenticationResponse.setPermissions(credential.getIdentity().getRoles().get(0).getPermissions()); TODO work on this
+        authenticationResponse.setIdentity(credential.getIdentity());
         return authenticationResponse;
+    }
+
+    @Override
+    @Transactional
+    public void invalidateToken(TokenInvalidationRequest tokenRequest) throws TokenServiceException {
+        tokenService.invalidateToken(tokenRequest);
     }
 }

@@ -1,10 +1,12 @@
 package com.sflpro.identity.api.common.dtos.identity;
 
+import com.sflpro.identity.api.common.dtos.principal.PrincipalDto;
 import com.sflpro.identity.core.datatypes.IdentityContactMethod;
 import com.sflpro.identity.core.datatypes.IdentityStatus;
 
 import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
+import java.util.Set;
 
 /**
  * Company: SFL LLC
@@ -24,6 +26,8 @@ public class IdentityDto {
 
     @NotNull
     private IdentityStatus status;
+
+    private Set<PrincipalDto> principals;
 
     public IdentityDto() {
         super();
@@ -59,5 +63,13 @@ public class IdentityDto {
 
     public void setStatus(IdentityStatus status) {
         this.status = status;
+    }
+
+    public Set<PrincipalDto> getPrincipals() {
+        return principals;
+    }
+
+    public void setPrincipals(Set<PrincipalDto> principals) {
+        this.principals = principals;
     }
 }

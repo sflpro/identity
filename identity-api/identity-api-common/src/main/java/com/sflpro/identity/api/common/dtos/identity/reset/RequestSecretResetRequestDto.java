@@ -1,6 +1,7 @@
 package com.sflpro.identity.api.common.dtos.identity.reset;
 
 import javax.validation.constraints.NotEmpty;
+import javax.validation.constraints.NotNull;
 
 /**
  * Company: SFL LLC
@@ -13,6 +14,9 @@ public class RequestSecretResetRequestDto {
     @NotEmpty
     private String email;
 
+    @NotNull
+    private Integer expiresInHours;
+
     public RequestSecretResetRequestDto() {
         super();
     }
@@ -23,5 +27,13 @@ public class RequestSecretResetRequestDto {
 
     public void setEmail(String email) {
         this.email = email;
+    }
+
+    public Integer getExpiresInHours() {
+        return expiresInHours;
+    }
+
+    public void setExpiresInHours(Integer expiresInHours) {
+        this.expiresInHours = expiresInHours;
     }
 }

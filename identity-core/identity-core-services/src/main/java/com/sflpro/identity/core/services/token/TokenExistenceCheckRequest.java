@@ -1,5 +1,7 @@
 package com.sflpro.identity.core.services.token;
 
+import com.sflpro.identity.core.datatypes.TokenType;
+
 /**
  * Company: SFL LLC
  * Created on 03/12/2017
@@ -8,15 +10,15 @@ package com.sflpro.identity.core.services.token;
  */
 public class TokenExistenceCheckRequest {
 
-    private String tokenType;
+    private TokenType tokenType;
     private String tokenValue;
 
-    public TokenExistenceCheckRequest(String tokenType, String tokenValue) {
+    public TokenExistenceCheckRequest(TokenType tokenType, String tokenValue) {
         this.tokenType = tokenType;
         this.tokenValue = tokenValue;
     }
 
-    public String getTokenType() {
+    public TokenType getTokenType() {
         return tokenType;
     }
 

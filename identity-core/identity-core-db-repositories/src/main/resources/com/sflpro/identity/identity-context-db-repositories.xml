@@ -68,6 +68,8 @@
                 <map>
                     <entry key="hibernate.dialect" value="org.hibernate.dialect.PostgreSQL95Dialect"/>
                     <entry key="hibernate.show_sql" value="${hibernate.show_sql}"/>
+                    <entry key="hibernate.format_sql" value="${hibernate.format_sql}"/>
+                    <entry key="hibernate.type" value="${hibernate.type}"/>
                     <entry key="hibernate.hbm2ddl.auto" value="${hibernate.hbm2ddl.auto}"/>
                     <entry key="hibernate.globally_quoted_identifiers" value="true"/>
                     <entry key="hibernate.cache.use_query_cache" value="true"/>

@@ -24,8 +24,8 @@ import java.time.LocalDateTime;
 public class Permission {
 
     @Id
-    @SequenceGenerator(name = "permission_sequence", sequenceName = "permission_sequence")
-    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "permission_sequence")
+    @SequenceGenerator(name = "seq_permission", sequenceName = "seq_permission")
+    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "seq_permission")
     @Column(name = "id", unique = true, nullable = false, updatable = false)
     private Long id;
 

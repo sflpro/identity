@@ -42,9 +42,6 @@ public class Credential {
     @Column(name = "details")
     private String details;
 
-    @Column(name = "enabled")
-    private boolean enabled;
-
     @Column(name = "created", nullable = false)
     private LocalDateTime created;
 
@@ -53,19 +50,6 @@ public class Credential {
 
     @Column(name = "deleted")
     private LocalDateTime deleted;
-
-    public Credential() {
-        super();
-    }
-
-    public Credential(Credential other) {
-        this();
-        this.identity = other.getIdentity();
-        this.type = other.getType();
-        this.failedAttempts = other.getFailedAttempts();
-        this.details = other.getDetails();
-        this.enabled = other.isEnabled();
-    }
 
     public String getId() {
         return id;
@@ -105,14 +89,6 @@ public class Credential {
 
     public void setDetails(String details) {
         this.details = details;
-    }
-
-    public boolean isEnabled() {
-        return enabled;
-    }
-
-    public void setEnabled(boolean enabled) {
-        this.enabled = enabled;
     }
 
     public LocalDateTime getCreated() {
@@ -160,7 +136,6 @@ public class Credential {
 
         return new EqualsBuilder()
                 .append(failedAttempts, that.failedAttempts)
-                .append(enabled, that.enabled)
                 .append(id, that.id)
                 .append(identity, that.identity)
                 .append(type, that.type)
@@ -179,7 +154,6 @@ public class Credential {
                 .append(type)
                 .append(failedAttempts)
                 .append(details)
-                .append(enabled)
                 .append(created)
                 .append(updated)
                 .append(deleted)
@@ -190,11 +164,9 @@ public class Credential {
     public String toString() {
         return new ToStringBuilder(this)
                 .append("id", id)
-                .append("identity", identity)
                 .append("type", type)
                 .append("failedAttempts", failedAttempts)
                 .append("details", details)
-                .append("enabled", enabled)
                 .append("created", created)
                 .append("updated", updated)
                 .append("deleted", deleted)

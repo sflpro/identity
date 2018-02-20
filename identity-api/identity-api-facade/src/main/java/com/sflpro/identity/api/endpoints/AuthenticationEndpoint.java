@@ -1,13 +1,20 @@
 package com.sflpro.identity.api.endpoints;
 
+import com.sflpro.identity.api.common.dtos.ApiResponseDto;
 import com.sflpro.identity.api.common.dtos.auth.AuthenticationExceptionDto;
 import com.sflpro.identity.api.common.dtos.auth.AuthenticationRequestDetailsDto;
 import com.sflpro.identity.api.common.dtos.auth.AuthenticationRequestDto;
 import com.sflpro.identity.api.common.dtos.auth.AuthenticationResponseDto;
-import com.sflpro.identity.api.common.dtos.identity.InactiveIdentityExceptionDto;
+import com.sflpro.identity.api.common.dtos.identity.InactiveIdentityExceptionDtoDto;
+import com.sflpro.identity.api.common.dtos.token.TokenInvalidationRequestDto;
 import com.sflpro.identity.api.mapper.BeanMapper;
-import com.sflpro.identity.core.services.auth.*;
+import com.sflpro.identity.core.services.auth.AuthenticationRequest;
+import com.sflpro.identity.core.services.auth.AuthenticationResponse;
+import com.sflpro.identity.core.services.auth.AuthenticationService;
+import com.sflpro.identity.core.services.auth.AuthenticationServiceException;
 import com.sflpro.identity.core.services.identity.InactiveIdentityException;
+import com.sflpro.identity.core.services.token.TokenInvalidationRequest;
+import com.sflpro.identity.core.services.token.TokenServiceException;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.SwaggerDefinition;
@@ -65,9 +72,31 @@ public class AuthenticationEndpoint {
             return mapper.map(authResponse, AuthenticationResponseDto.class);
         } catch (InactiveIdentityException e) {
             logger.warn("Authentication failed for inactive identity request:'{}'.", requestDto);
-            throw new InactiveIdentityExceptionDto(e);
+            throw new InactiveIdentityExceptionDtoDto(e);
         } catch (AuthenticationServiceException e) {
             logger.warn("Authentication failed for request:'{}'.", requestDto);
+            throw new AuthenticationExceptionDto(e.getMessage(), e);
+        }
+    }
+
+    @ApiOperation("Invalidate token")
+    @POST
+    @Path("/invalidate-token")
+    @Transactional
+    public ApiResponseDto invalidateToken(@Valid TokenInvalidationRequestDto requestDto) {
+        Assert.notNull(requestDto, "request cannot be null");
+        Assert.notNull(requestDto.getToken(), "request token cannot be null");
+        Assert.notNull(requestDto.getTokenType(), "request token type cannot be null");
+        logger.debug("Invalidating token: {}...", requestDto.getToken());
+        //Compose authentication request
+        TokenInvalidationRequest request = mapper.map(requestDto, TokenInvalidationRequest.class);
+        //Try to invalidate token
+        try {
+            authService.invalidateToken(request);
+            logger.info("Done invalidating token:'{}'.", requestDto.getToken());
+            return new ApiResponseDto();
+        } catch (TokenServiceException e) {
+            logger.warn("Invalidating token failed for request:'{}'.", requestDto);
             throw new AuthenticationExceptionDto(e.getMessage(), e);
         }
     }

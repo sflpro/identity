@@ -1,5 +1,7 @@
 package com.sflpro.identity.core.db.repositories;
 
+import com.sflpro.identity.core.datatypes.PrincipalType;
+import com.sflpro.identity.core.db.entities.Identity;
 import com.sflpro.identity.core.db.entities.Principal;
 import org.springframework.data.jpa.repository.JpaRepository;
 
@@ -13,6 +15,7 @@ import java.util.Optional;
  */
 public interface PrincipalRepository extends JpaRepository<Principal, String> {
 
-    Optional<Principal> findByDeletedIsNullAndName(String name);
+    Optional<Principal> findByDeletedIsNullAndPrincipalTypeAndName(final PrincipalType type, final String name);
 
+    Iterable<Principal> findAllByIdentity(final Identity identity);
 }

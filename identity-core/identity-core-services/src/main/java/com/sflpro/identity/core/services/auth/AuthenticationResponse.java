@@ -2,9 +2,7 @@ package com.sflpro.identity.core.services.auth;
 
 import com.sflpro.identity.core.datatypes.AuthenticationStatus;
 import com.sflpro.identity.core.datatypes.CredentialType;
-import com.sflpro.identity.core.db.entities.Credential;
-import com.sflpro.identity.core.db.entities.Identity;
-import com.sflpro.identity.core.db.entities.Token;
+import com.sflpro.identity.core.db.entities.*;
 
 import java.util.List;
 
@@ -18,11 +16,13 @@ public class AuthenticationResponse {
 
     private CredentialType credentialTypeUsed;
 
-    private String identityId;
+    private Identity identity;
 
     private List<String> permissions;
 
     private List<Token> tokens;
+
+    private List<Resource> resources;
 
     private AuthenticationStatus status;
 
@@ -31,7 +31,7 @@ public class AuthenticationResponse {
 
     public AuthenticationResponse(Credential credentialsUsed, Identity identity) {
         this.credentialTypeUsed = credentialsUsed.getType();
-        this.identityId = identity.getId();
+        this.identity = identity;
     }
 
     public CredentialType getCredentialTypeUsed() {
@@ -42,13 +42,15 @@ public class AuthenticationResponse {
         this.credentialTypeUsed = credentialTypeUsed;
     }
 
-    public String getIdentityId() {
-        return identityId;
+    public Identity getIdentity() {
+        return identity;
     }
 
-    public void setIdentityId(String identityId) {
-        this.identityId = identityId;
+    public void setIdentity(Identity identity) {
+        this.identity = identity;
     }
+
+
 
     public List<String> getPermissions() {
         return permissions;
@@ -64,6 +66,14 @@ public class AuthenticationResponse {
 
     public void setTokens(List<Token> tokens) {
         this.tokens = tokens;
+    }
+
+    public List<Resource> getResources() {
+        return resources;
+    }
+
+    public void setResources(List<Resource> resources) {
+        this.resources = resources;
     }
 
     public AuthenticationStatus getStatus() {

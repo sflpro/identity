@@ -14,9 +14,7 @@ public class SecretResetRequestDto {
     private String token;
 
     @NotEmpty
-    private String password;
-
-    private String description;
+    private String secret;
 
     public SecretResetRequestDto() {
         super();
@@ -30,19 +28,11 @@ public class SecretResetRequestDto {
         this.token = token;
     }
 
-    public String getPassword() {
-        return password;
+    public String getSecret() {
+        return secret;
     }
 
-    public void setPassword(String password) {
-        this.password = password;
-    }
-
-    public String getDescription() {
-        return description;
-    }
-
-    public void setDescription(String description) {
-        this.description = description;
+    public void setSecret(String secret) {
+        this.secret = secret;
     }
 }

@@ -5,7 +5,6 @@ import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.fasterxml.jackson.datatype.jsr310.deser.LocalDateTimeDeserializer;
 import com.fasterxml.jackson.datatype.jsr310.ser.LocalDateTimeSerializer;
-import com.sflpro.identity.api.common.dtos.identity.IdentityDto;
 import com.sflpro.identity.core.datatypes.CredentialType;
 
 import java.time.LocalDateTime;
@@ -19,8 +18,6 @@ import java.time.LocalDateTime;
 public class CredentialDto {
 
     private String id;
-
-    private IdentityDto identity;
 
     private CredentialType type;
 
@@ -41,14 +38,6 @@ public class CredentialDto {
 
     public void setId(String id) {
         this.id = id;
-    }
-
-    public IdentityDto getIdentity() {
-        return identity;
-    }
-
-    public void setIdentity(IdentityDto identity) {
-        this.identity = identity;
     }
 
     public CredentialType getType() {

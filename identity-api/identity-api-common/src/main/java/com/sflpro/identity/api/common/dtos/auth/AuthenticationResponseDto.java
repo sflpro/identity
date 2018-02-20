@@ -2,6 +2,8 @@ package com.sflpro.identity.api.common.dtos.auth;
 
 import com.sflpro.identity.api.common.dtos.AbstractApiResponse;
 import com.sflpro.identity.api.common.dtos.identity.IdentityDto;
+import com.sflpro.identity.api.common.dtos.principal.PrincipalDto;
+import com.sflpro.identity.api.common.dtos.resource.ResourceDto;
 import com.sflpro.identity.api.common.dtos.token.TokenDto;
 import com.sflpro.identity.core.datatypes.AuthenticationStatus;
 import com.sflpro.identity.core.datatypes.CredentialType;
@@ -18,11 +20,13 @@ public class AuthenticationResponseDto extends AbstractApiResponse {
 
     private CredentialType credentialTypeUsed;
 
-    private String identityId;
+    private IdentityDto identity;
 
     private List<String> permissions;
 
     private List<TokenDto> tokens;
+
+    private List<ResourceDto> resources;
 
     private AuthenticationStatus status;
 
@@ -34,12 +38,12 @@ public class AuthenticationResponseDto extends AbstractApiResponse {
         this.credentialTypeUsed = credentialTypeUsed;
     }
 
-    public String getIdentityId() {
-        return identityId;
+    public IdentityDto getIdentity() {
+        return identity;
     }
 
-    public void setIdentityId(String identityId) {
-        this.identityId = identityId;
+    public void setIdentity(IdentityDto identity) {
+        this.identity = identity;
     }
 
     public List<String> getPermissions() {
@@ -56,6 +60,14 @@ public class AuthenticationResponseDto extends AbstractApiResponse {
 
     public void setTokens(List<TokenDto> tokens) {
         this.tokens = tokens;
+    }
+
+    public List<ResourceDto> getResources() {
+        return resources;
+    }
+
+    public void setResources(List<ResourceDto> resources) {
+        this.resources = resources;
     }
 
     public AuthenticationStatus getStatus() {

@@ -35,11 +35,11 @@ public class ApplicationExceptionMapper implements ExceptionMapper<Exception> {
             logger.error("Unexpected error occurred!", e);
         }
 
-        final IdentityApiException apiException;
-        if (e instanceof IdentityApiException) {
-            apiException = (IdentityApiException) e;
+        final IdentityApiExceptionDto apiException;
+        if (e instanceof IdentityApiExceptionDto) {
+            apiException = (IdentityApiExceptionDto) e;
         } else if (e instanceof JsonMappingException) {
-            apiException = new InvalidRequestException(e.getMessage(), e);
+            apiException = new InvalidRequestExceptionDto(e.getMessage(), e);
         } /*else if (e instanceof AccessDeniedException) {
             apiException = new UnauthorizedIdentityException("Identity is not authorized", e);
         } */ else if (e instanceof WebApplicationException) {
@@ -52,44 +52,44 @@ public class ApplicationExceptionMapper implements ExceptionMapper<Exception> {
             if (((WebApplicationException) e).getResponse().getStatus() == Response.Status.NOT_FOUND.getStatusCode()) {
                 apiException = new ResourceNotFoundDto(e.getMessage(), e);
             } else {
-                apiException = new IdentityApiException(IdentityApiError.UNEXPECTED_INTERNAL_ERROR, e.getMessage(), ((WebApplicationException) e).getResponse().getStatus(), e);
+                apiException = new IdentityApiExceptionDto(IdentityApiError.UNEXPECTED_INTERNAL_ERROR, e.getMessage(), ((WebApplicationException) e).getResponse().getStatus(), e);
             }
         } else {
-            apiException = new IdentityApiException(IdentityApiError.UNEXPECTED_INTERNAL_ERROR, e.getMessage(), e);
+            apiException = new IdentityApiExceptionDto(IdentityApiError.UNEXPECTED_INTERNAL_ERROR, e.getMessage(), e);
         }
 
         return createResponse(apiException, httpHeaders.getMediaType());
     }
 
-    /*private IdentityApiException parseUnmarshalExceptions(UnmarshalException e) {
+    /*private IdentityApiExceptionDto parseUnmarshalExceptions(UnmarshalException e) {
 
-        IdentityApiException apiException;
+        IdentityApiExceptionDto apiException;
 
         if (e.getLinkedException() != null
                 && e.getCause() instanceof UnmarshalException
                 && ((UnmarshalException) e.getCause()).getLinkedException().getCause() instanceof IllegalArgumentException) {
             final IllegalArgumentException cause = (IllegalArgumentException) e.getLinkedException().getCause();
 
-            apiException = new IdentityApiException(IdentityApiError.INVALID_REQUEST_DATA, cause.getMessage(), e);
+            apiException = new IdentityApiExceptionDto(IdentityApiError.INVALID_REQUEST_DATA, cause.getMessage(), e);
         } else if (e.getLinkedException() != null
                 && e.getCause() instanceof SAXParseException) {
             final SAXParseException cause = (SAXParseException) e.getCause();
 
-            apiException = new IdentityApiException(IdentityApiError.INVALID_REQUEST_DATA, cause.getMessage(), e);
+            apiException = new IdentityApiExceptionDto(IdentityApiError.INVALID_REQUEST_DATA, cause.getMessage(), e);
         } else if (e.getLinkedException() != null
                 && e.getLinkedException() instanceof SAXParseException) {
             final SAXParseException cause = (SAXParseException) e.getLinkedException();
 
-            apiException = new IdentityApiException(IdentityApiError.INVALID_REQUEST_DATA, cause.getMessage(), e);
+            apiException = new IdentityApiExceptionDto(IdentityApiError.INVALID_REQUEST_DATA, cause.getMessage(), e);
         } else {
 
-            apiException = new IdentityApiException(IdentityApiError.INVALID_REQUEST_DATA, e.getMessage(), e);
+            apiException = new IdentityApiExceptionDto(IdentityApiError.INVALID_REQUEST_DATA, e.getMessage(), e);
         }
 
         return apiException;
     }*/
 
-    public static Response createResponse(final IdentityApiException exception, final MediaType mediaType) {
+    public static Response createResponse(final IdentityApiExceptionDto exception, final MediaType mediaType) {
         return Response.status(exception.getResponseStatusCode())
                 .entity(
                         new IdentityApiErrorResponseDto(

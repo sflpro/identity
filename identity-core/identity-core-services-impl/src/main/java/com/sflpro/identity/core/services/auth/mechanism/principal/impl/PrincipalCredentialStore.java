@@ -24,8 +24,8 @@ public class PrincipalCredentialStore implements CredentialStore<Principal, Prin
     }
 
     @Override
-    public Principal get(PrincipalCredentialIdentifier identifier) {
-        return principalService.get(identifier.getPrincipal());
+    public Principal get(final PrincipalCredentialIdentifier identifier) {
+        return principalService.get(identifier.getPrincipalType(), identifier.getPrincipal());
     }
 
     @Override

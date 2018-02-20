@@ -11,29 +11,24 @@ import javax.validation.constraints.NotNull;
 public class RequestSecretResetRequest {
 
     @NotNull
-    private String credentialId;
+    private String email;
 
-    private String tokenType;
+    @NotNull
+    private Integer expiresInHours;
 
-    private Integer expiresIn;
-
-    public RequestSecretResetRequest(String credentialId) {
-        this.credentialId = credentialId;
+    public String getEmail() {
+        return email;
     }
 
-    public String getCredentialId() {
-        return credentialId;
+    public void setEmail(String email) {
+        this.email = email;
     }
 
-    public String getTokenType() {
-        return tokenType;
+    public Integer getExpiresInHours() {
+        return expiresInHours;
     }
 
-    public void setTokenType(String tokenType) {
-        this.tokenType = tokenType;
-    }
-
-    public Integer getExpiresIn() {
-        return expiresIn;
+    public void setExpiresInHours(Integer expiresInHours) {
+        this.expiresInHours = expiresInHours;
     }
 }

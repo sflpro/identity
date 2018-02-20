@@ -13,6 +13,12 @@ public class IdentityUpdateRequestDto {
     @NotEmpty
     private String description;
 
+    @NotEmpty
+    private String secret;
+
+    @NotEmpty
+    private String newSecret;
+
     public IdentityUpdateRequestDto() {
         super();
     }
@@ -25,4 +31,19 @@ public class IdentityUpdateRequestDto {
         this.description = description;
     }
 
+    public String getSecret() {
+        return secret;
+    }
+
+    public void setSecret(String secret) {
+        this.secret = secret;
+    }
+
+    public String getNewSecret() {
+        return newSecret;
+    }
+
+    public void setNewSecret(String newSecret) {
+        this.newSecret = newSecret;
+    }
 }
