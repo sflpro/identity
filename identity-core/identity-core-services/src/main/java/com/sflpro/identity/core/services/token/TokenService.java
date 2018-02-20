@@ -46,6 +46,7 @@ public interface TokenService {
      *
      * @param tokenExistenceCheckRequest the details for token
      * @return validated token entity
+     * @throws TokenServiceException token service exception
      */
     Token getExistingToken(final TokenExistenceCheckRequest tokenExistenceCheckRequest) throws TokenServiceException;
 
@@ -54,6 +55,7 @@ public interface TokenService {
      *
      * @param tokenInvalidationRequest the details for token
      * @return demarked token entity
+     * @throws TokenServiceException token service exception
      */
     Token invalidateToken(final TokenInvalidationRequest tokenInvalidationRequest) throws TokenServiceException;
 }
