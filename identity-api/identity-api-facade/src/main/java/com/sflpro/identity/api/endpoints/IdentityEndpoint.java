@@ -82,6 +82,7 @@ public class IdentityEndpoint {
     @ApiOperation("Updates identity's details")
     @PUT
     @Path("/{identityId}")
+    @Transactional
     public IdentityDto update(@NotNull @PathParam("identityId") final String identityId,
                               final IdentityUpdateRequestDto updateRequestDto) {
         Assert.notNull(updateRequestDto, "updateRequestDto cannot be null");
@@ -101,6 +102,7 @@ public class IdentityEndpoint {
     @DELETE
     @Path("/{identityId}")
     @Deprecated
+    @Transactional
     public IdentityDto delete(@NotNull @PathParam("identityId") final String identityId) {
         return new IdentityDto();
     }
@@ -108,6 +110,7 @@ public class IdentityEndpoint {
     @ApiOperation("Request for secret reset")
     @PUT
     @Path("/secret-reset/request-token")
+    @Transactional
     public ApiResponseDto requestSecretReset(@Valid RequestSecretResetRequestDto requestDto) {
         RequestSecretResetRequest request = mapper.map(requestDto, RequestSecretResetRequest.class);
         identityService.requestSecretReset(request);
@@ -118,6 +121,7 @@ public class IdentityEndpoint {
     @ApiOperation("Set new secret")
     @PUT
     @Path("/secret-reset/secret")
+    @Transactional
     public ApiResponseDto secretReset(@Valid SecretResetRequestDto requestDto) {
         SecretResetRequest request = mapper.map(requestDto, SecretResetRequest.class);
         identityService.secretReset(request);
