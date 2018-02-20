@@ -1,6 +1,7 @@
 package com.sflpro.identity.core.services.principal;
 
 import com.sflpro.identity.core.datatypes.PrincipalType;
+import com.sflpro.identity.core.db.entities.Identity;
 import com.sflpro.identity.core.db.entities.Principal;
 import com.sflpro.identity.core.services.auth.AuthenticationServiceException;
 
@@ -26,6 +27,12 @@ public interface PrincipalService {
     /** Updates existing principal or inserts a new one if principal absent
      * @param identityId identity id
      * @param updateRequest principal update data
+     * @return list of principals
      */
     List<Principal> update(final String identityId, final PrincipalUpdateRequest updateRequest) throws AuthenticationServiceException;
+
+    /** Delete all principals of given identity
+     * @param identity identity
+     */
+    void deleteAllByIdentity(final Identity identity);
 }

@@ -17,5 +17,5 @@ public interface PrincipalRepository extends JpaRepository<Principal, String> {
 
     Optional<Principal> findByDeletedIsNullAndNameAndPrincipalType(String name, PrincipalType type);
 
-    void deleteAllByIdentity(final Identity identity);
+    Iterable<Principal> findAllByIdentity(final Identity identity);
 }

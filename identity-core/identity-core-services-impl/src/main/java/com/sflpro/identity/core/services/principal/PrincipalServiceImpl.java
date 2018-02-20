@@ -15,7 +15,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.util.Assert;
 
+import javax.persistence.EntityManager;
+import javax.persistence.PersistenceContext;
 import javax.transaction.Transactional;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -33,15 +36,24 @@ public class PrincipalServiceImpl implements PrincipalService {
     @Autowired
     private PrincipalRepository principalRepository;
 
+    @PersistenceContext
+    private EntityManager entityManager;
+
     @Autowired
     private IdentityService identityService;
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public Principal get(final PrincipalType type, final String name) {
         return principalRepository.findByDeletedIsNullAndNameAndPrincipalType(name, type)
                 .orElseThrow(() -> new ResourceNotFoundException(String.format("Principal with name:%s not found", name)));
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     @Transactional
     public List<Principal> update(final String identityId, final PrincipalUpdateRequest updateRequest) throws AuthenticationServiceException {
@@ -64,12 +76,28 @@ public class PrincipalServiceImpl implements PrincipalService {
                     }
                 });
 
-        principalRepository.deleteAllByIdentity(identity);
+        deleteAllByIdentity(identity);
+        entityManager.flush();
         List<Principal> result = updateRequest.getUpdateDetailsRequests().stream()
                 .map(principalUpdateDetailsRequest -> insert(identity, principalUpdateDetailsRequest))
                 .collect(Collectors.toList());
         logger.trace("Complete updating principal by identity id {}.", identityId);
         return result;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    @Transactional
+    public void deleteAllByIdentity(final Identity identity) {
+        Assert.notNull(identity, "identity cannot be null");
+        logger.debug("Deleting principals by identity id {}", identity.getId());
+        Iterable<Principal> principals = principalRepository.findAllByIdentity(identity);
+        LocalDateTime now = LocalDateTime.now();
+        principals.forEach(p -> p.setDeleted(now)); // TODO chk with Mr. Smith do we need also invalidate tokens issued by this principals
+        principalRepository.saveAll(principals);
+        logger.trace("Complete deleting principals by identity id {}.", identity.getId());
     }
 
     private Principal insert(final Identity identity, final PrincipalUpdateDetailsRequest updateRequest) {
@@ -81,6 +109,7 @@ public class PrincipalServiceImpl implements PrincipalService {
         newInstance.setPrincipalStatus(updateRequest.getPrincipalStatus());
         newInstance.setIdentity(identity);
         newInstance.setType(CredentialType.PRINCIPAL);
+        newInstance.setFailedAttempts(0);
         return principalRepository.save(newInstance);
     }
 }
