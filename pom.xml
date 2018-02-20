@@ -16,7 +16,7 @@
 
     <groupId>com.sflpro.identity</groupId>
     <artifactId>identity</artifactId>
-    <version>0.0.2</version>
+    <version>0.2.0-SNAPSHOT</version>
     <packaging>pom</packaging>
 
     <!-- Information required by maven central -->
@@ -308,9 +308,6 @@
                         <autoReleaseAfterClose>true</autoReleaseAfterClose>
                     </configuration>
                 </plugin>
-<<<<<<< HEAD
-=======
-
                 <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
                     <artifactId>maven-source-plugin</artifactId>
@@ -336,7 +333,6 @@
                         </execution>
                     </executions>
                 </plugin>
->>>>>>> master
             </plugins>
         </pluginManagement>
     </build>
