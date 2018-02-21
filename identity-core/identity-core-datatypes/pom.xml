@@ -5,7 +5,7 @@
     <parent>
         <groupId>com.sflpro.identity</groupId>
         <artifactId>identity-core</artifactId>
-        <version>0.0.4</version>
+        <version>0.0.5</version>
     </parent>
 
     <artifactId>identity-core-datatypes</artifactId>
@@ -25,10 +25,9 @@
                         <configuration>
                             <serverId>ossrh</serverId>
                             <nexusUrl>https://oss.sonatype.org/</nexusUrl>
-                            <autoReleaseAfterClose>true</autoReleaseAfterClose>
+                            <autoReleaseAfterClose>false</autoReleaseAfterClose>
                             <skipNexusStagingDeployMojo>false</skipNexusStagingDeployMojo>
                             <skipStaging>false</skipStaging>
-                            <autoReleaseAfterClose>true</autoReleaseAfterClose>
                         </configuration>
                     </plugin>
                     <plugin>

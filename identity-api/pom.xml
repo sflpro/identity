@@ -3,7 +3,7 @@
     <parent>
         <artifactId>identity</artifactId>
         <groupId>com.sflpro.identity</groupId>
-        <version>0.0.4</version>
+        <version>0.0.5</version>
     </parent>
     <modelVersion>4.0.0</modelVersion>
 
@@ -24,20 +24,6 @@
                 <plugins>
                     <!-- maven central stuff -->
                     <plugin>
-                        <groupId>org.sonatype.plugins</groupId>
-                        <artifactId>nexus-staging-maven-plugin</artifactId>
-                        <version>1.6.7</version>
-                        <extensions>true</extensions>
-                        <configuration>
-                            <serverId>ossrh</serverId>
-                            <nexusUrl>https://oss.sonatype.org/</nexusUrl>
-                            <autoReleaseAfterClose>true</autoReleaseAfterClose>
-                            <skipNexusStagingDeployMojo>false</skipNexusStagingDeployMojo>
-                            <skipStaging>false</skipStaging>
-                            <autoReleaseAfterClose>true</autoReleaseAfterClose>
-                        </configuration>
-                    </plugin>
-                    <plugin>
                         <groupId>org.apache.maven.plugins</groupId>
                         <artifactId>maven-gpg-plugin</artifactId>
                         <version>${maven.gpg.plugin.version}</version>
@@ -50,14 +36,6 @@
                                 </goals>
                             </execution>
                         </executions>
-                    </plugin>
-                    <plugin>
-                        <groupId>org.apache.maven.plugins</groupId>
-                        <artifactId>maven-source-plugin</artifactId>
-                    </plugin>
-                    <plugin>
-                        <groupId>org.apache.maven.plugins</groupId>
-                        <artifactId>maven-javadoc-plugin</artifactId>
                     </plugin>
                     <!-- end of maven central stuff -->
                 </plugins>
