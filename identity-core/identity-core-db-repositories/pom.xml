@@ -5,12 +5,12 @@
     <parent>
         <groupId>com.sflpro.identity</groupId>
         <artifactId>identity-core</artifactId>
-        <version>0.0.5-SNAPSHOT</version>
+        <version>0.0.5</version>
         <relativePath>../</relativePath>
     </parent>
 
     <artifactId>identity-core-db-repositories</artifactId>
-    <version>0.0.5-SNAPSHOT</version>
+    <version>0.0.5</version>
 
     <build>
         <plugins>
@@ -25,7 +25,7 @@
         <dependency>
             <groupId>com.sflpro.identity</groupId>
             <artifactId>identity-core-db-entities</artifactId>
-            <version>0.0.5-SNAPSHOT</version>
+            <version>0.0.5</version>
         </dependency>
 
         <dependency>
