@@ -2,6 +2,7 @@ package com.sflpro.identity.api.common.dtos.auth;
 
 import com.sflpro.identity.api.common.dtos.AbstractApiResponse;
 import com.sflpro.identity.api.common.dtos.identity.IdentityDto;
+import com.sflpro.identity.api.common.dtos.principal.PrincipalDto;
 import com.sflpro.identity.api.common.dtos.resource.ResourceDto;
 import com.sflpro.identity.api.common.dtos.token.TokenDto;
 import com.sflpro.identity.core.datatypes.AuthenticationStatus;
