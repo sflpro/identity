@@ -20,7 +20,10 @@ import org.springframework.util.Assert;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import java.time.LocalDateTime;
+import java.util.Collection;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 /**
@@ -59,6 +62,10 @@ public class PrincipalServiceImpl implements PrincipalService {
     @Override
     @Transactional(isolation = Isolation.SERIALIZABLE)
     public List<Principal> update(final String identityId, final PrincipalUpdateRequest updateRequest) throws AuthenticationServiceException {
+        Assert.notNull(identityId, "identity id cannot be null");
+        Assert.notNull(updateRequest, "updateRequest cannot be null");
+        Assert.notNull(updateRequest.getSecret(), "updateRequest secret cannot be null");
+        Assert.notNull(updateRequest.getUpdateDetailsRequests(), "updateRequest.details cannot be null");
         logger.debug("Updating principal by identity id {}", identityId);
         Identity identity = identityService.get(identityId);
 
@@ -81,17 +88,30 @@ public class PrincipalServiceImpl implements PrincipalService {
     @Override
     @Transactional
     public void deleteAllByIdentity(final Identity identity) {
-        Assert.notNull(identity, "identity cannot be null");
+        assertIdentity(identity);
         logger.debug("Deleting principals by identity id {}", identity.getId());
-        Iterable<Principal> principals = principalRepository.findAllByIdentity(identity);
+        Iterable<Principal> principals = principalRepository.findAllByDeletedIsNullAndIdentity(identity);
         LocalDateTime now = LocalDateTime.now();
         principals.forEach(p -> p.setDeleted(now));
         principalRepository.saveAll(principals);
         logger.trace("Complete deleting principals by identity id {}.", identity.getId());
     }
 
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    @Transactional(readOnly = true)
+    public Set<Principal> findAllByIdentity(final Identity identity) {
+        assertIdentity(identity);
+        logger.debug("Finding principals by identity id {}", identity.getId());
+        Iterable<Principal> principals = principalRepository.findAllByDeletedIsNullAndIdentity(identity);
+        logger.trace("Complete finding principals by identity id {}.", identity.getId());
+        return new HashSet<>((Collection<? extends Principal>) principals);
+    }
+
     private Principal insert(final Identity identity, final PrincipalUpdateDetailsRequest updateRequest) {
-        Assert.notNull(identity, "identity cannot be null");
+        assertIdentity(identity);
         Assert.notNull(updateRequest, "updateRequest cannot be null");
         Assert.notNull(updateRequest.getPrincipalType(), "updateRequest type cannot be null");
         Assert.notNull(updateRequest.getPrincipalStatus(), "updateRequest status cannot be null");
@@ -109,7 +129,8 @@ public class PrincipalServiceImpl implements PrincipalService {
 
     /**
      * Check that each principal type which has main contact required has only one and only one main contact
-     * @param principals  principal update requests
+     *
+     * @param principals principal update requests
      */
     private void chkStatusConstraints(final List<PrincipalUpdateDetailsRequest> principals) {
         principals.stream()
@@ -128,6 +149,7 @@ public class PrincipalServiceImpl implements PrincipalService {
 
     /**
      * Check principal type and name uniqueness
+     *
      * @param type principal type
      * @param name principal name
      */
@@ -135,5 +157,9 @@ public class PrincipalServiceImpl implements PrincipalService {
         principalRepository.findByDeletedIsNullAndPrincipalTypeAndName(type, name).ifPresent(p -> {
             throw new PrincipalNameBusyException(type, name);
         });
+    }
+
+    private void assertIdentity(final Identity identity) {
+        Assert.notNull(identity, "identity id cannot be null");
     }
 }

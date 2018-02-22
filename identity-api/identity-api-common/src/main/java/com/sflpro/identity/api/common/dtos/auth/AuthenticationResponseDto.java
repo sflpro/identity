@@ -9,6 +9,7 @@ import com.sflpro.identity.core.datatypes.AuthenticationStatus;
 import com.sflpro.identity.core.datatypes.CredentialType;
 
 import java.util.List;
+import java.util.Set;
 
 /**
  * Company: SFL LLC
@@ -21,6 +22,8 @@ public class AuthenticationResponseDto extends AbstractApiResponse {
     private CredentialType credentialTypeUsed;
 
     private IdentityDto identity;
+
+    private Set<PrincipalDto> principals;
 
     private List<String> permissions;
 
@@ -44,6 +47,14 @@ public class AuthenticationResponseDto extends AbstractApiResponse {
 
     public void setIdentity(IdentityDto identity) {
         this.identity = identity;
+    }
+
+    public Set<PrincipalDto> getPrincipals() {
+        return principals;
+    }
+
+    public void setPrincipals(Set<PrincipalDto> principals) {
+        this.principals = principals;
     }
 
     public List<String> getPermissions() {
