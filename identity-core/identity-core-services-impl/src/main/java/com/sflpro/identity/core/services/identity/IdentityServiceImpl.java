@@ -10,7 +10,6 @@ import com.sflpro.identity.core.db.repositories.IdentityRepository;
 import com.sflpro.identity.core.services.ResourceNotFoundException;
 import com.sflpro.identity.core.services.auth.AuthenticationServiceException;
 import com.sflpro.identity.core.services.auth.SecretHashHelper;
-import com.sflpro.identity.core.services.credential.CredentialService;
 import com.sflpro.identity.core.services.identity.reset.RequestSecretResetRequest;
 import com.sflpro.identity.core.services.identity.reset.SecretResetRequest;
 import com.sflpro.identity.core.services.notification.NotificationCommunicationService;
@@ -43,9 +42,6 @@ public class IdentityServiceImpl implements IdentityService {
     private PrincipalService principalService;
 
     @Autowired
-    private CredentialService credentialService;
-
-    @Autowired
     private IdentityRepository identityRepository;
 
     @Autowired
@@ -68,30 +64,6 @@ public class IdentityServiceImpl implements IdentityService {
                 .orElseThrow(() -> new ResourceNotFoundException(String.format("Identity with id: %s not found", identityId)));
         Assert.notNull(identity, "identity can not be null.");
         logger.trace("Complete getting identity by id {}.", identity);
-        return identity;
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    @Deprecated
-    @Transactional
-    public Identity create(final IdentityCreationRequest identityCreationRequest) {
-        Assert.notNull(identityCreationRequest, "Identity creation request cannot be null");
-        Assert.notEmpty(identityCreationRequest.getCredentials(), "Credentials can not be null");
-        logger.info("Creating identity '{}'", identityCreationRequest.getDescription());
-
-        // Creating identity
-        Identity identity = new Identity();
-        identity.setSecret(identityCreationRequest.getSecret());
-        identity.setStatus(IdentityStatus.ACTIVE);
-        identity.setDescription(identityCreationRequest.getDescription());
-        identity = identityRepository.save(identity);
-
-        // Storing credentials
-        credentialService.store(identity, identityCreationRequest.getCredentials());
-
         return identity;
     }
 

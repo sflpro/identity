@@ -17,10 +17,6 @@ public class RequestSecretResetRequestDto {
     @NotNull
     private Integer expiresInHours;
 
-    public RequestSecretResetRequestDto() {
-        super();
-    }
-
     public String getEmail() {
         return email;
     }
