@@ -45,10 +45,6 @@ public class Identity {
     @Column(name = "status")
     private IdentityStatus status;
 
-    @OneToMany(mappedBy = "identity", fetch = FetchType.LAZY)
-    @Where(clause = "\"deleted\" is null and \"type\" = 'PRINCIPAL'")
-    private Set<Credential> principals;
-
     @ManyToMany(fetch = FetchType.LAZY)
     @JoinTable(name = "identity_role",
             joinColumns = {@JoinColumn(name = "identity_id")},
@@ -103,14 +99,6 @@ public class Identity {
 
     public void setStatus(IdentityStatus status) {
         this.status = status;
-    }
-
-    public Set<Credential> getPrincipals() {
-        return principals;
-    }
-
-    public void setPrincipals(Set<Credential> principals) {
-        this.principals = principals;
     }
 
     public List<Role> getRoles() {

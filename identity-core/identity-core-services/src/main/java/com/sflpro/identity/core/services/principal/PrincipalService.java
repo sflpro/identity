@@ -6,6 +6,7 @@ import com.sflpro.identity.core.db.entities.Principal;
 import com.sflpro.identity.core.services.auth.AuthenticationServiceException;
 
 import java.util.List;
+import java.util.Set;
 
 /**
  * Company: SFL LLC
@@ -33,7 +34,16 @@ public interface PrincipalService {
     List<Principal> update(final String identityId, final PrincipalUpdateRequest updateRequest) throws AuthenticationServiceException;
 
     /** Delete all principals of given identity
+     *
      * @param identity identity
      */
     void deleteAllByIdentity(final Identity identity);
+
+
+    /** find all principals of given identity
+     *
+     * @param identity identity
+     * @return set of principals
+     */
+    Set<Principal> findAllByIdentity(final Identity identity);
 }
