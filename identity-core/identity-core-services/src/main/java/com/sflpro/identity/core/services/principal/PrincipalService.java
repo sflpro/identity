@@ -28,6 +28,7 @@ public interface PrincipalService {
      * @param identityId identity id
      * @param updateRequest principal update data
      * @return list of principals
+     * @throws AuthenticationServiceException authentication exception
      */
     List<Principal> update(final String identityId, final PrincipalUpdateRequest updateRequest) throws AuthenticationServiceException;
 

@@ -24,8 +24,10 @@ public interface IdentityService {
     /**
      * Updates identity and principals
      *
+     * @param identityId the ide of identity
      * @param updateRequest identity update request model
      * @return id and details of the created identity
+     * @throws AuthenticationServiceException authentication service exception
      */
     Identity update(final String identityId, final IdentityUpdateRequest updateRequest) throws AuthenticationServiceException;
 
@@ -49,6 +51,7 @@ public interface IdentityService {
      * @param identity identity
      * @param secret secret of identity
      * @return true if identity status is ACTIVE, false for other statuses
+     * @throws AuthenticationServiceException authentication service exception
      */
     boolean chkSecretCorrectAndIdentityActive(final Identity identity, final String secret) throws AuthenticationServiceException;
 
