@@ -46,11 +46,24 @@ public class PrincipalEndpoint {
     @Autowired
     private PrincipalService principalService;
 
+    @ApiOperation("Gets principals details")
+    @GET
+    @Path("/{identityId}")
+    public ApiGenericListResponse<PrincipalDto> getByIdentiy(@NotNull @PathParam("identityId") final String identityId) {
+        Assert.notNull(identityId, "identityId cannot be null");
+        logger.debug("Getting principals with identity id: {}", identityId);
+        List<Principal> principals = principalService.getByIdentity(identityId);
+        logger.info("Done getting principals with identity id: {}", identityId);
+        List<PrincipalDto> result = mapper.mapAsList(principals, PrincipalDto.class);
+        return new ApiGenericListResponse<>(result.size(), result);
+    }
+
     @ApiOperation("Updates principal's details")
     @PUT
     @Path("/{identityId}")
     public ApiGenericListResponse<PrincipalDto> update(@NotNull @PathParam("identityId") final String identityId,
                                                        @NotNull final PrincipalUpdateRequestDto updateRequestDto) {
+        Assert.notNull(identityId, "identityId cannot be null");
         Assert.notNull(updateRequestDto, "updateRequestDto cannot be null");
         logger.debug("Updating principals with identity id: {}", identityId);
         try {

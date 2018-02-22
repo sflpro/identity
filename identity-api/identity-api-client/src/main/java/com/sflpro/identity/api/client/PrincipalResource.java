@@ -20,8 +20,13 @@ public class PrincipalResource extends AbstractApiResource {
         super(client, rootTarget, "/principals");
     }
 
-    public ApiGenericListResponse<PrincipalDto> update(final String identitId, final PrincipalUpdateRequestDto requestDto) {
-        return doPut("/" + identitId, requestDto, new GenericType<ApiGenericListResponse<PrincipalDto>>() {
+    public ApiGenericListResponse<PrincipalDto> getAllByIdentity(final String identityId) {
+        return doGet("/" + identityId, new GenericType<ApiGenericListResponse<PrincipalDto>>() {
+        });
+    }
+
+    public ApiGenericListResponse<PrincipalDto> update(final String identityId, final PrincipalUpdateRequestDto requestDto) {
+        return doPut("/" + identityId, requestDto, new GenericType<ApiGenericListResponse<PrincipalDto>>() {
         });
     }
 }

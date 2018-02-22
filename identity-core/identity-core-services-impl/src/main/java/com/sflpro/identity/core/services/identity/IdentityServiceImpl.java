@@ -43,9 +43,6 @@ public class IdentityServiceImpl implements IdentityService {
     private PrincipalService principalService;
 
     @Autowired
-    private CredentialService credentialService;
-
-    @Autowired
     private IdentityRepository identityRepository;
 
     @Autowired

@@ -25,6 +25,14 @@ public interface PrincipalService {
      */
     Principal get(final PrincipalType type, final String name);
 
+    /**
+     * Gets principal by identity id
+     *
+     * @param identityId principal type
+     * @return list of principals
+     */
+    List<Principal> getByIdentity(final String identityId);
+
     /** Updates existing principal or inserts a new one if principal absent
      * @param identityId identity id
      * @param updateRequest principal update data

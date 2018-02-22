@@ -20,10 +20,7 @@ import org.springframework.util.Assert;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import java.time.LocalDateTime;
-import java.util.Collection;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Collectors;
 
 /**
@@ -54,6 +51,16 @@ public class PrincipalServiceImpl implements PrincipalService {
     public Principal get(final PrincipalType type, final String name) {
         return principalRepository.findByDeletedIsNullAndPrincipalTypeAndName(type, name)
                 .orElseThrow(() -> new ResourceNotFoundException(String.format("Principal with name:%s not found", name)));
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    @Transactional(readOnly = true)
+    public List<Principal> getByIdentity(final String identityId) {
+        final Identity identity = identityService.get(identityId);
+        return new ArrayList<>((Collection<? extends Principal>) principalRepository.findAllByDeletedIsNullAndIdentity(identity));
     }
 
     /**
