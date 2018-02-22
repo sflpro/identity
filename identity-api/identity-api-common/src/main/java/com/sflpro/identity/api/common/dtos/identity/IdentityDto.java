@@ -26,8 +26,6 @@ public class IdentityDto extends AbstractApiResponse {
 
     private IdentityStatus status;
 
-    private Set<PrincipalDto> principals;
-
     public IdentityDto() {
         super();
     }
@@ -64,14 +62,6 @@ public class IdentityDto extends AbstractApiResponse {
         this.status = status;
     }
 
-    public Set<PrincipalDto> getPrincipals() {
-        return principals;
-    }
-
-    public void setPrincipals(Set<PrincipalDto> principals) {
-        this.principals = principals;
-    }
-
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
@@ -86,7 +76,6 @@ public class IdentityDto extends AbstractApiResponse {
                 .append(description, that.description)
                 .append(contactMethod, that.contactMethod)
                 .append(status, that.status)
-                .append(principals, that.principals)
                 .isEquals();
     }
 
@@ -98,7 +87,6 @@ public class IdentityDto extends AbstractApiResponse {
                 .append(description)
                 .append(contactMethod)
                 .append(status)
-                .append(principals)
                 .toHashCode();
     }
 
@@ -109,7 +97,6 @@ public class IdentityDto extends AbstractApiResponse {
                 .append("description", description)
                 .append("contactMethod", contactMethod)
                 .append("status", status)
-                .append("principals", principals)
                 .toString();
     }
 }
