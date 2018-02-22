@@ -62,6 +62,10 @@ public class PrincipalServiceImpl implements PrincipalService {
     @Override
     @Transactional(isolation = Isolation.SERIALIZABLE)
     public List<Principal> update(final String identityId, final PrincipalUpdateRequest updateRequest) throws AuthenticationServiceException {
+        Assert.notNull(identityId, "identity id cannot be null");
+        Assert.notNull(updateRequest, "updateRequest cannot be null");
+        Assert.notNull(updateRequest.getSecret(), "updateRequest secret cannot be null");
+        Assert.notNull(updateRequest.getUpdateDetailsRequests(), "updateRequest.details cannot be null");
         logger.debug("Updating principal by identity id {}", identityId);
         Identity identity = identityService.get(identityId);
 
@@ -84,7 +88,7 @@ public class PrincipalServiceImpl implements PrincipalService {
     @Override
     @Transactional
     public void deleteAllByIdentity(final Identity identity) {
-        Assert.notNull(identity, "identity cannot be null");
+        assertIdentity(identity);
         logger.debug("Deleting principals by identity id {}", identity.getId());
         Iterable<Principal> principals = principalRepository.findAllByDeletedIsNullAndIdentity(identity);
         LocalDateTime now = LocalDateTime.now();
@@ -99,7 +103,7 @@ public class PrincipalServiceImpl implements PrincipalService {
     @Override
     @Transactional(readOnly = true)
     public Set<Principal> findAllByIdentity(final Identity identity) {
-        Assert.notNull(identity, "identity cannot be null");
+        assertIdentity(identity);
         logger.debug("Finding principals by identity id {}", identity.getId());
         Iterable<Principal> principals = principalRepository.findAllByDeletedIsNullAndIdentity(identity);
         logger.trace("Complete finding principals by identity id {}.", identity.getId());
@@ -107,7 +111,7 @@ public class PrincipalServiceImpl implements PrincipalService {
     }
 
     private Principal insert(final Identity identity, final PrincipalUpdateDetailsRequest updateRequest) {
-        Assert.notNull(identity, "identity cannot be null");
+        assertIdentity(identity);
         Assert.notNull(updateRequest, "updateRequest cannot be null");
         Assert.notNull(updateRequest.getPrincipalType(), "updateRequest type cannot be null");
         Assert.notNull(updateRequest.getPrincipalStatus(), "updateRequest status cannot be null");
@@ -153,5 +157,9 @@ public class PrincipalServiceImpl implements PrincipalService {
         principalRepository.findByDeletedIsNullAndPrincipalTypeAndName(type, name).ifPresent(p -> {
             throw new PrincipalNameBusyException(type, name);
         });
+    }
+
+    private void assertIdentity(final Identity identity) {
+        Assert.notNull(identity, "identity id cannot be null");
     }
 }
