@@ -49,7 +49,7 @@ public class PrincipalEndpoint {
     @ApiOperation("Gets principals details")
     @GET
     @Path("/{identityId}")
-    public ApiGenericListResponse<PrincipalDto> getByIdentiy(@NotNull @PathParam("identityId") final String identityId) {
+    public ApiGenericListResponse<PrincipalDto> getByIdentity(@NotNull @PathParam("identityId") final String identityId) {
         Assert.notNull(identityId, "identityId cannot be null");
         logger.debug("Getting principals with identity id: {}", identityId);
         List<Principal> principals = principalService.getByIdentity(identityId);
