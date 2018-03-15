@@ -2,6 +2,8 @@ package com.sflpro.identity.api.endpoints;
 
 import com.sflpro.identity.api.common.dtos.ApiResponseDto;
 import com.sflpro.identity.api.common.dtos.auth.AuthenticationExceptionDto;
+import com.sflpro.identity.api.common.dtos.identity.IdentityCreationRequest;
+import com.sflpro.identity.api.common.dtos.identity.IdentityCreationRequestDto;
 import com.sflpro.identity.api.common.dtos.identity.IdentityDto;
 import com.sflpro.identity.api.common.dtos.identity.IdentityUpdateRequestDto;
 import com.sflpro.identity.api.common.dtos.identity.reset.RequestSecretResetRequestDto;
@@ -23,11 +25,13 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.Assert;
+import org.springframework.web.bind.annotation.PathVariable;
 
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
+import java.util.Optional;
 
 /**
  * Company: SFL LLC
@@ -61,24 +65,8 @@ public class IdentityEndpoint {
         return mapper.map(identity, IdentityDto.class);
     }
 
-    @ApiOperation("Updates identity's details")
-    @PUT
-    @Path("/{identityId}")
-    @Transactional
-    public IdentityDto update(@NotNull @PathParam("identityId") final String identityId,
-                              final IdentityUpdateRequestDto updateRequestDto) {
-        Assert.notNull(updateRequestDto, "updateRequestDto cannot be null");
-        logger.debug("Updating identity id {} with data :{}...", identityId, updateRequestDto);
-        try {
-            IdentityUpdateRequest updateRequest = mapper.map(updateRequestDto, IdentityUpdateRequest.class);
-            Identity identity = identityService.update(identityId, updateRequest);
-            logger.info("Done updating identity id {} with data :{}....", identityId, updateRequestDto);
-            return mapper.map(identity, IdentityDto.class);
-        } catch (AuthenticationServiceException e) {
-            logger.warn("Authentication failed for request:'{}'.", updateRequestDto);
-            throw new AuthenticationExceptionDto(e.getMessage(), e);
-        }
-    }
+
+
 
     @ApiOperation("Delete identity")
     @DELETE
@@ -109,5 +97,20 @@ public class IdentityEndpoint {
         identityService.secretReset(request);
         logger.info("Reset secret was done by token:'{}'.", requestDto.getToken());
         return new ApiResponseDto();
+    }
+
+    @ApiOperation("Creates or Updates identity's details")
+    @PUT
+    @Path("/{identityId}")
+    @Transactional
+    public IdentityDto createIdentity(
+            @PathVariable Optional<String> identityId,
+            @NotNull final IdentityCreationRequestDto request) {
+        Assert.notNull(request, "request cannot be null");
+        logger.debug("Creating identity id {} with data :{}...", identityId, request);
+        final IdentityCreationRequest creationRequest = mapper.map(request, IdentityCreationRequest.class);
+        final Identity identity = identityService.add(creationRequest);
+        logger.info("Done creating identity with data :{}....", creationRequest);
+        return mapper.map(identity, IdentityDto.class);
     }
 }

@@ -1,9 +1,12 @@
 package com.sflpro.identity.core.services.identity;
 
+import com.sflpro.identity.api.common.dtos.identity.IdentityCreationRequest;
 import com.sflpro.identity.core.db.entities.Identity;
 import com.sflpro.identity.core.services.auth.AuthenticationServiceException;
 import com.sflpro.identity.core.services.identity.reset.RequestSecretResetRequest;
 import com.sflpro.identity.core.services.identity.reset.SecretResetRequest;
+
+import java.util.Optional;
 
 /**
  * Company: SFL LLC
@@ -62,4 +65,13 @@ public interface IdentityService {
      * @return true if identity status is ACTIVE, false for other statuses
      */
     boolean isIdentityActive(Identity identity);
+
+    /**
+     * Adds identity
+     *
+     * @param addRequest identity update request model
+     * @return id and details of the created identity
+     * @throws AuthenticationServiceException authentication service exception
+     */
+    Identity add(final IdentityCreationRequest addRequest);
 }

@@ -1,5 +1,7 @@
 package com.sflpro.identity.core.services.identity;
 
+import com.sflpro.identity.api.common.dtos.identity.IdentityCreationRequest;
+import com.sflpro.identity.core.datatypes.IdentityContactMethod;
 import com.sflpro.identity.core.datatypes.IdentityStatus;
 import com.sflpro.identity.core.datatypes.PrincipalType;
 import com.sflpro.identity.core.datatypes.TokenType;
@@ -23,6 +25,7 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.Assert;
 
 import javax.validation.constraints.NotNull;
+import java.util.Optional;
 
 /**
  * Company: SFL LLC
@@ -177,5 +180,26 @@ public class IdentityServiceImpl implements IdentityService {
     @Override
     public boolean isIdentityActive(Identity identity) {
         return identity.getStatus() == IdentityStatus.ACTIVE;
+    }
+
+    @Override
+    public Identity add(IdentityCreationRequest addRequest) {
+        Assert.notNull(addRequest, "addRequest cannot be null");
+        logger.debug("Creating identity  {}", addRequest);
+        final Identity identity = new Identity();
+        identity.setContactMethod(IdentityContactMethod.valueOf(addRequest.getContactMethod()));
+        identity.setSecret(secretHashHelper.hashSecret(addRequest.getSecret()));
+        identity.setDescription(addRequest.getDescription());
+        if (addRequest.getStatus().isPresent()) {
+            identity.setStatus(IdentityStatus.valueOf(addRequest.getStatus().get()));
+        } else {
+            identity.setStatus(IdentityStatus.ACTIVE);
+        }
+//        if (addRequest.getCreatorId().isPresent()) {
+//            identity.setStatus();
+//        }
+        final Identity createdIdentity = identityRepository.save(identity);
+        logger.trace("Complete adding identity - {}", createdIdentity );
+        return createdIdentity;
     }
 }
