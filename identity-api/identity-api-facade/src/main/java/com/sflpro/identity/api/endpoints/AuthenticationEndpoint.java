@@ -74,11 +74,11 @@ public class AuthenticationEndpoint {
             AuthenticationResponse authResponse = authService.authenticate(authRequest);
             final List<Role> roles = authResponse.getIdentity().getRoles();
             final Set<String> permissions = new HashSet<>();
-            roles.forEach(role -> {
-                role.getPermissions().forEach(permission -> {
-                    permissions.add(permission.getName());
-                });
-            });
+            roles.forEach(role ->
+                role.getPermissions().forEach(permission ->
+                    permissions.add(permission.getName())
+                )
+            );
             authResponse.setPermissions(permissions);
             logger.info("Done authenticating by credential type:'{}'.", requestDto.getDetails().getCredentialType());
             return mapper.map(authResponse, AuthenticationResponseDto.class);
