@@ -21,7 +21,7 @@ public class AuthenticationResponse {
 
     private Set<Principal> principals;
 
-    private List<String> permissions;
+    private Set<String> permissions;
 
     private List<Token> tokens;
 
@@ -58,11 +58,11 @@ public class AuthenticationResponse {
         this.principals = principals;
     }
 
-    public List<String> getPermissions() {
+    public Set<String> getPermissions() {
         return permissions;
     }
 
-    public void setPermissions(List<String> permissions) {
+    public void setPermissions(Set<String> permissions) {
         this.permissions = permissions;
     }
 
