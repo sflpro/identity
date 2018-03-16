@@ -202,7 +202,7 @@ public class IdentityServiceImpl implements IdentityService {
             identity.setStatus(IdentityStatus.valueOf(addRequest.getStatus()));
         }
         if (!addRequest.getCreatorId().isEmpty()) {
-            identity.setCreatorId(identityRepository.findOneByIdAndDeletedIsNull(addRequest.getCreatorId()));
+            identity.setCreatorId(identityRepository.findByDeletedIsNullAndId(addRequest.getCreatorId()).get());
         }
         final Identity createdIdentity = identityRepository.save(identity);
         logger.trace("Complete adding identity - {}", createdIdentity );
