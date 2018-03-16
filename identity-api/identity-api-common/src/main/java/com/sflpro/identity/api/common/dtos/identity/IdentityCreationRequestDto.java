@@ -10,10 +10,10 @@ public class IdentityCreationRequestDto {
     @NotEmpty
     private  String contactMethod;
 
-    private String status;
-
     @NotEmpty
     private  String secret;
+
+    private String status;
 
     private String creatorId;
 

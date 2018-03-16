@@ -1,6 +1,4 @@
-package com.sflpro.identity.api.common.dtos.identity;
-
-import java.util.Optional;
+package com.sflpro.identity.core.services.identity;
 
 public class IdentityCreationRequest {
 
@@ -8,11 +6,11 @@ public class IdentityCreationRequest {
 
     private  String contactMethod;
 
-    private Optional<String> status;
+    private String status;
 
     private  String secret;
 
-    private Optional<String> creatorId;
+    private String creatorId;
 
     public String getDescription() {
         return description;
@@ -30,11 +28,11 @@ public class IdentityCreationRequest {
         this.contactMethod = contactMethod;
     }
 
-    public Optional<String> getStatus() {
+    public String getStatus() {
         return status;
     }
 
-    public void setStatus(Optional<String> status) {
+    public void setStatus(String status) {
         this.status = status;
     }
 
@@ -46,11 +44,11 @@ public class IdentityCreationRequest {
         this.secret = secret;
     }
 
-    public Optional<String> getCreatorId() {
+    public String getCreatorId() {
         return creatorId;
     }
 
-    public void setCreatorId(Optional<String> creatorId) {
+    public void setCreatorId(String creatorId) {
         this.creatorId = creatorId;
     }
 }

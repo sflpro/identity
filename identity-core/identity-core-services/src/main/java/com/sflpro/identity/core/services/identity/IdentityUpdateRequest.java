@@ -18,6 +18,8 @@ public class IdentityUpdateRequest {
 
     private String newSecret;
 
+    private String contactMethod;
+
     private List<PrincipalUpdateDetailsRequest> principals;
 
     public String getDescription() {
@@ -50,5 +52,13 @@ public class IdentityUpdateRequest {
 
     public void setPrincipals(List<PrincipalUpdateDetailsRequest> principals) {
         this.principals = principals;
+    }
+
+    public String getContactMethod() {
+        return contactMethod;
+    }
+
+    public void setContactMethod(String contactMethod) {
+        this.contactMethod = contactMethod;
     }
 }

@@ -1,12 +1,9 @@
 package com.sflpro.identity.core.services.identity;
 
-import com.sflpro.identity.api.common.dtos.identity.IdentityCreationRequest;
 import com.sflpro.identity.core.db.entities.Identity;
 import com.sflpro.identity.core.services.auth.AuthenticationServiceException;
 import com.sflpro.identity.core.services.identity.reset.RequestSecretResetRequest;
 import com.sflpro.identity.core.services.identity.reset.SecretResetRequest;
-
-import java.util.Optional;
 
 /**
  * Company: SFL LLC
@@ -30,7 +27,6 @@ public interface IdentityService {
      * @param identityId the ide of identity
      * @param updateRequest identity update request model
      * @return id and details of the created identity
-     * @throws AuthenticationServiceException authentication service exception
      */
     Identity update(final String identityId, final IdentityUpdateRequest updateRequest) throws AuthenticationServiceException;
 
@@ -74,4 +70,6 @@ public interface IdentityService {
      * @throws AuthenticationServiceException authentication service exception
      */
     Identity add(final IdentityCreationRequest addRequest);
+
+    void delete(String id);
 }
