@@ -26,6 +26,7 @@ import org.springframework.util.Assert;
 
 import javax.validation.constraints.NotNull;
 import java.time.LocalDateTime;
+import java.util.Optional;
 
 /**
  * Company: SFL LLC
@@ -201,8 +202,9 @@ public class IdentityServiceImpl implements IdentityService {
         if (!addRequest.getStatus().isEmpty()) {
             identity.setStatus(IdentityStatus.valueOf(addRequest.getStatus()));
         }
-        if (!addRequest.getCreatorId().isEmpty() && identityRepository.findByDeletedIsNullAndId(addRequest.getCreatorId()).isPresent()) {
-            identity.setCreatorId(identityRepository.findByDeletedIsNullAndId(addRequest.getCreatorId()).get());
+        final Optional<Identity> identityById = identityRepository.findByDeletedIsNullAndId(addRequest.getCreatorId());
+        if (!addRequest.getCreatorId().isEmpty() && identityById.isPresent()) {
+            identity.setCreatorId(identityById.get());
         }
         final Identity createdIdentity = identityRepository.save(identity);
         logger.trace("Complete adding identity - {}", createdIdentity );
