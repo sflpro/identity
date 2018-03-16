@@ -14,4 +14,6 @@ import java.util.Optional;
 public interface IdentityRepository extends JpaRepository<Identity, String> {
 
     Optional<Identity> findByDeletedIsNullAndId(final String id);
+
+    Identity findOneByIdAndDeletedIsNull(final String id);
 }

@@ -30,7 +30,6 @@ import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
-import javax.ws.rs.core.Response;
 
 /**
  * Company: SFL LLC
@@ -87,9 +86,9 @@ public class IdentityEndpoint {
     @DELETE
     @Path("/{identityId}")
     @Transactional
-    public Response delete(@NotNull @PathParam("identityId") final String identityId) {
+    public ApiResponseDto delete(@NotNull @PathParam("identityId") final String identityId) {
         identityService.delete(identityId);
-        return Response.ok().build();
+        return new ApiResponseDto();
     }
 
     @ApiOperation("Request for secret reset")
