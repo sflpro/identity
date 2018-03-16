@@ -86,7 +86,6 @@ public class IdentityEndpoint {
     @ApiOperation("Delete identity")
     @DELETE
     @Path("/{identityId}")
-    @Deprecated
     @Transactional
     public Response delete(@NotNull @PathParam("identityId") final String identityId) {
         identityService.delete(identityId);
