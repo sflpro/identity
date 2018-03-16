@@ -6,7 +6,6 @@ import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
 import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.hibernate.annotations.GenericGenerator;
-
 import javax.persistence.*;
 import java.time.LocalDateTime;
 import java.util.List;
@@ -49,6 +48,10 @@ public class Identity {
             inverseJoinColumns = {@JoinColumn(name = "role_id")}
     )
     private List<Role> roles;
+
+    @ManyToOne
+    @JoinColumn(name = "creator_id")
+    private Identity creatorId;
 
     @Column(name = "created", nullable = false)
     private LocalDateTime created;
@@ -131,6 +134,14 @@ public class Identity {
         this.deleted = deleted;
     }
 
+    public Identity getCreatorId() {
+        return creatorId;
+    }
+
+    public void setCreatorId(Identity creatorId) {
+        this.creatorId = creatorId;
+    }
+
     @PrePersist
     protected void onCreate() {
         created = LocalDateTime.now();
@@ -152,6 +163,7 @@ public class Identity {
 
         return new EqualsBuilder()
                 .append(id, identity.id)
+                .append(creatorId, identity.creatorId)
                 .append(description, identity.description)
                 .append(secret, identity.secret)
                 .append(contactMethod, identity.contactMethod)
@@ -167,6 +179,7 @@ public class Identity {
     public int hashCode() {
         return new HashCodeBuilder(17, 37)
                 .append(id)
+                .append(creatorId)
                 .append(description)
                 .append(secret)
                 .append(contactMethod)
@@ -182,6 +195,7 @@ public class Identity {
     public String toString() {
         return new ToStringBuilder(this)
                 .append("id", id)
+                .append("creatorId", creatorId)
                 .append("description", description)
                 .append("secret", secret)
                 .append("contactMethod", contactMethod)

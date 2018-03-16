@@ -27,7 +27,6 @@ public interface IdentityService {
      * @param identityId the ide of identity
      * @param updateRequest identity update request model
      * @return id and details of the created identity
-     * @throws AuthenticationServiceException authentication service exception
      */
     Identity update(final String identityId, final IdentityUpdateRequest updateRequest) throws AuthenticationServiceException;
 
@@ -62,4 +61,15 @@ public interface IdentityService {
      * @return true if identity status is ACTIVE, false for other statuses
      */
     boolean isIdentityActive(Identity identity);
+
+    /**
+     * Adds identity
+     *
+     * @param addRequest identity update request model
+     * @return id and details of the created identity
+     * @throws AuthenticationServiceException authentication service exception
+     */
+    Identity add(final IdentityCreationRequest addRequest);
+
+    void delete(String id);
 }

@@ -19,6 +19,9 @@ public class IdentityUpdateRequestDto {
     @NotEmpty
     private String newSecret;
 
+    @NotEmpty
+    private String contactMethod;
+
     public IdentityUpdateRequestDto() {
         super();
     }
@@ -45,5 +48,13 @@ public class IdentityUpdateRequestDto {
 
     public void setNewSecret(String newSecret) {
         this.newSecret = newSecret;
+    }
+
+    public String getContactMethod() {
+        return contactMethod;
+    }
+
+    public void setContactMethod(String contactMethod) {
+        this.contactMethod = contactMethod;
     }
 }

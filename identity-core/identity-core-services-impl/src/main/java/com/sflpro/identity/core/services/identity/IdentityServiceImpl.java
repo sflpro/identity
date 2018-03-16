@@ -1,5 +1,6 @@
 package com.sflpro.identity.core.services.identity;
 
+import com.sflpro.identity.core.datatypes.IdentityContactMethod;
 import com.sflpro.identity.core.datatypes.IdentityStatus;
 import com.sflpro.identity.core.datatypes.PrincipalType;
 import com.sflpro.identity.core.datatypes.TokenType;
@@ -13,6 +14,7 @@ import com.sflpro.identity.core.services.auth.SecretHashHelper;
 import com.sflpro.identity.core.services.identity.reset.RequestSecretResetRequest;
 import com.sflpro.identity.core.services.identity.reset.SecretResetRequest;
 import com.sflpro.identity.core.services.notification.NotificationCommunicationService;
+import com.sflpro.identity.core.services.permission.PermissionService;
 import com.sflpro.identity.core.services.principal.PrincipalService;
 import com.sflpro.identity.core.services.token.*;
 import org.slf4j.Logger;
@@ -23,6 +25,8 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.Assert;
 
 import javax.validation.constraints.NotNull;
+import java.time.LocalDateTime;
+import java.util.Optional;
 
 /**
  * Company: SFL LLC
@@ -40,6 +44,9 @@ public class IdentityServiceImpl implements IdentityService {
 
     @Autowired
     private PrincipalService principalService;
+
+    @Autowired
+    private PermissionService permissionService;
 
     @Autowired
     private IdentityRepository identityRepository;
@@ -82,6 +89,10 @@ public class IdentityServiceImpl implements IdentityService {
         // Change secret
         chkSecretCorrectAndIdentityActive(identity, updateRequest.getSecret());
         changeSecret(identity, updateRequest.getNewSecret());
+
+        identity.setContactMethod(IdentityContactMethod.valueOf(updateRequest.getContactMethod()));
+
+        identityRepository.save(identity);
 
         logger.trace("Complete updating identity by id {}.", identityId);
         return identity;
@@ -177,5 +188,36 @@ public class IdentityServiceImpl implements IdentityService {
     @Override
     public boolean isIdentityActive(Identity identity) {
         return identity.getStatus() == IdentityStatus.ACTIVE;
+    }
+
+    @Override
+    public Identity add(IdentityCreationRequest addRequest) {
+        Assert.notNull(addRequest, "addRequest cannot be null");
+        logger.debug("Creating identity  {}", addRequest);
+        final Identity identity = new Identity();
+        identity.setContactMethod(IdentityContactMethod.valueOf(addRequest.getContactMethod()));
+        identity.setSecret(secretHashHelper.hashSecret(addRequest.getSecret()));
+        identity.setDescription(addRequest.getDescription());
+        identity.setStatus(IdentityStatus.ACTIVE);
+        if (!addRequest.getStatus().isEmpty()) {
+            identity.setStatus(IdentityStatus.valueOf(addRequest.getStatus()));
+        }
+        final Optional<Identity> identityById = identityRepository.findByDeletedIsNullAndId(addRequest.getCreatorId());
+        if (!addRequest.getCreatorId().isEmpty() && identityById.isPresent()) {
+            identity.setCreatorId(identityById.get());
+        }
+        final Identity createdIdentity = identityRepository.save(identity);
+        logger.trace("Complete adding identity - {}", createdIdentity );
+        return createdIdentity;
+    }
+
+    @Override
+    @Transactional
+    public void delete(String id) {
+        Identity identity = get(id);
+        final LocalDateTime now = LocalDateTime.now();
+        identity.setDeleted(now);
+        identityRepository.save(identity);
+        logger.debug("Deleting identity Identity:'{}'.", id);
     }
 }
