@@ -1,4 +1,4 @@
-ALTER TABLE public.identity ADD creator_id CHAR(36) NULL;
-ALTER TABLE public.identity
+ALTER TABLE identity ADD creator_id CHAR(36) NULL;
+ALTER TABLE identity
   ADD CONSTRAINT identity_creator_fk
 FOREIGN KEY (creator_id) REFERENCES identity ON DELETE CASCADE ON UPDATE SET NULL;
