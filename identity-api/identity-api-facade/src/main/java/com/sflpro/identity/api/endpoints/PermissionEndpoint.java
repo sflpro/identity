@@ -64,6 +64,7 @@ public class PermissionEndpoint {
         Assert.notNull(updateRequestDto, "updateRequestDto cannot be null");
         // Compose permission update
         PermissionRequest permissionRequest = mapper.map(updateRequestDto, PermissionRequest.class);
+        permissionRequest.setId(permissionId);
         // Update Permission
         Permission permission = permissionService.update(permissionRequest);
         logger.info("Updated permission:'{}'.", permission.getId());

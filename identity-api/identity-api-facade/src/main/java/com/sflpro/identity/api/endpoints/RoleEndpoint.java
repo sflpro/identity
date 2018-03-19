@@ -65,6 +65,7 @@ public class RoleEndpoint {
         Assert.notNull(updateRequestDto, "updateRequestDto cannot be null");
         // Compose role update
         RoleRequest roleUpdateRequest = mapper.map(updateRequestDto, RoleRequest.class);
+        roleUpdateRequest.setId(roleId);
         // Update Role
         Role role = roleService.update(roleUpdateRequest);
         logger.info("Updated role:'{}'.", role.getId());
