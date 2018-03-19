@@ -35,7 +35,7 @@ public interface CredentialService {
      * @param credential
      * @return credential entity
      */
-    Credential update(Credential credential);
+    Credential updateFailedAttempts(Credential credential, int val);
 
 
 }

@@ -39,7 +39,8 @@ public class CredentialServiceImpl implements CredentialService {
 
     @Override
     @Transactional
-    public Credential update(Credential credential) {
+    public Credential updateFailedAttempts(Credential credential, int val) {
+        credential.setFailedAttempts(val);
         return credentialRepository.save(credential);
     }
 

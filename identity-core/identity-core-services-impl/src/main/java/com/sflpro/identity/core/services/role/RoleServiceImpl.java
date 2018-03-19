@@ -10,7 +10,9 @@ import org.springframework.stereotype.Service;
 import org.springframework.util.Assert;
 
 import java.time.LocalDateTime;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 /**
@@ -68,6 +70,17 @@ public class RoleServiceImpl implements RoleService {
         Assert.notNull(roleId, "roleId cannot be null");
         return roleRepository.findByDeletedIsNullAndId(roleId)
                 .orElseThrow(() -> new ResourceNotFoundException(String.format("Role with id: %s not found", roleId)));
+    }
+
+    @Override
+    public Set<String> getPermissionsForRoles(List<Role> roles) {
+        final Set<String> permissions = new HashSet<>();
+        roles.forEach(role ->
+                role.getPermissions().forEach(permission ->
+                        permissions.add(permission.getName())
+                )
+        );
+        return permissions;
     }
 
 }

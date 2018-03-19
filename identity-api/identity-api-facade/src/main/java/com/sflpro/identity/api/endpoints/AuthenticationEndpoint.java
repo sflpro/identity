@@ -9,7 +9,6 @@ import com.sflpro.identity.api.common.dtos.identity.InactiveIdentityExceptionDto
 import com.sflpro.identity.api.common.dtos.token.TokenInvalidationRequestDto;
 import com.sflpro.identity.api.mapper.BeanMapper;
 import com.sflpro.identity.core.db.entities.Credential;
-import com.sflpro.identity.core.db.entities.Role;
 import com.sflpro.identity.core.services.auth.AuthenticationRequest;
 import com.sflpro.identity.core.services.auth.AuthenticationResponse;
 import com.sflpro.identity.core.services.auth.AuthenticationService;
@@ -17,6 +16,7 @@ import com.sflpro.identity.core.services.auth.AuthenticationServiceException;
 import com.sflpro.identity.core.services.credential.CredentialService;
 import com.sflpro.identity.core.services.identity.IdentityService;
 import com.sflpro.identity.core.services.identity.InactiveIdentityException;
+import com.sflpro.identity.core.services.role.RoleService;
 import com.sflpro.identity.core.services.token.TokenInvalidationRequest;
 import com.sflpro.identity.core.services.token.TokenServiceException;
 import io.swagger.annotations.Api;
@@ -36,9 +36,6 @@ import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
 
 /**
  * Company: SFL LLC
@@ -66,6 +63,9 @@ public class AuthenticationEndpoint {
     CredentialService credentialService;
 
     @Autowired
+    RoleService roleService;
+
+    @Autowired
     IdentityService identityService;
 
     @ApiOperation("Authenticating by credential type")
@@ -81,17 +81,9 @@ public class AuthenticationEndpoint {
         //Try to authenticate
         try {
             AuthenticationResponse authResponse = authService.authenticate(authRequest);
-            final List<Role> roles = authResponse.getIdentity().getRoles();
-            final Set<String> permissions = new HashSet<>();
-            roles.forEach(role ->
-                    role.getPermissions().forEach(permission ->
-                            permissions.add(permission.getName())
-                    )
-            );
-            authResponse.setPermissions(permissions);
+            authResponse.setPermissions(roleService.getPermissionsForRoles(authResponse.getIdentity().getRoles()));
             final Credential credential = authService.getCredential(authRequest);
-            credential.setFailedAttempts(0);
-            Credential update = credentialService.update(credential);
+            credentialService.updateFailedAttempts(credential, 0);
             logger.info("Done authenticating by credential type:'{}'.", requestDto.getDetails().getCredentialType());
             return mapper.map(authResponse, AuthenticationResponseDto.class);
         } catch (InactiveIdentityException e) {
@@ -100,8 +92,7 @@ public class AuthenticationEndpoint {
         } catch (AuthenticationServiceException e) {
             logger.warn("Authentication failed for request:'{}'.", requestDto);
             final Credential credential = authService.getCredential(authRequest);
-            credential.setFailedAttempts(credential.getFailedAttempts() + 1);
-            Credential update = credentialService.update(credential);
+            credentialService.updateFailedAttempts(credential, credential.getFailedAttempts() + 1);
             throw new AuthenticationExceptionDto(e.getMessage(), e);
         }
     }
