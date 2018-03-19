@@ -53,7 +53,7 @@ public class AuthenticationServiceImpl implements AuthenticationService {
         Class<AuthenticationRequestDetails<T, E>> clazz = request.getDetails().getGenericClass();
         logger.debug("Attempting find identity with credential type{'{}'}.", details.getCredentialType());
 
-        T credential = authenticatorRegistry.getCredentialStore(details.getCredentialIdentifier().getGenericClass()).get(details.getCredentialIdentifier());
+        T credential = getCredential(request);
 
         Authenticator<T, E, AuthenticationRequestDetails<T, E>> authenticator = authenticatorRegistry.getAuthenticator(clazz);
         if (authenticator.getSupportedCredentialType() != details.getCredentialType()) {
@@ -81,4 +81,11 @@ public class AuthenticationServiceImpl implements AuthenticationService {
     public void invalidateToken(TokenInvalidationRequest tokenRequest) throws TokenServiceException {
         tokenService.invalidateToken(tokenRequest);
     }
+
+    @Override
+    public <T extends Credential, E extends CredentialIdentifier<T>, S extends AuthenticationRequestDetails<T, E>> T getCredential(AuthenticationRequest<T, E, S> request) {
+        S details = request.getDetails();
+        return authenticatorRegistry.getCredentialStore(details.getCredentialIdentifier().getGenericClass()).get(details.getCredentialIdentifier());
+    }
 }
+

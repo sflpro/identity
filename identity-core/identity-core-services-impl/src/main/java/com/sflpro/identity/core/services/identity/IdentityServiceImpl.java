@@ -220,4 +220,18 @@ public class IdentityServiceImpl implements IdentityService {
         identityRepository.save(identity);
         logger.debug("Deleting identity Identity:'{}'.", id);
     }
+
+    @Override
+    public Identity updateStatus(String identityId) {
+        Assert.notNull(identityId, "identityId cannot be null");
+        Identity identity = get(identityId);
+
+        identity.setStatus(IdentityStatus.DISABLED);
+
+        identityRepository.save(identity);
+
+        logger.trace("Update finished for identity by id {}. Set status DISABLED", identityId);
+        return identity;
+    }
+
 }

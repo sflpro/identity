@@ -8,11 +8,17 @@ import com.sflpro.identity.api.common.dtos.auth.AuthenticationResponseDto;
 import com.sflpro.identity.api.common.dtos.identity.InactiveIdentityExceptionDtoDto;
 import com.sflpro.identity.api.common.dtos.token.TokenInvalidationRequestDto;
 import com.sflpro.identity.api.mapper.BeanMapper;
+import com.sflpro.identity.core.datatypes.IdentityStatus;
+import com.sflpro.identity.core.db.entities.Credential;
+import com.sflpro.identity.core.db.entities.Identity;
 import com.sflpro.identity.core.db.entities.Role;
 import com.sflpro.identity.core.services.auth.AuthenticationRequest;
 import com.sflpro.identity.core.services.auth.AuthenticationResponse;
 import com.sflpro.identity.core.services.auth.AuthenticationService;
 import com.sflpro.identity.core.services.auth.AuthenticationServiceException;
+import com.sflpro.identity.core.services.credential.CredentialService;
+import com.sflpro.identity.core.services.identity.IdentityService;
+import com.sflpro.identity.core.services.identity.IdentityUpdateRequest;
 import com.sflpro.identity.core.services.identity.InactiveIdentityException;
 import com.sflpro.identity.core.services.token.TokenInvalidationRequest;
 import com.sflpro.identity.core.services.token.TokenServiceException;
@@ -23,6 +29,7 @@ import io.swagger.annotations.Tag;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.Assert;
@@ -59,6 +66,15 @@ public class AuthenticationEndpoint {
     @Autowired
     private AuthenticationService authService;
 
+    @Autowired
+    CredentialService credentialService;
+
+    @Autowired
+    IdentityService identityService;
+
+    @Value("${identity.authentication.allowedAttempts}")
+    private int allowedFailedAttemps;
+
     @ApiOperation("Authenticating by credential type")
     @POST
     @Path("/authenticate")
@@ -75,9 +91,9 @@ public class AuthenticationEndpoint {
             final List<Role> roles = authResponse.getIdentity().getRoles();
             final Set<String> permissions = new HashSet<>();
             roles.forEach(role ->
-                role.getPermissions().forEach(permission ->
-                    permissions.add(permission.getName())
-                )
+                    role.getPermissions().forEach(permission ->
+                            permissions.add(permission.getName())
+                    )
             );
             authResponse.setPermissions(permissions);
             logger.info("Done authenticating by credential type:'{}'.", requestDto.getDetails().getCredentialType());
@@ -87,6 +103,13 @@ public class AuthenticationEndpoint {
             throw new InactiveIdentityExceptionDtoDto(e);
         } catch (AuthenticationServiceException e) {
             logger.warn("Authentication failed for request:'{}'.", requestDto);
+            final Credential credential = authService.getCredential(authRequest);
+            if (credential.getFailedAttempts() >= allowedFailedAttemps) {
+                identityService.updateStatus(credential.getIdentity().getId());
+            } else {
+                credential.setFailedAttempts(credential.getFailedAttempts() + 1);
+                Credential update = credentialService.update(credential);
+            }
             throw new AuthenticationExceptionDto(e.getMessage(), e);
         }
     }

@@ -72,4 +72,13 @@ public interface IdentityService {
     Identity add(final IdentityCreationRequest addRequest);
 
     void delete(String id);
+
+    /**
+     * Updates identity status
+     *
+     * @param identityId identity id
+     * @return identity
+     */
+    Identity updateStatus(final String identityId);
+
 }

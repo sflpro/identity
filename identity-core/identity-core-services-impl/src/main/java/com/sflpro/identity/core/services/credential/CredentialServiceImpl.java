@@ -7,6 +7,7 @@ import com.sflpro.identity.core.services.ResourceNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import javax.transaction.Transactional;
 import java.time.LocalDateTime;
 import java.util.List;
 
@@ -36,4 +37,11 @@ public class CredentialServiceImpl implements CredentialService {
             credentialRepository.save(credential);
         });
     }
+
+    @Override
+    @Transactional
+    public Credential update(Credential credential) {
+        return credentialRepository.save(credential);
+    }
+
 }

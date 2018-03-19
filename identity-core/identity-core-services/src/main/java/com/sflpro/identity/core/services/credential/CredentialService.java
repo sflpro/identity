@@ -29,4 +29,13 @@ public interface CredentialService {
      */
     void store(final Identity identity, final List<CredentialCreation> credentialCreations);
 
+    /**
+     * Updates Credential
+     *
+     * @param credential
+     * @return credential entity
+     */
+    Credential update(Credential credential);
+
+
 }

@@ -30,5 +30,17 @@ public interface AuthenticationService {
      * @param tokenInvalidationRequest auth request details and token request list
      * @throws TokenServiceException auth service exceptions
      */
-     void invalidateToken(TokenInvalidationRequest tokenInvalidationRequest) throws TokenServiceException;
+    void invalidateToken(TokenInvalidationRequest tokenInvalidationRequest) throws TokenServiceException;
+
+    /**
+     * Get Identity credential
+     *
+     * @param request auth request details and token request list
+     * @param <T> credential type
+     * @param <E> credential identifier
+     * @param <S> credential details
+     * @return identity credential
+     */
+    <T extends Credential, E extends CredentialIdentifier<T>, S extends AuthenticationRequestDetails<T, E>> T getCredential(AuthenticationRequest<T, E, S> request);
 }
+
