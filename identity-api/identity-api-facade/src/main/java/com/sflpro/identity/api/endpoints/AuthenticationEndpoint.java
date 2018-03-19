@@ -93,6 +93,9 @@ public class AuthenticationEndpoint {
                     )
             );
             authResponse.setPermissions(permissions);
+            final Credential credential = authService.getCredential(authRequest);
+            credential.setFailedAttempts(0);
+            Credential update = credentialService.update(credential);
             logger.info("Done authenticating by credential type:'{}'.", requestDto.getDetails().getCredentialType());
             return mapper.map(authResponse, AuthenticationResponseDto.class);
         } catch (InactiveIdentityException e) {
