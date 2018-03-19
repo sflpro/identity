@@ -8,7 +8,6 @@ import com.sflpro.identity.api.common.dtos.auth.AuthenticationResponseDto;
 import com.sflpro.identity.api.common.dtos.identity.InactiveIdentityExceptionDtoDto;
 import com.sflpro.identity.api.common.dtos.token.TokenInvalidationRequestDto;
 import com.sflpro.identity.api.mapper.BeanMapper;
-import com.sflpro.identity.core.db.entities.Credential;
 import com.sflpro.identity.core.services.auth.AuthenticationRequest;
 import com.sflpro.identity.core.services.auth.AuthenticationResponse;
 import com.sflpro.identity.core.services.auth.AuthenticationService;
@@ -81,9 +80,6 @@ public class AuthenticationEndpoint {
         //Try to authenticate
         try {
             AuthenticationResponse authResponse = authService.authenticate(authRequest);
-            authResponse.setPermissions(roleService.getPermissionsForRoles(authResponse.getIdentity().getRoles()));
-            final Credential credential = authService.getCredential(authRequest);
-            credentialService.updateFailedAttempts(credential, 0);
             logger.info("Done authenticating by credential type:'{}'.", requestDto.getDetails().getCredentialType());
             return mapper.map(authResponse, AuthenticationResponseDto.class);
         } catch (InactiveIdentityException e) {
@@ -91,8 +87,6 @@ public class AuthenticationEndpoint {
             throw new InactiveIdentityExceptionDtoDto(e);
         } catch (AuthenticationServiceException e) {
             logger.warn("Authentication failed for request:'{}'.", requestDto);
-            final Credential credential = authService.getCredential(authRequest);
-            credentialService.updateFailedAttempts(credential, credential.getFailedAttempts() + 1);
             throw new AuthenticationExceptionDto(e.getMessage(), e);
         }
     }
