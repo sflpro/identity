@@ -72,9 +72,6 @@ public class AuthenticationEndpoint {
     @Autowired
     IdentityService identityService;
 
-    @Value("${identity.authentication.allowedAttempts}")
-    private int allowedFailedAttemps;
-
     @ApiOperation("Authenticating by credential type")
     @POST
     @Path("/authenticate")
@@ -104,12 +101,8 @@ public class AuthenticationEndpoint {
         } catch (AuthenticationServiceException e) {
             logger.warn("Authentication failed for request:'{}'.", requestDto);
             final Credential credential = authService.getCredential(authRequest);
-            if (credential.getFailedAttempts() >= allowedFailedAttemps) {
-                identityService.updateStatus(credential.getIdentity().getId());
-            } else {
-                credential.setFailedAttempts(credential.getFailedAttempts() + 1);
-                Credential update = credentialService.update(credential);
-            }
+            credential.setFailedAttempts(credential.getFailedAttempts() + 1);
+            Credential update = credentialService.update(credential);
             throw new AuthenticationExceptionDto(e.getMessage(), e);
         }
     }
