@@ -59,9 +59,6 @@ public class AuthenticationEndpoint {
     private AuthenticationService authService;
 
     @Autowired
-    CredentialService credentialService;
-
-    @Autowired
     RoleService roleService;
 
     @Autowired
