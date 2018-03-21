@@ -58,10 +58,10 @@ public class AuthenticationEndpoint {
     private AuthenticationService authService;
 
     @Autowired
-    RoleService roleService;
+    private RoleService roleService;
 
     @Autowired
-    IdentityService identityService;
+    private IdentityService identityService;
 
     @ApiOperation("Authenticating by credential type")
     @POST
