@@ -112,8 +112,7 @@ public class AuthenticationServiceImpl implements AuthenticationService {
         tokenService.invalidateToken(tokenRequest);
     }
 
-    @Override
-    public <T extends Credential, E extends CredentialIdentifier<T>, S extends AuthenticationRequestDetails<T, E>> T getCredential(AuthenticationRequest<T, E, S> request) {
+    private <T extends Credential, E extends CredentialIdentifier<T>, S extends AuthenticationRequestDetails<T, E>> T getCredential(AuthenticationRequest<T, E, S> request) {
         S details = request.getDetails();
         return authenticatorRegistry.getCredentialStore(details.getCredentialIdentifier().getGenericClass()).get(details.getCredentialIdentifier());
     }
