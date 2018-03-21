@@ -12,7 +12,6 @@ import com.sflpro.identity.core.services.auth.AuthenticationRequest;
 import com.sflpro.identity.core.services.auth.AuthenticationResponse;
 import com.sflpro.identity.core.services.auth.AuthenticationService;
 import com.sflpro.identity.core.services.auth.AuthenticationServiceException;
-import com.sflpro.identity.core.services.credential.CredentialService;
 import com.sflpro.identity.core.services.identity.IdentityService;
 import com.sflpro.identity.core.services.identity.InactiveIdentityException;
 import com.sflpro.identity.core.services.role.RoleService;
