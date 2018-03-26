@@ -1,8 +1,8 @@
 package com.sflpro.identity.core.services.role;
 
+import com.sflpro.identity.core.db.entities.Permission;
 import com.sflpro.identity.core.db.entities.Role;
 
-import java.util.List;
 import java.util.Set;
 
 /**
@@ -36,5 +36,10 @@ public interface RoleService {
      */
     Role get(final Long roleId);
 
-    Set<String> getPermissionsForRoles(List<Role> roles);
+    /**
+     * Gets permissions for provided roles
+     * @param roles set of roles
+     * @return set of permissions
+     */
+    Set<Permission> getPermissions(Set<Role> roles);
 }

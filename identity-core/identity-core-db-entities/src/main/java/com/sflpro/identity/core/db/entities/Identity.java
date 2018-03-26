@@ -6,9 +6,10 @@ import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
 import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.hibernate.annotations.GenericGenerator;
+
 import javax.persistence.*;
 import java.time.LocalDateTime;
-import java.util.List;
+import java.util.Set;
 
 /**
  * Company: SFL LLC
@@ -47,7 +48,7 @@ public class Identity {
             joinColumns = {@JoinColumn(name = "identity_id")},
             inverseJoinColumns = {@JoinColumn(name = "role_id")}
     )
-    private List<Role> roles;
+    private Set<Role> roles;
 
     @ManyToOne
     @JoinColumn(name = "creator_id")
@@ -102,11 +103,11 @@ public class Identity {
         this.status = status;
     }
 
-    public List<Role> getRoles() {
+    public Set<Role> getRoles() {
         return roles;
     }
 
-    public void setRoles(List<Role> roles) {
+    public void setRoles(Set<Role> roles) {
         this.roles = roles;
     }
 
