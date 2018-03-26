@@ -12,9 +12,7 @@ import com.sflpro.identity.core.services.auth.AuthenticationRequest;
 import com.sflpro.identity.core.services.auth.AuthenticationResponse;
 import com.sflpro.identity.core.services.auth.AuthenticationService;
 import com.sflpro.identity.core.services.auth.AuthenticationServiceException;
-import com.sflpro.identity.core.services.identity.IdentityService;
 import com.sflpro.identity.core.services.identity.InactiveIdentityException;
-import com.sflpro.identity.core.services.role.RoleService;
 import com.sflpro.identity.core.services.token.TokenInvalidationRequest;
 import com.sflpro.identity.core.services.token.TokenServiceException;
 import io.swagger.annotations.Api;
@@ -57,16 +55,10 @@ public class AuthenticationEndpoint {
     @Autowired
     private AuthenticationService authService;
 
-    @Autowired
-    private RoleService roleService;
-
-    @Autowired
-    private IdentityService identityService;
-
     @ApiOperation("Authenticating by credential type")
     @POST
     @Path("/authenticate")
-    @Transactional
+    @Transactional(noRollbackFor = {AuthenticationExceptionDto.class})
     public <T extends AuthenticationRequestDetailsDto> AuthenticationResponseDto authenticate(@Valid AuthenticationRequestDto<T> requestDto) {
         Assert.notNull(requestDto, "request cannot be null");
         Assert.notNull(requestDto.getDetails(), "request details cannot be null");

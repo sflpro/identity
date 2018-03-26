@@ -10,11 +10,11 @@ import com.sflpro.identity.core.db.entities.Token;
 import com.sflpro.identity.core.db.repositories.IdentityRepository;
 import com.sflpro.identity.core.services.ResourceNotFoundException;
 import com.sflpro.identity.core.services.auth.AuthenticationServiceException;
+import com.sflpro.identity.core.services.auth.InvalidCredentialsException;
 import com.sflpro.identity.core.services.auth.SecretHashHelper;
 import com.sflpro.identity.core.services.identity.reset.RequestSecretResetRequest;
 import com.sflpro.identity.core.services.identity.reset.SecretResetRequest;
 import com.sflpro.identity.core.services.notification.NotificationCommunicationService;
-import com.sflpro.identity.core.services.permission.PermissionService;
 import com.sflpro.identity.core.services.principal.PrincipalService;
 import com.sflpro.identity.core.services.token.*;
 import org.slf4j.Logger;
@@ -44,9 +44,6 @@ public class IdentityServiceImpl implements IdentityService {
 
     @Autowired
     private PrincipalService principalService;
-
-    @Autowired
-    private PermissionService permissionService;
 
     @Autowired
     private IdentityRepository identityRepository;
@@ -117,7 +114,6 @@ public class IdentityServiceImpl implements IdentityService {
                 new TokenRequest(TokenType.SECRET_RESET, resetRequest.getExpiresInHours()), credential
         );
 
-        // TODO Send email with reset token
         notificationCommunicationService.sendSecretResetEmail(resetRequest.getEmail(), token);
 
         logger.debug("Email sent to User {} for password reset.", identity);
@@ -177,7 +173,7 @@ public class IdentityServiceImpl implements IdentityService {
     public boolean chkSecretCorrectAndIdentityActive(final Identity identity, final String secret) throws AuthenticationServiceException {
         if (!secretHashHelper.isSecretCorrect(secret, identity.getSecret())) {
             logger.debug("Invalid secret was supplied for identity {}.", identity);
-            throw new AuthenticationServiceException("Invalid credentials");
+            throw new InvalidCredentialsException();
         } else if (identity.getStatus() != IdentityStatus.ACTIVE) {
             logger.debug("Authenticating identity {} is Inactive.", identity);
             throw new InactiveIdentityException(identity);
