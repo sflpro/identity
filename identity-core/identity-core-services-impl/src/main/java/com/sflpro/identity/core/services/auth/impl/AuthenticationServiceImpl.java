@@ -92,7 +92,7 @@ public class AuthenticationServiceImpl implements AuthenticationService {
         authenticationResponse.setCredentialTypeUsed(credential.getType());
         authenticationResponse.setIdentity(identity);
         authenticationResponse.setPrincipals(principalService.findAllByIdentity(credential.getIdentity()));
-        authenticationResponse.setPermissions(roleService.getPermissionsForRoles(identity.getRoles()));
+        authenticationResponse.setPermissions(roleService.getPermissions(identity.getRoles()));
         credentialService.updateFailedAttempts(credential, 0);
         return authenticationResponse;
     }

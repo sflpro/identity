@@ -2,6 +2,7 @@ package com.sflpro.identity.api.common.dtos.auth;
 
 import com.sflpro.identity.api.common.dtos.AbstractApiResponse;
 import com.sflpro.identity.api.common.dtos.identity.IdentityDto;
+import com.sflpro.identity.api.common.dtos.permission.PermissionDto;
 import com.sflpro.identity.api.common.dtos.principal.PrincipalDto;
 import com.sflpro.identity.api.common.dtos.resource.ResourceDto;
 import com.sflpro.identity.api.common.dtos.token.TokenDto;
@@ -25,7 +26,7 @@ public class AuthenticationResponseDto extends AbstractApiResponse {
 
     private Set<PrincipalDto> principals;
 
-    private List<String> permissions;
+    private Set<PermissionDto> permissions;
 
     private List<TokenDto> tokens;
 
@@ -57,11 +58,11 @@ public class AuthenticationResponseDto extends AbstractApiResponse {
         this.principals = principals;
     }
 
-    public List<String> getPermissions() {
+    public Set<PermissionDto> getPermissions() {
         return permissions;
     }
 
-    public void setPermissions(List<String> permissions) {
+    public void setPermissions(Set<PermissionDto> permissions) {
         this.permissions = permissions;
     }
 
