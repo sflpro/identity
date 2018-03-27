@@ -1,5 +1,6 @@
 package com.sflpro.identity.api.common.dtos;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
 import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
 import org.apache.commons.lang3.builder.ToStringBuilder;
@@ -10,9 +11,10 @@ import org.apache.commons.lang3.builder.ToStringBuilder;
  *
  * @author Davit Harutyunyan
  */
+@JsonInclude(JsonInclude.Include.NON_NULL)
 public abstract class AbstractApiResponse {
 
-    private long timeSpent;
+    private Long timeSpent;
 
     private String apiVersion;
 
@@ -20,7 +22,7 @@ public abstract class AbstractApiResponse {
         super();
     }
 
-    public long getTimeSpent() {
+    public Long getTimeSpent() {
         return timeSpent;
     }
 
@@ -28,7 +30,7 @@ public abstract class AbstractApiResponse {
         return apiVersion;
     }
 
-    public void setTimeSpent(long timeSpent) {
+    public void setTimeSpent(Long timeSpent) {
         this.timeSpent = timeSpent;
     }
 

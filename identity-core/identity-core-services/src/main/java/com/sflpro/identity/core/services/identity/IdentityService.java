@@ -72,4 +72,5 @@ public interface IdentityService {
     Identity add(final IdentityCreationRequest addRequest);
 
     void delete(String id);
+
 }

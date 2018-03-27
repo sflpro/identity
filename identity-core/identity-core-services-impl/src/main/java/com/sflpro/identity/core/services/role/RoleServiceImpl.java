@@ -10,7 +10,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.util.Assert;
 
 import java.time.LocalDateTime;
-import java.util.List;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 /**
@@ -32,6 +32,9 @@ public class RoleServiceImpl implements RoleService {
         this.permissionService = permissionService;
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public Role create(final RoleRequest roleRequest) {
         Assert.notNull(roleRequest.getName(), "roleRequest.name cannot be null");
@@ -41,13 +44,16 @@ public class RoleServiceImpl implements RoleService {
         role.setCreated(LocalDateTime.now());
         role.setUpdated(LocalDateTime.now());
 
-        List<Permission> permissions = roleRequest.getPermission().stream()
+        Set<Permission> permissions = roleRequest.getPermission().stream()
                 .map(permissionRequest -> permissionService.get(permissionRequest.getId()))
-                .collect(Collectors.toList());
+                .collect(Collectors.toSet());
         role.setPermissions(permissions);
         return roleRepository.save(role);
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public Role update(final RoleRequest roleRequest) {
         Assert.notNull(roleRequest.getId(), "roleRequest.id cannot be null");
@@ -56,13 +62,16 @@ public class RoleServiceImpl implements RoleService {
         Role role = get(roleRequest.getId());
         role.setName(roleRequest.getName());
 
-        List<Permission> permissions = roleRequest.getPermission().stream()
+        Set<Permission> permissions = roleRequest.getPermission().stream()
                 .map(permissionRequest -> permissionService.get(permissionRequest.getId()))
-                .collect(Collectors.toList());
+                .collect(Collectors.toSet());
         role.setPermissions(permissions);
         return roleRepository.save(role);
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public Role get(final Long roleId) {
         Assert.notNull(roleId, "roleId cannot be null");
@@ -70,4 +79,13 @@ public class RoleServiceImpl implements RoleService {
                 .orElseThrow(() -> new ResourceNotFoundException(String.format("Role with id: %s not found", roleId)));
     }
 
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public Set<Permission> getPermissions(final Set<Role> roles) {
+        return roles.stream()
+                .flatMap(role -> role.getPermissions().stream())
+                .collect(Collectors.toSet());
+    }
 }

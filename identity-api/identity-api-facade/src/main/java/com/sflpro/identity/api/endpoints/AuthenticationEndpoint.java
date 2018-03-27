@@ -8,7 +8,6 @@ import com.sflpro.identity.api.common.dtos.auth.AuthenticationResponseDto;
 import com.sflpro.identity.api.common.dtos.identity.InactiveIdentityExceptionDtoDto;
 import com.sflpro.identity.api.common.dtos.token.TokenInvalidationRequestDto;
 import com.sflpro.identity.api.mapper.BeanMapper;
-import com.sflpro.identity.core.db.entities.Role;
 import com.sflpro.identity.core.services.auth.AuthenticationRequest;
 import com.sflpro.identity.core.services.auth.AuthenticationResponse;
 import com.sflpro.identity.core.services.auth.AuthenticationService;
@@ -33,9 +32,6 @@ import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
 
 /**
  * Company: SFL LLC
@@ -62,7 +58,7 @@ public class AuthenticationEndpoint {
     @ApiOperation("Authenticating by credential type")
     @POST
     @Path("/authenticate")
-    @Transactional
+    @Transactional(noRollbackFor = {AuthenticationExceptionDto.class})
     public <T extends AuthenticationRequestDetailsDto> AuthenticationResponseDto authenticate(@Valid AuthenticationRequestDto<T> requestDto) {
         Assert.notNull(requestDto, "request cannot be null");
         Assert.notNull(requestDto.getDetails(), "request details cannot be null");
@@ -72,14 +68,6 @@ public class AuthenticationEndpoint {
         //Try to authenticate
         try {
             AuthenticationResponse authResponse = authService.authenticate(authRequest);
-            final List<Role> roles = authResponse.getIdentity().getRoles();
-            final Set<String> permissions = new HashSet<>();
-            roles.forEach(role ->
-                role.getPermissions().forEach(permission ->
-                    permissions.add(permission.getName())
-                )
-            );
-            authResponse.setPermissions(permissions);
             logger.info("Done authenticating by credential type:'{}'.", requestDto.getDetails().getCredentialType());
             return mapper.map(authResponse, AuthenticationResponseDto.class);
         } catch (InactiveIdentityException e) {

@@ -30,5 +30,7 @@ public interface AuthenticationService {
      * @param tokenInvalidationRequest auth request details and token request list
      * @throws TokenServiceException auth service exceptions
      */
-     void invalidateToken(TokenInvalidationRequest tokenInvalidationRequest) throws TokenServiceException;
+    void invalidateToken(TokenInvalidationRequest tokenInvalidationRequest) throws TokenServiceException;
+
 }
+

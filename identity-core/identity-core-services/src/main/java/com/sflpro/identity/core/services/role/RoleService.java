@@ -1,6 +1,9 @@
 package com.sflpro.identity.core.services.role;
 
+import com.sflpro.identity.core.db.entities.Permission;
 import com.sflpro.identity.core.db.entities.Role;
+
+import java.util.Set;
 
 /**
  * Company: SFL LLC
@@ -32,4 +35,11 @@ public interface RoleService {
      * @return details of the permission
      */
     Role get(final Long roleId);
+
+    /**
+     * Gets permissions for provided roles
+     * @param roles set of roles
+     * @return set of permissions
+     */
+    Set<Permission> getPermissions(Set<Role> roles);
 }
