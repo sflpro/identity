@@ -88,7 +88,7 @@ public class IdentityServiceImpl implements IdentityService {
         chkSecretCorrectAndIdentityActive(identity, updateRequest.getSecret());
         changeSecret(identity, updateRequest.getNewSecret());
 
-        identity.setContactMethod(IdentityContactMethod.valueOf(updateRequest.getContactMethod()));
+        identity.setContactMethod(updateRequest.getContactMethod());
 
         identityRepository.save(identity);
 
