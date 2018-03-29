@@ -17,6 +17,7 @@ import com.sflpro.identity.core.services.identity.reset.SecretResetRequest;
 import com.sflpro.identity.core.services.notification.NotificationCommunicationService;
 import com.sflpro.identity.core.services.principal.PrincipalService;
 import com.sflpro.identity.core.services.token.*;
+import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -199,7 +200,7 @@ public class IdentityServiceImpl implements IdentityService {
             identity.setStatus(IdentityStatus.valueOf(addRequest.getStatus()));
         }
         final Optional<Identity> identityById = identityRepository.findByDeletedIsNullAndId(addRequest.getCreatorId());
-        if (!addRequest.getCreatorId().isEmpty() && identityById.isPresent()) {
+        if (!StringUtils.isEmpty(addRequest.getCreatorId()) && identityById.isPresent()) {
             identity.setCreatorId(identityById.get());
         }
         final Identity createdIdentity = identityRepository.save(identity);
