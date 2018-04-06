@@ -177,8 +177,8 @@
                 <version>${gitflow.plugin.version}</version>
                 <configuration>
                     <versionDigitToIncrement>1</versionDigitToIncrement>
-                    <gpgSignCommit>true</gpgSignCommit>
-                    <gpgSignTag>true</gpgSignTag>
+                    <gpgSignCommit>false</gpgSignCommit>
+                    <gpgSignTag>false</gpgSignTag>
                     <gitFlowConfig>
                         <productionBranch>master</productionBranch>
                         <developmentBranch>develop</developmentBranch>
