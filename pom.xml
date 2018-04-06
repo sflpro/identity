@@ -85,7 +85,20 @@
                             </execution>
                         </executions>
                     </plugin>
-
+                    <plugin>
+                        <groupId>org.sonatype.plugins</groupId>
+                        <artifactId>nexus-staging-maven-plugin</artifactId>
+                        <version>${nexus.staging.maven.plugin.version}</version>
+                        <extensions>true</extensions>
+                        <configuration>
+                            <serverId>ossrh</serverId>
+                            <stagingProfileId>${sonatype.profile.id}</stagingProfileId>
+                            <skipStaging>false</skipStaging>
+                            <skipNexusStagingDeployMojo>false</skipNexusStagingDeployMojo>
+                            <nexusUrl>https://oss.sonatype.org/</nexusUrl>
+                            <autoReleaseAfterClose>false</autoReleaseAfterClose>
+                        </configuration>
+                    </plugin>
                     <!-- end of maven central stuff -->
                 </plugins>
             </build>
@@ -108,6 +121,8 @@
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
         <java.version>1.9</java.version>
+
+        <sonatype.profile.id>1f51d97e92ca91</sonatype.profile.id>
 
         <!-- utilities -->
         <sfl.notifier.version>1.2</sfl.notifier.version>
@@ -151,6 +166,7 @@
         <sonar.jacoco.version>0.7.10-SNAPSHOT</sonar.jacoco.version>
         <sonar.jacoco.jar>${main.project.dir}/lib/jacocoagent.jar</sonar.jacoco.jar>
         <war.exclude.paths>site/**</war.exclude.paths>
+        <nexus.staging.maven.plugin.version>1.6.8</nexus.staging.maven.plugin.version>
     </properties>
 
     <build>
@@ -188,15 +204,6 @@
                         </execution>
                     </executions>
                 </plugin>
-
-                <!--<plugin>-->
-                <!--<groupId>org.apache.maven.plugins</groupId>-->
-                <!--<artifactId>maven-deploy-plugin</artifactId>-->
-                <!--<version>${maven.deploy.plugin}</version>-->
-                <!--<configuration>-->
-                <!--<skip>false</skip>-->
-                <!--</configuration>-->
-                <!--</plugin>-->
 
                 <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
@@ -298,18 +305,22 @@
                     <artifactId>maven-site-plugin</artifactId>
                     <version>${maven.site.plugin.version}</version>
                 </plugin>
+                <!-- Plugins required for deployment to maven central -->
                 <plugin>
                     <groupId>org.sonatype.plugins</groupId>
                     <artifactId>nexus-staging-maven-plugin</artifactId>
-                    <version>1.6.7</version>
+                    <version>${nexus.staging.maven.plugin.version}</version>
                     <extensions>true</extensions>
                     <configuration>
+                        <serverId>ossrh</serverId>
+                        <stagingProfileId>${sonatype.profile.id}</stagingProfileId>
+                        <nexusUrl>https://oss.sonatype.org/</nexusUrl>
                         <skipStaging>true</skipStaging>
                         <skipNexusStagingDeployMojo>true</skipNexusStagingDeployMojo>
                         <autoReleaseAfterClose>false</autoReleaseAfterClose>
                     </configuration>
                 </plugin>
-
+                <!-- End of plugins required for deployment to maven central -->
                 <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
                     <artifactId>maven-source-plugin</artifactId>
