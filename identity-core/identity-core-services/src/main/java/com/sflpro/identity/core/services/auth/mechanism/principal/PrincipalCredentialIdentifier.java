@@ -21,15 +21,9 @@ public final class PrincipalCredentialIdentifier extends CredentialIdentifier<Pr
     @NotNull
     private final String principal;
 
-    public PrincipalCredentialIdentifier(PrincipalType principalType, @NotNull String principal) {
+    public PrincipalCredentialIdentifier(@NotNull PrincipalType principalType, @NotNull String principal) {
         super(CredentialType.PRINCIPAL);
         this.principalType = principalType;
-        this.principal = principal;
-    }
-
-    public PrincipalCredentialIdentifier(@NotNull String principal) {
-        super(CredentialType.PRINCIPAL);
-        this.principalType = null;
         this.principal = principal;
     }
 

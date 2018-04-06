@@ -1,6 +1,9 @@
 package com.sflpro.identity.api.common.dtos.identity;
 
+import com.sflpro.identity.core.datatypes.IdentityContactMethod;
+
 import javax.validation.constraints.NotEmpty;
+import javax.validation.constraints.NotNull;
 
 /**
  * Company: SFL LLC
@@ -18,6 +21,9 @@ public class IdentityUpdateRequestDto {
 
     @NotEmpty
     private String newSecret;
+
+    @NotNull
+    private IdentityContactMethod contactMethod;
 
     public IdentityUpdateRequestDto() {
         super();
@@ -45,5 +51,13 @@ public class IdentityUpdateRequestDto {
 
     public void setNewSecret(String newSecret) {
         this.newSecret = newSecret;
+    }
+
+    public IdentityContactMethod getContactMethod() {
+        return contactMethod;
+    }
+
+    public void setContactMethod(IdentityContactMethod contactMethod) {
+        this.contactMethod = contactMethod;
     }
 }

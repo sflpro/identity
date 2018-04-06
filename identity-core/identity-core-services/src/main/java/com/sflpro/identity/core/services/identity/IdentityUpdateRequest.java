@@ -1,5 +1,6 @@
 package com.sflpro.identity.core.services.identity;
 
+import com.sflpro.identity.core.datatypes.IdentityContactMethod;
 import com.sflpro.identity.core.services.principal.PrincipalUpdateDetailsRequest;
 
 import java.util.List;
@@ -17,6 +18,8 @@ public class IdentityUpdateRequest {
     private String secret;
 
     private String newSecret;
+
+    private IdentityContactMethod contactMethod;
 
     private List<PrincipalUpdateDetailsRequest> principals;
 
@@ -50,5 +53,13 @@ public class IdentityUpdateRequest {
 
     public void setPrincipals(List<PrincipalUpdateDetailsRequest> principals) {
         this.principals = principals;
+    }
+
+    public IdentityContactMethod getContactMethod() {
+        return contactMethod;
+    }
+
+    public void setContactMethod(IdentityContactMethod contactMethod) {
+        this.contactMethod = contactMethod;
     }
 }

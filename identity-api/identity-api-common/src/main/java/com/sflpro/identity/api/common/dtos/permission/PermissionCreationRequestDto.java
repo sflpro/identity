@@ -19,10 +19,6 @@ public class PermissionCreationRequestDto {
     @NotNull
     private PermissionType type;
 
-    public PermissionCreationRequestDto() {
-        super();
-    }
-
     public String getName() {
         return name;
     }

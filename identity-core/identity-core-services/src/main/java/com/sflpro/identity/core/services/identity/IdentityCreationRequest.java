@@ -1,26 +1,16 @@
 package com.sflpro.identity.core.services.identity;
 
-import com.sflpro.identity.core.services.credential.CredentialCreation;
-
-import java.util.List;
-
-/**
- * Company: SFL LLC
- * Created on 29/11/2017
- *
- * @author Davit Harutyunyan
- */
 public class IdentityCreationRequest {
 
-    private String description;
+    private  String description;
 
-    private String secret;
+    private  String contactMethod;
 
-    private List<CredentialCreation> credentials;
+    private String status;
 
-    public IdentityCreationRequest() {
-        super();
-    }
+    private  String secret;
+
+    private String creatorId;
 
     public String getDescription() {
         return description;
@@ -28,6 +18,22 @@ public class IdentityCreationRequest {
 
     public void setDescription(String description) {
         this.description = description;
+    }
+
+    public String getContactMethod() {
+        return contactMethod;
+    }
+
+    public void setContactMethod(String contactMethod) {
+        this.contactMethod = contactMethod;
+    }
+
+    public String getStatus() {
+        return status;
+    }
+
+    public void setStatus(String status) {
+        this.status = status;
     }
 
     public String getSecret() {
@@ -38,11 +44,11 @@ public class IdentityCreationRequest {
         this.secret = secret;
     }
 
-    public List<CredentialCreation> getCredentials() {
-        return credentials;
+    public String getCreatorId() {
+        return creatorId;
     }
 
-    public void setCredentials(List<CredentialCreation> credentials) {
-        this.credentials = credentials;
+    public void setCreatorId(String creatorId) {
+        this.creatorId = creatorId;
     }
 }

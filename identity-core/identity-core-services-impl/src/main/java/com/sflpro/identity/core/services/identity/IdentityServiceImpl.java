@@ -1,5 +1,6 @@
 package com.sflpro.identity.core.services.identity;
 
+import com.sflpro.identity.core.datatypes.IdentityContactMethod;
 import com.sflpro.identity.core.datatypes.IdentityStatus;
 import com.sflpro.identity.core.datatypes.PrincipalType;
 import com.sflpro.identity.core.datatypes.TokenType;
@@ -9,13 +10,14 @@ import com.sflpro.identity.core.db.entities.Token;
 import com.sflpro.identity.core.db.repositories.IdentityRepository;
 import com.sflpro.identity.core.services.ResourceNotFoundException;
 import com.sflpro.identity.core.services.auth.AuthenticationServiceException;
+import com.sflpro.identity.core.services.auth.InvalidCredentialsException;
 import com.sflpro.identity.core.services.auth.SecretHashHelper;
-import com.sflpro.identity.core.services.credential.CredentialService;
 import com.sflpro.identity.core.services.identity.reset.RequestSecretResetRequest;
 import com.sflpro.identity.core.services.identity.reset.SecretResetRequest;
 import com.sflpro.identity.core.services.notification.NotificationCommunicationService;
 import com.sflpro.identity.core.services.principal.PrincipalService;
 import com.sflpro.identity.core.services.token.*;
+import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -24,6 +26,8 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.Assert;
 
 import javax.validation.constraints.NotNull;
+import java.time.LocalDateTime;
+import java.util.Optional;
 
 /**
  * Company: SFL LLC
@@ -41,9 +45,6 @@ public class IdentityServiceImpl implements IdentityService {
 
     @Autowired
     private PrincipalService principalService;
-
-    @Autowired
-    private CredentialService credentialService;
 
     @Autowired
     private IdentityRepository identityRepository;
@@ -75,30 +76,6 @@ public class IdentityServiceImpl implements IdentityService {
      * {@inheritDoc}
      */
     @Override
-    @Deprecated
-    @Transactional
-    public Identity create(final IdentityCreationRequest identityCreationRequest) {
-        Assert.notNull(identityCreationRequest, "Identity creation request cannot be null");
-        Assert.notEmpty(identityCreationRequest.getCredentials(), "Credentials can not be null");
-        logger.info("Creating identity '{}'", identityCreationRequest.getDescription());
-
-        // Creating identity
-        Identity identity = new Identity();
-        identity.setSecret(identityCreationRequest.getSecret());
-        identity.setStatus(IdentityStatus.ACTIVE);
-        identity.setDescription(identityCreationRequest.getDescription());
-        identity = identityRepository.save(identity);
-
-        // Storing credentials
-        credentialService.store(identity, identityCreationRequest.getCredentials());
-
-        return identity;
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
     @Transactional
     public Identity update(@NotNull final String identityId, @NotNull final IdentityUpdateRequest updateRequest) throws AuthenticationServiceException {
         Assert.notNull(identityId, "identityId cannot be null");
@@ -110,6 +87,10 @@ public class IdentityServiceImpl implements IdentityService {
         // Change secret
         chkSecretCorrectAndIdentityActive(identity, updateRequest.getSecret());
         changeSecret(identity, updateRequest.getNewSecret());
+
+        identity.setContactMethod(updateRequest.getContactMethod());
+
+        identityRepository.save(identity);
 
         logger.trace("Complete updating identity by id {}.", identityId);
         return identity;
@@ -134,7 +115,6 @@ public class IdentityServiceImpl implements IdentityService {
                 new TokenRequest(TokenType.SECRET_RESET, resetRequest.getExpiresInHours()), credential
         );
 
-        // TODO Send email with reset token
         notificationCommunicationService.sendSecretResetEmail(resetRequest.getEmail(), token);
 
         logger.debug("Email sent to User {} for password reset.", identity);
@@ -194,7 +174,7 @@ public class IdentityServiceImpl implements IdentityService {
     public boolean chkSecretCorrectAndIdentityActive(final Identity identity, final String secret) throws AuthenticationServiceException {
         if (!secretHashHelper.isSecretCorrect(secret, identity.getSecret())) {
             logger.debug("Invalid secret was supplied for identity {}.", identity);
-            throw new AuthenticationServiceException("Invalid credentials");
+            throw new InvalidCredentialsException();
         } else if (identity.getStatus() != IdentityStatus.ACTIVE) {
             logger.debug("Authenticating identity {} is Inactive.", identity);
             throw new InactiveIdentityException(identity);
@@ -206,4 +186,36 @@ public class IdentityServiceImpl implements IdentityService {
     public boolean isIdentityActive(Identity identity) {
         return identity.getStatus() == IdentityStatus.ACTIVE;
     }
+
+    @Override
+    public Identity add(IdentityCreationRequest addRequest) {
+        Assert.notNull(addRequest, "addRequest cannot be null");
+        logger.debug("Creating identity  {}", addRequest);
+        final Identity identity = new Identity();
+        identity.setContactMethod(IdentityContactMethod.valueOf(addRequest.getContactMethod()));
+        identity.setSecret(secretHashHelper.hashSecret(addRequest.getSecret()));
+        identity.setDescription(addRequest.getDescription());
+        identity.setStatus(IdentityStatus.ACTIVE);
+        if (!addRequest.getStatus().isEmpty()) {
+            identity.setStatus(IdentityStatus.valueOf(addRequest.getStatus()));
+        }
+        final Optional<Identity> identityById = identityRepository.findByDeletedIsNullAndId(addRequest.getCreatorId());
+        if (!StringUtils.isEmpty(addRequest.getCreatorId()) && identityById.isPresent()) {
+            identity.setCreatorId(identityById.get());
+        }
+        final Identity createdIdentity = identityRepository.save(identity);
+        logger.trace("Complete adding identity - {}", createdIdentity );
+        return createdIdentity;
+    }
+
+    @Override
+    @Transactional
+    public void delete(String id) {
+        Identity identity = get(id);
+        final LocalDateTime now = LocalDateTime.now();
+        identity.setDeleted(now);
+        identityRepository.save(identity);
+        logger.debug("Deleting identity Identity:'{}'.", id);
+    }
+
 }

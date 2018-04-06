@@ -11,6 +11,7 @@ import com.sflpro.notifier.core.api.internal.model.email.response.CreateEmailNot
 import com.sflpro.notifier.core.api.internal.model.email.template.forgotpassword.ResetPasswordEmailClientModel;
 import com.sflpro.notifier.core.api.internal.model.email.template.request.ForgotPasswordRequest;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.util.Assert;
 
@@ -24,6 +25,9 @@ import javax.validation.constraints.NotNull;
  */
 @Service
 public class NotificationCommunicationServiceImpl implements NotificationCommunicationService {
+
+    @Value("${redirect.uri}")
+    private String redirectUri;
 
     @Autowired
     private PrincipalService principalService;
@@ -49,6 +53,7 @@ public class NotificationCommunicationServiceImpl implements NotificationCommuni
         Principal principal = principalService.get(PrincipalType.MAIL, email);
         templateModel.setEmail(principal.getName());
         templateModel.setName(token.getIdentity().getDescription());
+        templateModel.setRedirectUri(redirectUri);
         forgotPasswordRequest.setTemplateModel(templateModel);
         ResultResponseModel<CreateEmailNotificationResponse> response = applicationNotificationProcessorResourceClient.processForgotPassword(forgotPasswordRequest);
         if (response.hasErrors()) {

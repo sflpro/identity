@@ -19,10 +19,6 @@ public class SecretResetTokenValidationRequestDto {
     @NotEmpty
     private String token;
 
-    public SecretResetTokenValidationRequestDto() {
-        super();
-    }
-
     public TokenType getTokenType() {
         return tokenType;
     }

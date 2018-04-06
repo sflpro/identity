@@ -2,6 +2,7 @@ package com.sflpro.identity.api.common.dtos.auth;
 
 import com.sflpro.identity.api.common.dtos.AbstractApiResponse;
 import com.sflpro.identity.api.common.dtos.identity.IdentityDto;
+import com.sflpro.identity.api.common.dtos.permission.PermissionDto;
 import com.sflpro.identity.api.common.dtos.principal.PrincipalDto;
 import com.sflpro.identity.api.common.dtos.resource.ResourceDto;
 import com.sflpro.identity.api.common.dtos.token.TokenDto;
@@ -9,6 +10,7 @@ import com.sflpro.identity.core.datatypes.AuthenticationStatus;
 import com.sflpro.identity.core.datatypes.CredentialType;
 
 import java.util.List;
+import java.util.Set;
 
 /**
  * Company: SFL LLC
@@ -22,7 +24,9 @@ public class AuthenticationResponseDto extends AbstractApiResponse {
 
     private IdentityDto identity;
 
-    private List<String> permissions;
+    private Set<PrincipalDto> principals;
+
+    private Set<PermissionDto> permissions;
 
     private List<TokenDto> tokens;
 
@@ -46,11 +50,19 @@ public class AuthenticationResponseDto extends AbstractApiResponse {
         this.identity = identity;
     }
 
-    public List<String> getPermissions() {
+    public Set<PrincipalDto> getPrincipals() {
+        return principals;
+    }
+
+    public void setPrincipals(Set<PrincipalDto> principals) {
+        this.principals = principals;
+    }
+
+    public Set<PermissionDto> getPermissions() {
         return permissions;
     }
 
-    public void setPermissions(List<String> permissions) {
+    public void setPermissions(Set<PermissionDto> permissions) {
         this.permissions = permissions;
     }
 

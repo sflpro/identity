@@ -3,7 +3,7 @@ package com.sflpro.identity.api.common.dtos.role;
 import com.sflpro.identity.api.common.dtos.AbstractApiResponse;
 import com.sflpro.identity.api.common.dtos.permission.PermissionDto;
 
-import java.util.List;
+import java.util.Set;
 
 /**
  * Company: SFL LLC
@@ -17,7 +17,7 @@ public class RoleDto extends AbstractApiResponse {
 
     private String name;
 
-    private List<PermissionDto> permissions;
+    private Set<PermissionDto> permissions;
 
     public RoleDto() {
         super();
@@ -39,11 +39,11 @@ public class RoleDto extends AbstractApiResponse {
         this.name = name;
     }
 
-    public List<PermissionDto> getPermissions() {
+    public Set<PermissionDto> getPermissions() {
         return permissions;
     }
 
-    public void setPermissions(List<PermissionDto> permissions) {
+    public void setPermissions(Set<PermissionDto> permissions) {
         this.permissions = permissions;
     }
 }

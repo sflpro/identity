@@ -19,8 +19,7 @@ public interface IdentityResourceRepository extends JpaRepository<IdentityResour
     @Query("select r.resource " +
             "from IdentityResource r " +
             "where r.identity.id = :identityId " +
-            "and r.resource.id = r.id " +
-            "and (:resourceType is null or lower(r.resource.type) = :resourceType) " +
+            "and (:resourceType is null or lower(r.resource.type) = lower(:resourceType)) " +
             "and (:resourceIdentifier is null or r.resource.identifier = :resourceIdentifier) " +
             "and r.resource.deleted is null " +
             "order by r.resource.type, r.resource.identifier")

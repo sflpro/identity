@@ -1,7 +1,6 @@
 package com.sflpro.identity.core.services.identity;
 
 import com.sflpro.identity.core.db.entities.Identity;
-import com.sflpro.identity.core.services.auth.AuthenticationServiceException;
 
 /**
  * Company: SFL LLC
@@ -9,7 +8,7 @@ import com.sflpro.identity.core.services.auth.AuthenticationServiceException;
  *
  * @author Davit Harutyunyan
  */
-public class InactiveIdentityException extends AuthenticationServiceException {
+public class InactiveIdentityException extends RuntimeException {
 
     private static final String MESSAGE_FORMAT = "%s is not active";
 

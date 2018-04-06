@@ -6,7 +6,7 @@ import org.apache.commons.lang3.builder.ToStringBuilder;
 
 import javax.persistence.*;
 import java.time.LocalDateTime;
-import java.util.List;
+import java.util.Set;
 
 /**
  * Company: SFL LLC
@@ -36,7 +36,7 @@ public class Role {
     @JoinTable(name = "role_permission",
             joinColumns = {@JoinColumn(name = "role_id")},
             inverseJoinColumns = {@JoinColumn(name = "permission_id")})
-    private List<Permission> permissions;
+    private Set<Permission> permissions;
 
     @Column(name = "created", nullable = false)
     private LocalDateTime created;
@@ -63,11 +63,11 @@ public class Role {
         this.name = name;
     }
 
-    public List<Permission> getPermissions() {
+    public Set<Permission> getPermissions() {
         return permissions;
     }
 
-    public void setPermissions(List<Permission> permissions) {
+    public void setPermissions(Set<Permission> permissions) {
         this.permissions = permissions;
     }
 

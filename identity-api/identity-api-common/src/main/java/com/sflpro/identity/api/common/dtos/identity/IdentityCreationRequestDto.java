@@ -1,34 +1,21 @@
 package com.sflpro.identity.api.common.dtos.identity;
 
-import com.sflpro.identity.api.common.dtos.credential.CredentialCreationDto;
-import com.sflpro.identity.core.datatypes.IdentityContactMethod;
-
 import javax.validation.constraints.NotEmpty;
-import javax.validation.constraints.NotNull;
-import java.util.List;
 
-/**
- * Company: SFL LLC
- * Created on 27/11/2017
- *
- * @author Davit Harutyunyan
- */
 public class IdentityCreationRequestDto {
 
     @NotEmpty
-    private String description;
+    private  String description;
 
     @NotEmpty
-    private String secret;
+    private  String contactMethod;
 
-    @NotNull
-    private List<CredentialCreationDto> credentials;
+    @NotEmpty
+    private  String secret;
 
-    private IdentityContactMethod contactMethod;
+    private String status;
 
-    public IdentityCreationRequestDto() {
-        super();
-    }
+    private String creatorId;
 
     public String getDescription() {
         return description;
@@ -36,6 +23,22 @@ public class IdentityCreationRequestDto {
 
     public void setDescription(String description) {
         this.description = description;
+    }
+
+    public String getContactMethod() {
+        return contactMethod;
+    }
+
+    public void setContactMethod(String contactMethod) {
+        this.contactMethod = contactMethod;
+    }
+
+    public String getStatus() {
+        return status;
+    }
+
+    public void setStatus(String status) {
+        this.status = status;
     }
 
     public String getSecret() {
@@ -46,19 +49,11 @@ public class IdentityCreationRequestDto {
         this.secret = secret;
     }
 
-    public IdentityContactMethod getContactMethod() {
-        return contactMethod;
+    public String getCreatorId() {
+        return creatorId;
     }
 
-    public void setContactMethod(IdentityContactMethod contactMethod) {
-        this.contactMethod = contactMethod;
-    }
-
-    public List<CredentialCreationDto> getCredentials() {
-        return credentials;
-    }
-
-    public void setCredentials(List<CredentialCreationDto> credentials) {
-        this.credentials = credentials;
+    public void setCreatorId(String creatorId) {
+        this.creatorId = creatorId;
     }
 }

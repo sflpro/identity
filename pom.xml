@@ -5,7 +5,7 @@
     <parent>
         <groupId>org.springframework.boot</groupId>
         <artifactId>spring-boot-starter-parent</artifactId>
-        <version>2.0.0.RC1</version>
+        <version>2.0.0.RELEASE</version>
         <relativePath /> <!-- lookup parent from repository -->
     </parent>
 
@@ -85,7 +85,20 @@
                             </execution>
                         </executions>
                     </plugin>
-
+                    <plugin>
+                        <groupId>org.sonatype.plugins</groupId>
+                        <artifactId>nexus-staging-maven-plugin</artifactId>
+                        <version>${nexus.staging.maven.plugin.version}</version>
+                        <extensions>true</extensions>
+                        <configuration>
+                            <serverId>ossrh</serverId>
+                            <stagingProfileId>${sonatype.profile.id}</stagingProfileId>
+                            <skipStaging>false</skipStaging>
+                            <skipNexusStagingDeployMojo>false</skipNexusStagingDeployMojo>
+                            <nexusUrl>https://oss.sonatype.org/</nexusUrl>
+                            <autoReleaseAfterClose>false</autoReleaseAfterClose>
+                        </configuration>
+                    </plugin>
                     <!-- end of maven central stuff -->
                 </plugins>
             </build>
@@ -109,8 +122,10 @@
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
         <java.version>1.9</java.version>
 
+        <sonatype.profile.id>1f51d97e92ca91</sonatype.profile.id>
+
         <!-- utilities -->
-        <sfl.notifier.version>1.2</sfl.notifier.version>
+        <sfl.notifier.version>1.4.0</sfl.notifier.version>
         <jackson.version>2.9.2</jackson.version>
         <logback.version>1.2.3</logback.version>
         <javax.ws.rs-api.version>2.1</javax.ws.rs-api.version>
@@ -131,6 +146,7 @@
         <maven.surefire.plugin.version>2.20.1</maven.surefire.plugin.version>
         <dockerfile.maven.plugin.version>1.3.6</dockerfile.maven.plugin.version>
         <jacoco.maven.plugin.version>0.7.9</jacoco.maven.plugin.version>
+        <gitflow.plugin.version>1.9.0</gitflow.plugin.version>
 
         <!-- maven plugin dependencies -->
         <javax.activation.version>1.1.1</javax.activation.version>
@@ -150,26 +166,27 @@
         <sonar.jacoco.version>0.7.10-SNAPSHOT</sonar.jacoco.version>
         <sonar.jacoco.jar>${main.project.dir}/lib/jacocoagent.jar</sonar.jacoco.jar>
         <war.exclude.paths>site/**</war.exclude.paths>
+        <nexus.staging.maven.plugin.version>1.6.8</nexus.staging.maven.plugin.version>
     </properties>
 
     <build>
         <plugins>
             <plugin>
-                <groupId>external.atlassian.jgitflow</groupId>
-                <artifactId>jgitflow-maven-plugin</artifactId>
-                <version>1.0-m5.1</version>
+                <groupId>com.amashchenko.maven.plugin</groupId>
+                <artifactId>gitflow-maven-plugin</artifactId>
+                <version>${gitflow.plugin.version}</version>
                 <configuration>
-                    <autoVersionSubmodules>true</autoVersionSubmodules>
-                    <noFeatureBuild>true</noFeatureBuild>
-                    <noHotfixBuild>true</noHotfixBuild>
-                    <noReleaseBuild>true</noReleaseBuild>
-                    <flowInitContext>
-                        <masterBranchName>master</masterBranchName>
-                        <developBranchName>develop</developBranchName>
+                    <versionDigitToIncrement>1</versionDigitToIncrement>
+                    <gpgSignCommit>false</gpgSignCommit>
+                    <gpgSignTag>false</gpgSignTag>
+                    <gitFlowConfig>
+                        <productionBranch>master</productionBranch>
+                        <developmentBranch>develop</developmentBranch>
                         <featureBranchPrefix>feature/</featureBranchPrefix>
                         <releaseBranchPrefix>release/</releaseBranchPrefix>
                         <hotfixBranchPrefix>hotfix/</hotfixBranchPrefix>
-                    </flowInitContext>
+                        <origin>origin</origin>
+                    </gitFlowConfig>
                 </configuration>
             </plugin>
         </plugins>
@@ -187,15 +204,6 @@
                         </execution>
                     </executions>
                 </plugin>
-
-                <!--<plugin>-->
-                <!--<groupId>org.apache.maven.plugins</groupId>-->
-                <!--<artifactId>maven-deploy-plugin</artifactId>-->
-                <!--<version>${maven.deploy.plugin}</version>-->
-                <!--<configuration>-->
-                <!--<skip>false</skip>-->
-                <!--</configuration>-->
-                <!--</plugin>-->
 
                 <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
@@ -297,18 +305,22 @@
                     <artifactId>maven-site-plugin</artifactId>
                     <version>${maven.site.plugin.version}</version>
                 </plugin>
+                <!-- Plugins required for deployment to maven central -->
                 <plugin>
                     <groupId>org.sonatype.plugins</groupId>
                     <artifactId>nexus-staging-maven-plugin</artifactId>
-                    <version>1.6.7</version>
+                    <version>${nexus.staging.maven.plugin.version}</version>
                     <extensions>true</extensions>
                     <configuration>
+                        <serverId>ossrh</serverId>
+                        <stagingProfileId>${sonatype.profile.id}</stagingProfileId>
+                        <nexusUrl>https://oss.sonatype.org/</nexusUrl>
                         <skipStaging>true</skipStaging>
                         <skipNexusStagingDeployMojo>true</skipNexusStagingDeployMojo>
                         <autoReleaseAfterClose>false</autoReleaseAfterClose>
                     </configuration>
                 </plugin>
-
+                <!-- End of plugins required for deployment to maven central -->
                 <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
                     <artifactId>maven-source-plugin</artifactId>
@@ -338,43 +350,6 @@
         </pluginManagement>
     </build>
 
-    <repositories>
-        <repository>
-            <id>spring-snapshots</id>
-            <name>Spring Snapshots</name>
-            <url>https://repo.spring.io/snapshot</url>
-            <snapshots>
-                <enabled>true</enabled>
-            </snapshots>
-        </repository>
-        <repository>
-            <id>spring-milestones</id>
-            <name>Spring Milestones</name>
-            <url>https://repo.spring.io/milestone</url>
-            <snapshots>
-                <enabled>false</enabled>
-            </snapshots>
-        </repository>
-    </repositories>
-
-    <pluginRepositories>
-        <pluginRepository>
-            <id>spring-snapshots</id>
-            <name>Spring Snapshots</name>
-            <url>https://repo.spring.io/snapshot</url>
-            <snapshots>
-                <enabled>true</enabled>
-            </snapshots>
-        </pluginRepository>
-        <pluginRepository>
-            <id>spring-milestones</id>
-            <name>Spring Milestones</name>
-            <url>https://repo.spring.io/milestone</url>
-            <snapshots>
-                <enabled>false</enabled>
-            </snapshots>
-        </pluginRepository>
-    </pluginRepositories>
 
     <dependencyManagement>
         <dependencies>

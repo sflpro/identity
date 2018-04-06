@@ -1,0 +1,1 @@
+ALTER TABLE credential ALTER COLUMN failed_attempts SET DEFAULT 0;

@@ -5,6 +5,7 @@ import com.sflpro.identity.core.datatypes.CredentialType;
 import com.sflpro.identity.core.db.entities.*;
 
 import java.util.List;
+import java.util.Set;
 
 /**
  * Company: SFL LLC
@@ -18,16 +19,15 @@ public class AuthenticationResponse {
 
     private Identity identity;
 
-    private List<String> permissions;
+    private Set<Principal> principals;
+
+    private Set<Permission> permissions;
 
     private List<Token> tokens;
 
     private List<Resource> resources;
 
     private AuthenticationStatus status;
-
-    public AuthenticationResponse() {
-    }
 
     public AuthenticationResponse(Credential credentialsUsed, Identity identity) {
         this.credentialTypeUsed = credentialsUsed.getType();
@@ -50,13 +50,19 @@ public class AuthenticationResponse {
         this.identity = identity;
     }
 
+    public Set<Principal> getPrincipals() {
+        return principals;
+    }
 
+    public void setPrincipals(Set<Principal> principals) {
+        this.principals = principals;
+    }
 
-    public List<String> getPermissions() {
+    public Set<Permission> getPermissions() {
         return permissions;
     }
 
-    public void setPermissions(List<String> permissions) {
+    public void setPermissions(Set<Permission> permissions) {
         this.permissions = permissions;
     }
 

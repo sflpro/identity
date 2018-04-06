@@ -58,7 +58,7 @@ public class AuthenticationEndpoint {
     @ApiOperation("Authenticating by credential type")
     @POST
     @Path("/authenticate")
-    @Transactional
+    @Transactional(noRollbackFor = {AuthenticationExceptionDto.class})
     public <T extends AuthenticationRequestDetailsDto> AuthenticationResponseDto authenticate(@Valid AuthenticationRequestDto<T> requestDto) {
         Assert.notNull(requestDto, "request cannot be null");
         Assert.notNull(requestDto.getDetails(), "request details cannot be null");

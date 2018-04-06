@@ -29,4 +29,11 @@ public interface CredentialService {
      */
     void store(final Identity identity, final List<CredentialCreation> credentialCreations);
 
+    /**
+     * Updates failed attempts Credential
+     *
+     * @param credential credential need to update
+     * @return updated credential entity
+     */
+    Credential updateFailedAttempts(Credential credential, int val);
 }

@@ -6,8 +6,9 @@ import com.sflpro.identity.core.db.repositories.CredentialRepository;
 import com.sflpro.identity.core.services.ResourceNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.util.Assert;
 
-import java.time.LocalDateTime;
+import javax.transaction.Transactional;
 import java.util.List;
 
 /**
@@ -35,5 +36,13 @@ public class CredentialServiceImpl implements CredentialService {
             credential.setType(credentialCreation.getCredentialType());
             credentialRepository.save(credential);
         });
+    }
+
+    @Override
+    @Transactional
+    public Credential updateFailedAttempts(final Credential credential, final int val) {
+        Assert.notNull(credential, "credential cannot be null");
+        credential.setFailedAttempts(val);
+        return credentialRepository.save(credential);
     }
 }

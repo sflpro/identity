@@ -12,10 +12,6 @@ public class PermissionCreationResponseDto extends AbstractApiResponse {
 
     private Long permissionId;
 
-    public PermissionCreationResponseDto() {
-        super();
-    }
-
     public Long getPermissionId() {
         return permissionId;
     }

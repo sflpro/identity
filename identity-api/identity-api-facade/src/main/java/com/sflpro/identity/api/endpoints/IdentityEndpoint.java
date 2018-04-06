@@ -2,16 +2,15 @@ package com.sflpro.identity.api.endpoints;
 
 import com.sflpro.identity.api.common.dtos.ApiResponseDto;
 import com.sflpro.identity.api.common.dtos.auth.AuthenticationExceptionDto;
-import com.sflpro.identity.api.common.dtos.identity.IdentityCreationRequestDto;
-import com.sflpro.identity.api.common.dtos.identity.IdentityCreationResponseDto;
-import com.sflpro.identity.api.common.dtos.identity.IdentityDto;
 import com.sflpro.identity.api.common.dtos.identity.IdentityUpdateRequestDto;
+import com.sflpro.identity.core.services.auth.AuthenticationServiceException;
+import com.sflpro.identity.core.services.identity.IdentityCreationRequest;
+import com.sflpro.identity.api.common.dtos.identity.IdentityCreationRequestDto;
+import com.sflpro.identity.api.common.dtos.identity.IdentityDto;
 import com.sflpro.identity.api.common.dtos.identity.reset.RequestSecretResetRequestDto;
 import com.sflpro.identity.api.common.dtos.identity.reset.SecretResetRequestDto;
 import com.sflpro.identity.api.mapper.BeanMapper;
 import com.sflpro.identity.core.db.entities.Identity;
-import com.sflpro.identity.core.services.auth.AuthenticationServiceException;
-import com.sflpro.identity.core.services.identity.IdentityCreationRequest;
 import com.sflpro.identity.core.services.identity.IdentityService;
 import com.sflpro.identity.core.services.identity.IdentityUpdateRequest;
 import com.sflpro.identity.core.services.identity.reset.RequestSecretResetRequest;
@@ -64,27 +63,12 @@ public class IdentityEndpoint {
         return mapper.map(identity, IdentityDto.class);
     }
 
-    @ApiOperation("Creates identity")
-    @PUT
-    @Transactional
-    @Deprecated
-    public IdentityCreationResponseDto create(@NotNull @Valid final IdentityCreationRequestDto identityCreationRequestDto) {
-        // Compose authentication request
-        IdentityCreationRequest identityCreationRequest = mapper.map(identityCreationRequestDto, IdentityCreationRequest.class);
-
-        // Create Identity
-        Identity identityCreationResponse = identityService.create(identityCreationRequest);
-        logger.info("Created identity:'{}'.", identityCreationResponse.getId());
-        IdentityCreationResponseDto identityCreationResponseDto = mapper.map(identityCreationResponse, IdentityCreationResponseDto.class);
-        return identityCreationResponseDto;
-    }
-
     @ApiOperation("Updates identity's details")
     @PUT
     @Path("/{identityId}")
     @Transactional
     public IdentityDto update(@NotNull @PathParam("identityId") final String identityId,
-                              final IdentityUpdateRequestDto updateRequestDto) {
+                              @Valid final IdentityUpdateRequestDto updateRequestDto) {
         Assert.notNull(updateRequestDto, "updateRequestDto cannot be null");
         logger.debug("Updating identity id {} with data :{}...", identityId, updateRequestDto);
         try {
@@ -101,10 +85,10 @@ public class IdentityEndpoint {
     @ApiOperation("Delete identity")
     @DELETE
     @Path("/{identityId}")
-    @Deprecated
     @Transactional
-    public IdentityDto delete(@NotNull @PathParam("identityId") final String identityId) {
-        return new IdentityDto();
+    public ApiResponseDto delete(@NotNull @PathParam("identityId") final String identityId) {
+        identityService.delete(identityId);
+        return new ApiResponseDto();
     }
 
     @ApiOperation("Request for secret reset")
@@ -127,5 +111,19 @@ public class IdentityEndpoint {
         identityService.secretReset(request);
         logger.info("Reset secret was done by token:'{}'.", requestDto.getToken());
         return new ApiResponseDto();
+    }
+
+    @ApiOperation("Creates identity's details")
+    @PUT
+    @Path("/")
+    @Transactional
+    public IdentityDto createIdentity(
+           @NotNull @Valid final IdentityCreationRequestDto request) {
+        Assert.notNull(request, "request cannot be null");
+        logger.debug("Creating identity  with data :{}...", request);
+        final IdentityCreationRequest creationRequest = mapper.map(request, IdentityCreationRequest.class);
+        final Identity identity = identityService.add(creationRequest);
+        logger.info("Done creating identity with data :{}....", creationRequest);
+        return mapper.map(identity, IdentityDto.class);
     }
 }
