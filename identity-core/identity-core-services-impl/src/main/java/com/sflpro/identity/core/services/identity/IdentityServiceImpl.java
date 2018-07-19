@@ -8,6 +8,7 @@ import com.sflpro.identity.core.db.entities.Credential;
 import com.sflpro.identity.core.db.entities.Identity;
 import com.sflpro.identity.core.db.entities.Token;
 import com.sflpro.identity.core.db.repositories.IdentityRepository;
+import com.sflpro.identity.core.db.repositories.IdentityResourceRepository;
 import com.sflpro.identity.core.services.ResourceNotFoundException;
 import com.sflpro.identity.core.services.auth.AuthenticationServiceException;
 import com.sflpro.identity.core.services.auth.InvalidCredentialsException;
@@ -27,6 +28,7 @@ import org.springframework.util.Assert;
 
 import javax.validation.constraints.NotNull;
 import java.time.LocalDateTime;
+import java.util.List;
 import java.util.Optional;
 
 /**
@@ -54,6 +56,9 @@ public class IdentityServiceImpl implements IdentityService {
 
     @Autowired
     private NotificationCommunicationService notificationCommunicationService;
+
+    @Autowired
+    private IdentityResourceRepository identityResourceRepository;
 
     /**
      * {@inheritDoc}
@@ -216,6 +221,14 @@ public class IdentityServiceImpl implements IdentityService {
         identity.setDeleted(now);
         identityRepository.save(identity);
         logger.debug("Deleting identity Identity:'{}'.", id);
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public List<Identity> list(long resourceId) {
+        List<Identity> identities = identityResourceRepository.findIdentities(resourceId);
+        logger.debug("Found {} identities for resource:'{}'", identities.size(), resourceId);
+        return identities;
     }
 
 }

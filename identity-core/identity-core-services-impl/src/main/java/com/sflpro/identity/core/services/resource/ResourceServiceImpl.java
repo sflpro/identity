@@ -3,13 +3,20 @@ package com.sflpro.identity.core.services.resource;
 import com.sflpro.identity.core.db.entities.Identity;
 import com.sflpro.identity.core.db.entities.Resource;
 import com.sflpro.identity.core.db.repositories.IdentityResourceRepository;
+import com.sflpro.identity.core.db.repositories.ResourceRepository;
+import com.sflpro.identity.core.services.ResourceNotFoundException;
+import org.hibernate.loader.custom.RootReturn;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.Assert;
 
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 /**
  * Company: SFL LLC
@@ -23,7 +30,72 @@ public class ResourceServiceImpl implements ResourceService {
     private static final Logger logger = LoggerFactory.getLogger(ResourceServiceImpl.class);
 
     @Autowired
+    private ResourceRepository resourceRepository;
+
+    @Autowired
     private IdentityResourceRepository identityResourceRepository;
+
+    @Override
+    @Transactional
+    public Resource create(ResourceCreationRequest resourceRequest) {
+        logger.debug("Trying to create new resource: '{}'", resourceRequest);
+        Assert.notNull(resourceRequest, "resourceRequest cannot be null");
+        Assert.notNull(resourceRequest.getIdentifier(), "resourceRequest.identifier cannot be null");
+        Assert.notNull(resourceRequest.getType(), "resourceRequest.type cannot be null");
+
+        Resource resource = new Resource();
+        resource.setIdentifier(resourceRequest.getIdentifier());
+        resource.setType(resourceRequest.getType());
+        Resource saved = resourceRepository.save(resource);
+        logger.trace("Resource created:'{}'", saved);
+        return saved;
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public Resource get(long resourceId) {
+        logger.debug("Trying to get resource: '{}'", resourceId);
+        Resource resource = resourceRepository.findById(resourceId)
+                .orElseThrow(() -> new ResourceNotFoundException(String.format("Resource with %s id does not exist", resourceId)));
+        logger.trace("Resource found:'{}'", resource);
+        return resource;
+    }
+
+    @Override
+    @Transactional
+    public Resource update(ResourceUpdateRequest resourceRequest) {
+        logger.debug("Trying to update resource: '{}'", resourceRequest);
+        Assert.notNull(resourceRequest, "resourceRequest cannot be null");
+        Assert.notNull(resourceRequest.getId(), "resourceRequest.id cannot be null");
+
+        Resource resource = get(resourceRequest.getId());
+        resource.setType(resourceRequest.getType());
+        resource.setIdentifier(resourceRequest.getIdentifier());
+        Resource saved = resourceRepository.save(resource);
+        logger.trace("Resource updated:'{}'", saved);
+        return saved;
+    }
+
+    @Override
+    @Transactional
+    public Resource delete(long resourceId) {
+        logger.debug("Trying to delete resource: '{}'", resourceId);
+        Resource resource = get(resourceId);
+        resource.setDeleted(LocalDateTime.now());
+
+        Resource saved = resourceRepository.save(resource);
+        logger.trace("Resource deleted:'{}'", saved);
+        return saved;
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public List<Resource> list(String identityId, String resourceType, String resourceIdentifier) {
+        logger.debug("Trying to to list resources for identity '{}'.", identityId);
+        List<Resource> resources = identityResourceRepository.search(identityId, resourceType, resourceIdentifier);
+        logger.trace("Finished listing resources with '{}' resource type and '{}' identifier for identity '{}'.", resourceType, resourceIdentifier, identityId);
+        return resources;
+    }
 
     @Override
     public List<Resource> get(List<ResourceRequest> resourceRequests, Identity identity) {

@@ -2,10 +2,10 @@ package com.sflpro.identity.core.services.permission;
 
 /**
  * Company: SFL LLC
- * Created on 30/11/2017
+ * Created on 7/19/2018
  *
- * @author Davit Harutyunyan
+ * @author Taron Petrosyan
  */
-public class PermissionServiceImplTest {
+public class ResourceServiceImplTest {
     //TODO: Add appropriate tests
 }
