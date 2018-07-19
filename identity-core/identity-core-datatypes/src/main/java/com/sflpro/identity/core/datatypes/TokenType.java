@@ -9,5 +9,6 @@ package com.sflpro.identity.core.datatypes;
 public enum TokenType {
     ACCESS,
     SECRET_RESET,
-    CUSTOM
+    CUSTOM,
+    REFRESH
 }
