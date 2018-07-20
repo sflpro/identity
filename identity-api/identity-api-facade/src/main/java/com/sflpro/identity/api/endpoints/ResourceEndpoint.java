@@ -5,12 +5,14 @@ import com.sflpro.identity.api.common.dtos.ApiResponseDto;
 import com.sflpro.identity.api.common.dtos.identity.IdentityDto;
 import com.sflpro.identity.api.common.dtos.resource.ResourceCreationRequestDto;
 import com.sflpro.identity.api.common.dtos.resource.ResourceDto;
+import com.sflpro.identity.api.common.dtos.resource.ResourceIdentityAdditionRequestDto;
 import com.sflpro.identity.api.common.dtos.resource.ResourceUpdateRequestDto;
 import com.sflpro.identity.api.mapper.BeanMapper;
 import com.sflpro.identity.core.db.entities.Identity;
 import com.sflpro.identity.core.db.entities.Resource;
 import com.sflpro.identity.core.services.identity.IdentityService;
 import com.sflpro.identity.core.services.resource.ResourceCreationRequest;
+import com.sflpro.identity.core.services.resource.ResourceIdentityAdditionRequest;
 import com.sflpro.identity.core.services.resource.ResourceService;
 import com.sflpro.identity.core.services.resource.ResourceUpdateRequest;
 import io.swagger.annotations.Api;
@@ -102,6 +104,18 @@ public class ResourceEndpoint {
         return new ApiResponseDto();
     }
 
+    @ApiOperation("Lists resources")
+    @GET
+    @Transactional(readOnly = true)
+    public ApiGenericListResponse<ResourceDto> list(@QueryParam("type") final String type,
+                                                    @QueryParam("identifier") final String identifier) {
+        // list resources
+        List<Resource> resources = resourceService.list(type, identifier);
+        logger.info("Found {} resources", resources.size(), resources.size());
+        List<ResourceDto> result = mapper.mapAsList(resources, ResourceDto.class);
+        return new ApiGenericListResponse<>(result.size(), result);
+    }
+
     @ApiOperation("Lists resource's identities")
     @GET
     @Path("/{resourceId}/identities")
@@ -112,5 +126,31 @@ public class ResourceEndpoint {
         logger.info("Found {} identities for resource:'{}'.", identities.size(), resourceId);
         List<IdentityDto> result = mapper.mapAsList(identities, IdentityDto.class);
         return new ApiGenericListResponse<>(result.size(), result);
+    }
+
+    @ApiOperation("Add resource access to identities")
+    @PUT
+    @Path("/{resourceId}/identities")
+    @Transactional
+    public ApiResponseDto addIdentities(@NotNull @PathParam("resourceId") final Long resourceId, @Valid @NotNull final ResourceIdentityAdditionRequestDto requestDto) {
+        // Add identities to resource
+        logger.debug("Adding identities to resource: {}...", resourceId);
+        ResourceIdentityAdditionRequest resourceModificationRequest = mapper.map(requestDto, ResourceIdentityAdditionRequest.class);
+        resourceModificationRequest.setResourceId(resourceId);
+        resourceService.addIdentities(resourceModificationRequest);
+        logger.info("Done adding identities to resource: {}", resourceId);
+        return new ApiResponseDto();
+    }
+
+    @ApiOperation("Remove resource access of identities")
+    @DELETE
+    @Path("/{resourceId}/identities/{identityId}")
+    @Transactional
+    public ApiResponseDto removeIdentities(@NotNull @PathParam("resourceId") final Long resourceId, @NotNull @PathParam("identityId") final String identityId) {
+        // Remove identity from resource
+        logger.debug("Removing identity: {} from resource: {}...", identityId, resourceId);
+        resourceService.removeIdentity(resourceId, identityId);
+        logger.info("Done removing identity:{} from resource: {}", identityId, resourceId);
+        return new ApiResponseDto();
     }
 }

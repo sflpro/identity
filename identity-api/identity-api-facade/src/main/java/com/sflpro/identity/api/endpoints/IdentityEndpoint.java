@@ -143,7 +143,7 @@ public class IdentityEndpoint {
                                                              @QueryParam("resourceType") final String resourceType,
                                                              @QueryParam("resourceIdentifier") final String resourceIdentifier) {
         // Get resources
-        List<Resource> resources = resourceService.list(identityId, resourceType, resourceIdentifier);
+        List<Resource> resources = resourceService.search(identityId, resourceType, resourceIdentifier);
         logger.info("Found {} resources for identity:'{}'.", resources.size(), identityId);
         List<ResourceDto> result = mapper.mapAsList(resources, ResourceDto.class);
         return new ApiGenericListResponse<>(result.size(), result);

@@ -32,4 +32,8 @@ public interface IdentityResourceRepository extends JpaRepository<IdentityResour
             "and r.identity.deleted is null " +
             "order by r.resource.type")
     List<Identity> findIdentities(@Param("resourceId") long resourceId);
+
+    IdentityResource findByIdentityAndResource(Identity identity, Resource resource);
+
+    boolean existsByIdentityAndResource(Identity identity, Resource resource);
 }
