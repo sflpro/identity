@@ -111,7 +111,7 @@ public class ResourceEndpoint {
                                                     @QueryParam("identifier") final String identifier) {
         // list resources
         List<Resource> resources = resourceService.list(type, identifier);
-        logger.info("Found {} resources", resources.size(), resources.size());
+        logger.info("Found {} resources", resources.size());
         List<ResourceDto> result = mapper.mapAsList(resources, ResourceDto.class);
         return new ApiGenericListResponse<>(result.size(), result);
     }

@@ -41,15 +41,15 @@ public class ResourceServiceImpl implements ResourceService {
 
     @Override
     @Transactional
-    public Resource create(ResourceCreationRequest resourceRequest) {
-        logger.debug("Trying to create new resource: '{}'", resourceRequest);
-        Assert.notNull(resourceRequest, "resourceRequest cannot be null");
-        Assert.notNull(resourceRequest.getIdentifier(), "resourceRequest.identifier cannot be null");
-        Assert.notNull(resourceRequest.getType(), "resourceRequest.type cannot be null");
+    public Resource create(ResourceCreationRequest resourceCreationRequest) {
+        logger.debug("Trying to create new resource: '{}'", resourceCreationRequest);
+        Assert.notNull(resourceCreationRequest, "resourceCreationRequest cannot be null");
+        Assert.notNull(resourceCreationRequest.getIdentifier(), "resourceCreationRequest.identifier cannot be null");
+        Assert.notNull(resourceCreationRequest.getType(), "resourceCreationRequest.type cannot be null");
 
         Resource resource = new Resource();
-        resource.setIdentifier(resourceRequest.getIdentifier());
-        resource.setType(resourceRequest.getType());
+        resource.setIdentifier(resourceCreationRequest.getIdentifier());
+        resource.setType(resourceCreationRequest.getType());
         Resource saved = resourceRepository.save(resource);
         logger.trace("Resource created:'{}'", saved);
         return saved;
@@ -67,14 +67,14 @@ public class ResourceServiceImpl implements ResourceService {
 
     @Override
     @Transactional
-    public Resource update(ResourceUpdateRequest resourceRequest) {
-        logger.debug("Trying to update resource: '{}'", resourceRequest);
-        Assert.notNull(resourceRequest, "resourceRequest cannot be null");
-        Assert.notNull(resourceRequest.getId(), "resourceRequest.id cannot be null");
+    public Resource update(ResourceUpdateRequest resourceUpdateRequest) {
+        logger.debug("Trying to update resource: '{}'", resourceUpdateRequest);
+        Assert.notNull(resourceUpdateRequest, "resourceUpdateRequest cannot be null");
+        Assert.notNull(resourceUpdateRequest.getId(), "resourceUpdateRequest.id cannot be null");
 
-        Resource resource = get(resourceRequest.getId());
-        resource.setType(resourceRequest.getType());
-        resource.setIdentifier(resourceRequest.getIdentifier());
+        Resource resource = get(resourceUpdateRequest.getId());
+        resource.setType(resourceUpdateRequest.getType());
+        resource.setIdentifier(resourceUpdateRequest.getIdentifier());
         Resource saved = resourceRepository.save(resource);
         logger.trace("Resource updated:'{}'", saved);
         return saved;
@@ -122,13 +122,13 @@ public class ResourceServiceImpl implements ResourceService {
 
     @Override
     @Transactional
-    public void addIdentities(ResourceIdentityAdditionRequest resourceRequest) {
-        logger.debug("Trying to add identities to resource: '{}'", resourceRequest);
-        Assert.notNull(resourceRequest, "resourceRequest cannot be null");
-        Assert.notNull(resourceRequest.getResourceId(), "resourceRequest.id cannot be null");
-        Assert.notEmpty(resourceRequest.getIdentityIds(), "resourceRequest.identityIds cannot be empty");
-        Resource resource = get(resourceRequest.getResourceId());
-        List<Identity> identities = identityRepository.findAllById(resourceRequest.getIdentityIds());
+    public void addIdentities(ResourceIdentityAdditionRequest resourceIdentityAdditionRequest) {
+        logger.debug("Trying to add identities to resource: '{}'", resourceIdentityAdditionRequest);
+        Assert.notNull(resourceIdentityAdditionRequest, "resourceRequest cannot be null");
+        Assert.notNull(resourceIdentityAdditionRequest.getResourceId(), "resourceRequest.id cannot be null");
+        Assert.notEmpty(resourceIdentityAdditionRequest.getIdentityIds(), "resourceRequest.identityIds cannot be empty");
+        Resource resource = get(resourceIdentityAdditionRequest.getResourceId());
+        List<Identity> identities = identityRepository.findAllById(resourceIdentityAdditionRequest.getIdentityIds());
         List<Identity> missingIdentities = identities.stream()
                 .filter(i -> !identityResourceRepository.existsByIdentityAndResource(i, resource))
                 .collect(Collectors.toList());
