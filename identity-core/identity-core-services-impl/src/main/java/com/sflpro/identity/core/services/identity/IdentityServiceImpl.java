@@ -231,7 +231,7 @@ public class IdentityServiceImpl implements IdentityService {
         List<Identity> identities = identityRepository.findAllById(identityIds).stream()
                 .filter(Objects::nonNull)
                 .collect(Collectors.toList());
-        logger.debug("Found {} identities from {} identity ids:'{}'", identities.size(), identities.size(), identityIds.size(), identityIds);
+        logger.debug("Found {} identities from {} identity ids:'{}'", identities.size(), identityIds.size(), identityIds);
         return identities;
     }
 
