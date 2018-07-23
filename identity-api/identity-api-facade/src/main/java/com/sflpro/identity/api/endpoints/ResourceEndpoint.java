@@ -135,9 +135,9 @@ public class ResourceEndpoint {
     public ApiResponseDto addIdentities(@NotNull @PathParam("resourceId") final Long resourceId, @Valid @NotNull final ResourceIdentityAdditionRequestDto requestDto) {
         // Add identities to resource
         logger.debug("Adding identities to resource: {}...", resourceId);
-        ResourceIdentityAdditionRequest resourceModificationRequest = mapper.map(requestDto, ResourceIdentityAdditionRequest.class);
-        resourceModificationRequest.setResourceId(resourceId);
-        resourceService.addIdentities(resourceModificationRequest);
+        ResourceIdentityAdditionRequest resourceIdentityAdditionRequest = mapper.map(requestDto, ResourceIdentityAdditionRequest.class);
+        resourceIdentityAdditionRequest.setResourceId(resourceId);
+        resourceService.addIdentities(resourceIdentityAdditionRequest);
         logger.info("Done adding identities to resource: {}", resourceId);
         return new ApiResponseDto();
     }

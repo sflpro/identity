@@ -3,10 +3,10 @@ package com.sflpro.identity.core.services.resource;
 import com.sflpro.identity.core.db.entities.Identity;
 import com.sflpro.identity.core.db.entities.IdentityResource;
 import com.sflpro.identity.core.db.entities.Resource;
-import com.sflpro.identity.core.db.repositories.IdentityRepository;
 import com.sflpro.identity.core.db.repositories.IdentityResourceRepository;
 import com.sflpro.identity.core.db.repositories.ResourceRepository;
 import com.sflpro.identity.core.services.ResourceNotFoundException;
+import com.sflpro.identity.core.services.identity.IdentityService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -37,7 +37,7 @@ public class ResourceServiceImpl implements ResourceService {
     private IdentityResourceRepository identityResourceRepository;
 
     @Autowired
-    private IdentityRepository identityRepository;
+    private IdentityService identityService;
 
     @Override
     @Transactional
@@ -128,7 +128,7 @@ public class ResourceServiceImpl implements ResourceService {
         Assert.notNull(resourceIdentityAdditionRequest.getResourceId(), "resourceRequest.id cannot be null");
         Assert.notEmpty(resourceIdentityAdditionRequest.getIdentityIds(), "resourceRequest.identityIds cannot be empty");
         Resource resource = get(resourceIdentityAdditionRequest.getResourceId());
-        List<Identity> identities = identityRepository.findAllById(resourceIdentityAdditionRequest.getIdentityIds());
+        List<Identity> identities = identityService.findAllById(resourceIdentityAdditionRequest.getIdentityIds());
         List<Identity> missingIdentities = identities.stream()
                 .filter(i -> !identityResourceRepository.existsByIdentityAndResource(i, resource))
                 .collect(Collectors.toList());
@@ -151,8 +151,7 @@ public class ResourceServiceImpl implements ResourceService {
         logger.debug("Trying to remove identity '{}' from resource: '{}'", identityId, resourceId);
         Assert.notNull(identityId, "identityId cannot be null");
         Resource resource = get(resourceId);
-        Identity identity = identityRepository.findByDeletedIsNullAndId(identityId)
-                .orElseThrow(() -> new ResourceNotFoundException(String.format("Identity with %s id not found", identityId)));
+        Identity identity = identityService.get(identityId);
         IdentityResource identityResources = identityResourceRepository.findByIdentityAndResource(identity, resource);
 
         identityResourceRepository.delete(identityResources);

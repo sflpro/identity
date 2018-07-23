@@ -1,7 +1,7 @@
 package com.sflpro.identity.api.common.dtos.resource;
 
 import javax.validation.constraints.NotEmpty;
-import java.util.Set;
+import java.util.List;
 
 /**
  * Company: SFL LLC
@@ -11,14 +11,13 @@ import java.util.Set;
  */
 public class ResourceIdentityAdditionRequestDto {
 
-    @NotEmpty
-    private Set<String> identityIds;
+    private @NotEmpty List<String> identityIds;
 
-    public Set<String> getIdentityIds() {
+    public @NotEmpty List<String> getIdentityIds() {
         return identityIds;
     }
 
-    public void setIdentityIds(Set<String> identityIds) {
+    public void setIdentityIds(@NotEmpty List<String> identityIds) {
         this.identityIds = identityIds;
     }
 }

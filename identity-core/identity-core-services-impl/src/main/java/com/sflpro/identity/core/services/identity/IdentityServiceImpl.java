@@ -29,7 +29,9 @@ import org.springframework.util.Assert;
 import javax.validation.constraints.NotNull;
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 /**
  * Company: SFL LLC
@@ -209,7 +211,7 @@ public class IdentityServiceImpl implements IdentityService {
             identity.setCreatorId(identityById.get());
         }
         final Identity createdIdentity = identityRepository.save(identity);
-        logger.trace("Complete adding identity - {}", createdIdentity );
+        logger.trace("Complete adding identity - {}", createdIdentity);
         return createdIdentity;
     }
 
@@ -221,6 +223,16 @@ public class IdentityServiceImpl implements IdentityService {
         identity.setDeleted(now);
         identityRepository.save(identity);
         logger.debug("Deleting identity Identity:'{}'.", id);
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public List<Identity> findAllById(List<String> identityIds) {
+        List<Identity> identities = identityRepository.findAllById(identityIds).stream()
+                .filter(Objects::nonNull)
+                .collect(Collectors.toList());
+        logger.debug("Found {} identities from {} identity ids:'{}'", identities.size(), identities.size(), identityIds.size(), identityIds);
+        return identities;
     }
 
     @Override

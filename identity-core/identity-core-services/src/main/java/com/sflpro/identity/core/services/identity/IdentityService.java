@@ -75,6 +75,15 @@ public interface IdentityService {
     void delete(String id);
 
     /**
+     *  Find all identities from provided list of ids
+     *  Also exclude nulls if some identity is not found
+     *
+     * @param identityIds ids of identities which should be returned
+     * @return list of identities
+     */
+    List<Identity> findAllById(final List<String> identityIds);
+
+    /**
      *  Lists all identities for specified resource
      * @param resourceId id of resource which identities should be retrieved
      * @return list of resource's identities

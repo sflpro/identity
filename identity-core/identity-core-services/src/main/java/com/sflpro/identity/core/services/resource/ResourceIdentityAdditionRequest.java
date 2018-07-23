@@ -1,6 +1,6 @@
 package com.sflpro.identity.core.services.resource;
 
-import java.util.Set;
+import java.util.List;
 
 /**
  * Company: SFL LLC
@@ -12,7 +12,7 @@ public class ResourceIdentityAdditionRequest {
 
     private Long resourceId;
 
-    private Set<String> identityIds;
+    private List<String> identityIds;
 
     public Long getResourceId() {
         return resourceId;
@@ -22,11 +22,11 @@ public class ResourceIdentityAdditionRequest {
         this.resourceId = resourceId;
     }
 
-    public Set<String> getIdentityIds() {
+    public List<String> getIdentityIds() {
         return identityIds;
     }
 
-    public void setIdentityIds(Set<String> identityIds) {
+    public void setIdentityIds(List<String> identityIds) {
         this.identityIds = identityIds;
     }
 }
