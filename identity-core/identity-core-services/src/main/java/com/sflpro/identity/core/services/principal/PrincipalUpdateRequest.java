@@ -10,6 +10,8 @@ import java.util.List;
  */
 public class PrincipalUpdateRequest {
 
+    private String adminSecret;
+
     private String secret;
 
     private List<PrincipalUpdateDetailsRequest> updateDetailsRequests;
@@ -20,6 +22,14 @@ public class PrincipalUpdateRequest {
 
     public void setSecret(String secret) {
         this.secret = secret;
+    }
+
+    public String getAdminSecret() {
+        return adminSecret;
+    }
+
+    public void setAdminSecret(String adminSecret) {
+        this.adminSecret = adminSecret;
     }
 
     public List<PrincipalUpdateDetailsRequest> getUpdateDetailsRequests() {

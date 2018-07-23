@@ -12,6 +12,7 @@ import com.sflpro.identity.core.services.identity.IdentityService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Isolation;
 import org.springframework.transaction.annotation.Transactional;
@@ -33,6 +34,9 @@ import java.util.stream.Collectors;
 public class PrincipalServiceImpl implements PrincipalService {
 
     private static final Logger logger = LoggerFactory.getLogger(PrincipalServiceImpl.class);
+
+    @Value("${auth.admin.secret}")
+    private String authAdminSecret;
 
     @Autowired
     private PrincipalRepository principalRepository;
@@ -71,12 +75,17 @@ public class PrincipalServiceImpl implements PrincipalService {
     public List<Principal> update(final String identityId, final PrincipalUpdateRequest updateRequest) throws AuthenticationServiceException {
         Assert.notNull(identityId, "identity id cannot be null");
         Assert.notNull(updateRequest, "updateRequest cannot be null");
-        Assert.notNull(updateRequest.getSecret(), "updateRequest secret cannot be null");
         Assert.notNull(updateRequest.getUpdateDetailsRequests(), "updateRequest.details cannot be null");
+
+        if(!authAdminSecret.equals(updateRequest.getAdminSecret())) {
+            Assert.notNull(updateRequest.getSecret(), "updateRequest secret cannot be null");
+        }
         logger.debug("Updating principal by identity id {}", identityId);
         Identity identity = identityService.get(identityId);
 
-        identityService.chkSecretCorrectAndIdentityActive(identity, updateRequest.getSecret());
+        if(Objects.nonNull(updateRequest.getSecret())) {
+            identityService.chkSecretCorrectAndIdentityActive(identity, updateRequest.getSecret());
+        }
 
         chkStatusConstraints(updateRequest.getUpdateDetailsRequests());
 

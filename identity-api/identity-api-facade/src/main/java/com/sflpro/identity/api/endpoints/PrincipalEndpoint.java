@@ -19,6 +19,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.util.Assert;
 
+import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
@@ -62,7 +63,7 @@ public class PrincipalEndpoint {
     @PUT
     @Path("/{identityId}")
     public ApiGenericListResponse<PrincipalDto> update(@NotNull @PathParam("identityId") final String identityId,
-                                                       @NotNull final PrincipalUpdateRequestDto updateRequestDto) {
+                                                       @NotNull @Valid final PrincipalUpdateRequestDto updateRequestDto) {
         Assert.notNull(identityId, "identityId cannot be null");
         Assert.notNull(updateRequestDto, "updateRequestDto cannot be null");
         logger.debug("Updating principals with identity id: {}", identityId);
