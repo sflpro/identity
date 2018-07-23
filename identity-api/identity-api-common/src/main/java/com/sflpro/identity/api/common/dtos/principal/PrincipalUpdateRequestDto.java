@@ -1,5 +1,6 @@
 package com.sflpro.identity.api.common.dtos.principal;
 
+import javax.validation.constraints.AssertTrue;
 import javax.validation.constraints.NotNull;
 import java.util.List;
 
@@ -11,8 +12,9 @@ import java.util.List;
  */
 public class PrincipalUpdateRequestDto {
 
-    @NotNull
     private String secret;
+
+    private String adminSecret;
 
     @NotNull
     private List<PrincipalUpdateDetailsRequestDto> updateDetailsRequests;
@@ -25,11 +27,24 @@ public class PrincipalUpdateRequestDto {
         this.secret = secret;
     }
 
+    public String getAdminSecret() {
+        return adminSecret;
+    }
+
+    public void setAdminSecret(String adminSecret) {
+        this.adminSecret = adminSecret;
+    }
+
     public List<PrincipalUpdateDetailsRequestDto> getUpdateDetailsRequests() {
         return updateDetailsRequests;
     }
 
     public void setUpdateDetailsRequests(List<PrincipalUpdateDetailsRequestDto> updateDetailsRequests) {
         this.updateDetailsRequests = updateDetailsRequests;
+    }
+
+    @AssertTrue(message = "secret must not be null")
+    public boolean isSecretNotNull() {
+        return secret != null || adminSecret != null;
     }
 }
