@@ -6,14 +6,18 @@ import com.sflpro.identity.core.db.entities.Resource;
 import com.sflpro.identity.core.db.repositories.IdentityResourceRepository;
 import com.sflpro.identity.core.db.repositories.ResourceRepository;
 import com.sflpro.identity.core.services.ResourceNotFoundException;
+import com.sflpro.identity.core.services.identity.IdentityResourceUpdateRequest;
 import com.sflpro.identity.core.services.identity.IdentityService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Isolation;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.Assert;
 
+import javax.persistence.EntityManager;
+import javax.persistence.PersistenceContext;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -35,9 +39,6 @@ public class ResourceServiceImpl implements ResourceService {
 
     @Autowired
     private IdentityResourceRepository identityResourceRepository;
-
-    @Autowired
-    private IdentityService identityService;
 
     @Override
     @Transactional
@@ -121,40 +122,11 @@ public class ResourceServiceImpl implements ResourceService {
     }
 
     @Override
-    @Transactional
-    public void addIdentities(ResourceIdentityAdditionRequest resourceIdentityAdditionRequest) {
-        logger.debug("Trying to add identities to resource: '{}'", resourceIdentityAdditionRequest);
-        Assert.notNull(resourceIdentityAdditionRequest, "resourceRequest cannot be null");
-        Assert.notNull(resourceIdentityAdditionRequest.getResourceId(), "resourceRequest.id cannot be null");
-        Assert.notEmpty(resourceIdentityAdditionRequest.getIdentityIds(), "resourceRequest.identityIds cannot be empty");
-        Resource resource = get(resourceIdentityAdditionRequest.getResourceId());
-        List<Identity> identities = identityService.findAllById(resourceIdentityAdditionRequest.getIdentityIds());
-        List<Identity> missingIdentities = identities.stream()
-                .filter(i -> !identityResourceRepository.existsByIdentityAndResource(i, resource))
-                .collect(Collectors.toList());
-        List<IdentityResource> identityResources = missingIdentities.stream()
-                .map(i -> {
-                    IdentityResource identityResource = new IdentityResource();
-                    identityResource.setIdentity(i);
-                    identityResource.setResource(resource);
-                    return identityResource;
-                })
-                .collect(Collectors.toList());
-
-        identityResourceRepository.saveAll(identityResources);
-        logger.trace("Added {} identities to resource: '{}'", identityResources.size(), resource);
-    }
-
-    @Override
-    @Transactional
-    public void removeIdentity(final long resourceId, final String identityId) {
-        logger.debug("Trying to remove identity '{}' from resource: '{}'", identityId, resourceId);
-        Assert.notNull(identityId, "identityId cannot be null");
-        Resource resource = get(resourceId);
-        Identity identity = identityService.get(identityId);
-        IdentityResource identityResources = identityResourceRepository.findByIdentityAndResource(identity, resource);
-
-        identityResourceRepository.delete(identityResources);
-        logger.trace("Removed identity: '{}' from resource: '{}'", identity, resource);
+    @Transactional(readOnly = true)
+    public List<Resource> getByIds(final List<Long> resourceIds) {
+        logger.debug("Trying to get resources with ids: '{}'.", resourceIds);
+        List<Resource> resources = resourceRepository.findAllById(resourceIds);
+        logger.trace("Finished getting resources from ids '{}'", resourceIds);
+        return resources;
     }
 }

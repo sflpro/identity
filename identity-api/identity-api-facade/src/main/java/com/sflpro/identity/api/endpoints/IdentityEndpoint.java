@@ -3,6 +3,7 @@ package com.sflpro.identity.api.endpoints;
 import com.sflpro.identity.api.common.dtos.ApiGenericListResponse;
 import com.sflpro.identity.api.common.dtos.ApiResponseDto;
 import com.sflpro.identity.api.common.dtos.auth.AuthenticationExceptionDto;
+import com.sflpro.identity.api.common.dtos.identity.IdentityResourceUpdateRequestDto;
 import com.sflpro.identity.api.common.dtos.identity.IdentityUpdateRequestDto;
 import com.sflpro.identity.api.common.dtos.resource.ResourceDto;
 import com.sflpro.identity.core.db.entities.Resource;
@@ -19,6 +20,7 @@ import com.sflpro.identity.core.services.identity.IdentityUpdateRequest;
 import com.sflpro.identity.core.services.identity.reset.RequestSecretResetRequest;
 import com.sflpro.identity.core.services.identity.reset.SecretResetRequest;
 import com.sflpro.identity.core.services.resource.ResourceService;
+import com.sflpro.identity.core.services.identity.IdentityResourceUpdateRequest;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.SwaggerDefinition;
@@ -145,6 +147,20 @@ public class IdentityEndpoint {
         // Get resources
         List<Resource> resources = resourceService.search(identityId, resourceType, resourceIdentifier);
         logger.info("Found {} resources for identity:'{}'.", resources.size(), identityId);
+        List<ResourceDto> result = mapper.mapAsList(resources, ResourceDto.class);
+        return new ApiGenericListResponse<>(result.size(), result);
+    }
+
+    @ApiOperation("Update resources of identity")
+    @PUT
+    @Path("/{identityId}/resources")
+    @Transactional
+    public ApiGenericListResponse<ResourceDto> updateIdentityResources(@NotNull @PathParam("identityId") final String identityId, @NotNull @Valid IdentityResourceUpdateRequestDto updateRequestDto) {
+        logger.debug("Updating resources of identity: {}", identityId);
+        IdentityResourceUpdateRequest updateRequest = mapper.map(updateRequestDto, IdentityResourceUpdateRequest.class);
+        updateRequest.setIdentityId(identityId);
+        List<Resource> resources = identityService.updateIdentityResources(updateRequest);
+        logger.info("Done updating resources of identity: {}", identityId);
         List<ResourceDto> result = mapper.mapAsList(resources, ResourceDto.class);
         return new ApiGenericListResponse<>(result.size(), result);
     }

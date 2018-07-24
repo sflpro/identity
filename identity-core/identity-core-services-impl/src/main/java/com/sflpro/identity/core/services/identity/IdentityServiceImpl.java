@@ -4,9 +4,7 @@ import com.sflpro.identity.core.datatypes.IdentityContactMethod;
 import com.sflpro.identity.core.datatypes.IdentityStatus;
 import com.sflpro.identity.core.datatypes.PrincipalType;
 import com.sflpro.identity.core.datatypes.TokenType;
-import com.sflpro.identity.core.db.entities.Credential;
-import com.sflpro.identity.core.db.entities.Identity;
-import com.sflpro.identity.core.db.entities.Token;
+import com.sflpro.identity.core.db.entities.*;
 import com.sflpro.identity.core.db.repositories.IdentityRepository;
 import com.sflpro.identity.core.db.repositories.IdentityResourceRepository;
 import com.sflpro.identity.core.services.ResourceNotFoundException;
@@ -17,19 +15,22 @@ import com.sflpro.identity.core.services.identity.reset.RequestSecretResetReques
 import com.sflpro.identity.core.services.identity.reset.SecretResetRequest;
 import com.sflpro.identity.core.services.notification.NotificationCommunicationService;
 import com.sflpro.identity.core.services.principal.PrincipalService;
+import com.sflpro.identity.core.services.resource.ResourceService;
 import com.sflpro.identity.core.services.token.*;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Isolation;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.Assert;
 
+import javax.persistence.EntityManager;
+import javax.persistence.PersistenceContext;
 import javax.validation.constraints.NotNull;
 import java.time.LocalDateTime;
 import java.util.List;
-import java.util.Objects;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
@@ -43,6 +44,9 @@ import java.util.stream.Collectors;
 public class IdentityServiceImpl implements IdentityService {
 
     private static final Logger logger = LoggerFactory.getLogger(IdentityServiceImpl.class);
+
+    @PersistenceContext
+    private EntityManager entityManager;
 
     @Autowired
     private TokenService tokenService;
@@ -61,6 +65,9 @@ public class IdentityServiceImpl implements IdentityService {
 
     @Autowired
     private IdentityResourceRepository identityResourceRepository;
+
+    @Autowired
+    private ResourceService resourceService;
 
     /**
      * {@inheritDoc}
@@ -227,20 +234,46 @@ public class IdentityServiceImpl implements IdentityService {
 
     @Override
     @Transactional(readOnly = true)
-    public List<Identity> findAllById(List<String> identityIds) {
-        List<Identity> identities = identityRepository.findAllById(identityIds).stream()
-                .filter(Objects::nonNull)
-                .collect(Collectors.toList());
-        logger.debug("Found {} identities from {} identity ids:'{}'", identities.size(), identityIds.size(), identityIds);
-        return identities;
-    }
-
-    @Override
-    @Transactional(readOnly = true)
     public List<Identity> list(long resourceId) {
         List<Identity> identities = identityResourceRepository.findIdentities(resourceId);
         logger.debug("Found {} identities for resource:'{}'", identities.size(), resourceId);
         return identities;
+    }
+
+    @Override
+    @Transactional(isolation = Isolation.SERIALIZABLE)
+    public List<Resource> updateIdentityResources(IdentityResourceUpdateRequest updateRequest) {
+        Assert.notNull(updateRequest, "updateRequest cannot be null");
+        Assert.notNull(updateRequest.getIdentityId(), "updateRequest.identity id cannot be null");
+        Assert.notNull(updateRequest.getResourceIds(), "updateRequest.details cannot be null");
+        logger.debug("Updating resources of identity: {}", updateRequest);
+        Identity identity = get(updateRequest.getIdentityId());
+
+        deleteAllResourcesFromIdentity(identity);
+        entityManager.flush();
+        List<Resource> result = resourceService.getByIds(updateRequest.getResourceIds()).stream()
+                .map(r -> insert(identity, r))
+                .map(IdentityResource::getResource)
+                .collect(Collectors.toList());
+        logger.trace("Complete updating resources of identity: {}.", identity);
+        return result;
+    }
+
+    @Transactional
+    public void deleteAllResourcesFromIdentity(final Identity identity) {
+        logger.debug("Removing all resources from identity: {}", identity);
+        List<IdentityResource> identityResources = identityResourceRepository.findByIdentity(identity);
+        identityResourceRepository.deleteAll(identityResources);
+    }
+
+    @Transactional
+    public IdentityResource insert(final Identity identity, final Resource resource) {
+        Assert.notNull(identity, "identity cannot be null");
+        Assert.notNull(resource, "resource cannot be null");
+        IdentityResource identityResource = new IdentityResource();
+        identityResource.setResource(resource);
+        identityResource.setIdentity(identity);
+        return identityResourceRepository.save(identityResource);
     }
 
 }

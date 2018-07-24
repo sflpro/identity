@@ -5,7 +5,6 @@ import com.sflpro.identity.api.common.dtos.ApiResponseDto;
 import com.sflpro.identity.api.common.dtos.identity.IdentityDto;
 import com.sflpro.identity.api.common.dtos.resource.ResourceCreationRequestDto;
 import com.sflpro.identity.api.common.dtos.resource.ResourceDto;
-import com.sflpro.identity.api.common.dtos.resource.ResourceIdentityAdditionRequestDto;
 import com.sflpro.identity.api.common.dtos.resource.ResourceUpdateRequestDto;
 
 import javax.ws.rs.client.Client;
@@ -44,20 +43,14 @@ public class ResourceResource extends AbstractApiResource {
 
     public ApiGenericListResponse<ResourceDto> list(final String type, final String identifier){
         Map<String, String> params = new HashMap<>();
-        Optional.ofNullable(type).ifPresent(t -> params.put("type", t));
-        Optional.ofNullable(identifier).ifPresent(i -> params.put("identifier", i));
+        Optional.ofNullable(type)
+                .ifPresent(t -> params.put("type", t));
+        Optional.ofNullable(identifier)
+                .ifPresent(i -> params.put("identifier", i));
         return doGet("", new GenericType<ApiGenericListResponse<ResourceDto>>() {}, params);
     }
 
     public ApiGenericListResponse<IdentityDto> listIdentities(final long resourceId){
         return doGet(String.format("/%s/identities", resourceId), new GenericType<ApiGenericListResponse<IdentityDto>>() {});
-    }
-
-    public ApiResponseDto addIdentities(final Long resourceId, final ResourceIdentityAdditionRequestDto identityModificationRequestDto) {
-        return doPut(String.format("/%s/identities", resourceId), identityModificationRequestDto, ApiResponseDto.class);
-    }
-
-    public ApiResponseDto removeIdentity(final Long resourceId, final String identityId) {
-        return doDelete(String.format("/%s/identities/%s", resourceId, identityId), ApiResponseDto.class);
     }
 }
