@@ -1,27 +1,20 @@
 package com.sflpro.identity.core.services.resource;
 
 import com.sflpro.identity.core.db.entities.Identity;
-import com.sflpro.identity.core.db.entities.IdentityResource;
 import com.sflpro.identity.core.db.entities.Resource;
 import com.sflpro.identity.core.db.repositories.IdentityResourceRepository;
 import com.sflpro.identity.core.db.repositories.ResourceRepository;
 import com.sflpro.identity.core.services.ResourceNotFoundException;
-import com.sflpro.identity.core.services.identity.IdentityResourceUpdateRequest;
-import com.sflpro.identity.core.services.identity.IdentityService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Isolation;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.Assert;
 
-import javax.persistence.EntityManager;
-import javax.persistence.PersistenceContext;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.Collectors;
 
 /**
  * Company: SFL LLC
