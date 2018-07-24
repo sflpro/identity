@@ -2,7 +2,6 @@ package com.sflpro.identity.core.services.resource;
 
 import com.sflpro.identity.core.db.entities.Identity;
 import com.sflpro.identity.core.db.entities.Resource;
-import com.sflpro.identity.core.services.identity.IdentityResourceUpdateRequest;
 
 import java.util.List;
 
