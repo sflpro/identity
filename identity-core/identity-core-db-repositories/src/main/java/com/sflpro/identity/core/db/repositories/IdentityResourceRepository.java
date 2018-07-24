@@ -1,5 +1,6 @@
 package com.sflpro.identity.core.db.repositories;
 
+import com.sflpro.identity.core.db.entities.Identity;
 import com.sflpro.identity.core.db.entities.IdentityResource;
 import com.sflpro.identity.core.db.entities.Resource;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -24,4 +25,13 @@ public interface IdentityResourceRepository extends JpaRepository<IdentityResour
             "and r.resource.deleted is null " +
             "order by r.resource.type, r.resource.identifier")
     List<Resource> search(@Param("identityId") String identityId, @Param("resourceType") String resourceType, @Param("resourceIdentifier") String resourceIdentifier);
+
+    @Query("select r.identity " +
+            "from IdentityResource r " +
+            "where r.resource.id = :resourceId " +
+            "and r.identity.deleted is null " +
+            "order by r.resource.type")
+    List<Identity> findIdentities(@Param("resourceId") long resourceId);
+
+    List<IdentityResource> findByIdentity(Identity identity);
 }

@@ -12,4 +12,5 @@ public interface IdentityApiClient extends Closeable {
 
     IdentityResource identity();
     PrincipalResource principal();
+    ResourceResource resource();
 }
