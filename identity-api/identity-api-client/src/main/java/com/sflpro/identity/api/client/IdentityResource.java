@@ -1,6 +1,8 @@
 package com.sflpro.identity.api.client;
 
 import com.sflpro.identity.api.common.dtos.ApiGenericListResponse;
+import com.sflpro.identity.api.common.dtos.ApiResponseDto;
+import com.sflpro.identity.api.common.dtos.identity.IdentityCreationRequestDto;
 import com.sflpro.identity.api.common.dtos.identity.IdentityDto;
 import com.sflpro.identity.api.common.dtos.identity.IdentityUpdateRequestDto;
 import com.sflpro.identity.api.common.dtos.identity.IdentityResourceUpdateRequestDto;
@@ -31,6 +33,14 @@ public class IdentityResource extends AbstractApiResource {
 
     public IdentityDto update(final String identityId, final IdentityUpdateRequestDto requestDto) {
         return doPut("/" + identityId, requestDto, IdentityDto.class);
+    }
+
+    public ApiResponseDto delete(final String identityId) {
+        return doDelete("/" + identityId, ApiResponseDto.class);
+    }
+
+    public IdentityDto create(final IdentityCreationRequestDto request) {
+        return doPut("/", request, IdentityDto.class);
     }
 
     public ApiGenericListResponse<ResourceDto> listResources(final String identityId, final String resourceType, final String resourceIdentifier) {
