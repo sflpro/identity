@@ -249,7 +249,7 @@ public class IdentityServiceImpl implements IdentityService {
         logger.debug("Updating resources of identity: {}", updateRequest);
         Identity identity = get(updateRequest.getIdentityId());
 
-        deleteAllResourcesFromIdentity(identity);
+        identityResourceRepository.deleteAllByIdentityId(identity.getId());
         entityManager.flush();
         List<Resource> result = resourceService.getByIds(updateRequest.getResourceIds()).stream()
                 .map(r -> insert(identity, r))
@@ -259,15 +259,7 @@ public class IdentityServiceImpl implements IdentityService {
         return result;
     }
 
-    @Transactional
-    public void deleteAllResourcesFromIdentity(final Identity identity) {
-        logger.debug("Removing all resources from identity: {}", identity);
-        List<IdentityResource> identityResources = identityResourceRepository.findByIdentity(identity);
-        identityResourceRepository.deleteAll(identityResources);
-    }
-
-    @Transactional
-    public IdentityResource insert(final Identity identity, final Resource resource) {
+    private IdentityResource insert(final Identity identity, final Resource resource) {
         Assert.notNull(identity, "identity cannot be null");
         Assert.notNull(resource, "resource cannot be null");
         IdentityResource identityResource = new IdentityResource();
