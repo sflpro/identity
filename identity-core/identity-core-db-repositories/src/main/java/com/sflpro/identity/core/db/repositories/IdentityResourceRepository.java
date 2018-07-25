@@ -33,5 +33,5 @@ public interface IdentityResourceRepository extends JpaRepository<IdentityResour
             "order by r.resource.type")
     List<Identity> findIdentities(@Param("resourceId") long resourceId);
 
-    List<IdentityResource> findByIdentity(Identity identity);
+    void deleteAllByIdentityId(String identityId);
 }

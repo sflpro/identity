@@ -249,7 +249,7 @@ public class IdentityServiceImpl implements IdentityService {
         logger.debug("Updating resources of identity: {}", updateRequest);
         Identity identity = get(updateRequest.getIdentityId());
 
-        deleteAllResourcesFromIdentity(identity);
+        identityResourceRepository.deleteAllByIdentityId(identity.getId());
         entityManager.flush();
         List<Resource> result = resourceService.getByIds(updateRequest.getResourceIds()).stream()
                 .map(r -> insert(identity, r))
@@ -257,13 +257,6 @@ public class IdentityServiceImpl implements IdentityService {
                 .collect(Collectors.toList());
         logger.trace("Complete updating resources of identity: {}.", identity);
         return result;
-    }
-
-    @Transactional
-    public void deleteAllResourcesFromIdentity(final Identity identity) {
-        logger.debug("Removing all resources from identity: {}", identity);
-        List<IdentityResource> identityResources = identityResourceRepository.findByIdentity(identity);
-        identityResourceRepository.deleteAll(identityResources);
     }
 
     private IdentityResource insert(final Identity identity, final Resource resource) {
