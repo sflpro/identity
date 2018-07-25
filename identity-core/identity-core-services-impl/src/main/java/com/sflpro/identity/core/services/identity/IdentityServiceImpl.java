@@ -266,8 +266,7 @@ public class IdentityServiceImpl implements IdentityService {
         identityResourceRepository.deleteAll(identityResources);
     }
 
-    @Transactional
-    public IdentityResource insert(final Identity identity, final Resource resource) {
+    private IdentityResource insert(final Identity identity, final Resource resource) {
         Assert.notNull(identity, "identity cannot be null");
         Assert.notNull(resource, "resource cannot be null");
         IdentityResource identityResource = new IdentityResource();
