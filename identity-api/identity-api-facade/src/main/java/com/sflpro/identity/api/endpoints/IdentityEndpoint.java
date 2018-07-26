@@ -137,6 +137,15 @@ public class IdentityEndpoint {
         return mapper.map(identity, IdentityDto.class);
     }
 
+    @ApiOperation("Returns all identities")
+    @GET
+    @Transactional(readOnly = true)
+    public ApiGenericListResponse<IdentityDto> list() {
+        List<Identity> identities = identityService.list();
+        logger.info("Found {} identities.", identities);
+        return new ApiGenericListResponse<>(identities.size(), mapper.mapAsList(identities, IdentityDto.class));
+    }
+
     @ApiOperation("Lists identity's all resources")
     @GET
     @Path("/{identityId}/resources")

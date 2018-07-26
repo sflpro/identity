@@ -31,6 +31,7 @@ import javax.persistence.PersistenceContext;
 import javax.validation.constraints.NotNull;
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
@@ -234,7 +235,17 @@ public class IdentityServiceImpl implements IdentityService {
 
     @Override
     @Transactional(readOnly = true)
-    public List<Identity> list(long resourceId) {
+    public List<Identity> list() {
+        List<Identity> identities = identityRepository.findAll().stream()
+                .filter(i -> Objects.isNull(i.getDeleted()))
+                .collect(Collectors.toList());
+        logger.debug("Found {} identities", identities.size());
+        return identities;
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public List<Identity> getIdentities(long resourceId) {
         List<Identity> identities = identityResourceRepository.findIdentities(resourceId);
         logger.debug("Found {} identities for resource:'{}'", identities.size(), resourceId);
         return identities;

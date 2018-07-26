@@ -75,12 +75,14 @@ public interface IdentityService {
 
     void delete(String id);
 
+    List<Identity> list();
+
     /**
      *  Lists all identities for specified resource
      * @param resourceId id of resource which identities should be retrieved
      * @return list of resource's identities
      */
-    List<Identity> list(final long resourceId);
+    List<Identity> getIdentities(final long resourceId);
 
     /**
      *  Update resources of specified identity
