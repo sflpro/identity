@@ -120,7 +120,7 @@ public class ResourceEndpoint {
     @Transactional(readOnly = true)
     public ApiGenericListResponse<IdentityDto> listIdentities(@NotNull @PathParam("resourceId") final Long resourceId) {
         // Get identities
-        List<Identity> identities = identityService.list(resourceId);
+        List<Identity> identities = identityService.getIdentities(resourceId);
         logger.info("Found {} identities for resource:'{}'.", identities.size(), resourceId);
         List<IdentityDto> result = mapper.mapAsList(identities, IdentityDto.class);
         return new ApiGenericListResponse<>(result.size(), result);
