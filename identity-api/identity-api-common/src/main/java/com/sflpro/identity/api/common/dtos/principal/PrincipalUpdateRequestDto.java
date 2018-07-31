@@ -1,5 +1,7 @@
 package com.sflpro.identity.api.common.dtos.principal;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 import javax.validation.constraints.AssertTrue;
 import javax.validation.constraints.NotNull;
 import java.util.List;
@@ -43,6 +45,7 @@ public class PrincipalUpdateRequestDto {
         this.updateDetailsRequests = updateDetailsRequests;
     }
 
+    @JsonIgnore
     @AssertTrue(message = "secret must not be null")
     public boolean isSecretNotNull() {
         return secret != null || adminSecret != null;
