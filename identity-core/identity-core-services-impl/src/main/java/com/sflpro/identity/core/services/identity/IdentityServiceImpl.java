@@ -253,16 +253,13 @@ public class IdentityServiceImpl implements IdentityService {
         identityResourceRepository.deleteAllByIdentityId(identity.getId());
         entityManager.flush();
         List<Resource> result = updateRequest.getResourceRequests().stream()
-                .map(r -> {
-                    List<Resource> list = resourceService.list(r.getType(), r.getIdentifier());
-                    if(list.isEmpty() || list.get(0) == null) {
-                        ResourceCreationRequest creationRequest = new ResourceCreationRequest();
-                        creationRequest.setType(r.getType());
-                        creationRequest.setIdentifier(r.getIdentifier());
-                        return resourceService.create(creationRequest);
-                    }
-                    return list.get(0);
-                })
+                .map(r -> Optional.ofNullable(resourceService.get(r.getType(), r.getIdentifier()))
+                        .orElseGet(() -> {
+                            ResourceCreationRequest creationRequest = new ResourceCreationRequest();
+                            creationRequest.setType(r.getType());
+                            creationRequest.setIdentifier(r.getIdentifier());
+                            return resourceService.create(creationRequest);
+                        }))
                 .map(r -> insert(identity, r))
                 .map(IdentityResource::getResource)
                 .collect(Collectors.toList());
