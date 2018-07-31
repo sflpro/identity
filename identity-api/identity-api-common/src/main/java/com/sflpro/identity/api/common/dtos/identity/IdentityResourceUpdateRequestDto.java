@@ -1,5 +1,7 @@
 package com.sflpro.identity.api.common.dtos.identity;
 
+import com.sflpro.identity.api.common.dtos.resource.ResourceRequestDto;
+
 import javax.validation.constraints.NotEmpty;
 import java.util.List;
 
@@ -12,13 +14,13 @@ import java.util.List;
 public class IdentityResourceUpdateRequestDto {
 
     @NotEmpty
-    private List<Long> resourceIds;
+    private List<ResourceRequestDto> resourceRequests;
 
-    public List<Long> getResourceIds() {
-        return resourceIds;
+    public List<ResourceRequestDto> getResourceRequests() {
+        return resourceRequests;
     }
 
-    public void setResourceIds(List<Long> resourceIds) {
-        this.resourceIds = resourceIds;
+    public void setResourceRequests(List<ResourceRequestDto> resourceRequests) {
+        this.resourceRequests = resourceRequests;
     }
 }

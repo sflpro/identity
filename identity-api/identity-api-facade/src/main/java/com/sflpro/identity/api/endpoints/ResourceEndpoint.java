@@ -102,18 +102,6 @@ public class ResourceEndpoint {
         return new ApiResponseDto();
     }
 
-    @ApiOperation("Lists resources")
-    @GET
-    @Transactional(readOnly = true)
-    public ApiGenericListResponse<ResourceDto> list(@QueryParam("type") final String type,
-                                                    @QueryParam("identifier") final String identifier) {
-        // list resources
-        List<Resource> resources = resourceService.list(type, identifier);
-        logger.info("Found {} resources", resources.size());
-        List<ResourceDto> result = mapper.mapAsList(resources, ResourceDto.class);
-        return new ApiGenericListResponse<>(result.size(), result);
-    }
-
     @ApiOperation("Lists resource's identities")
     @GET
     @Path("/{resourceId}/identities")

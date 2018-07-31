@@ -21,11 +21,9 @@ public interface ResourceService {
 
     Resource delete(final long resourceId);
 
-    List<Resource> list(final String resourceType, String resourceIdentifier);
+    Resource get(final String resourceType, String resourceIdentifier);
 
     List<Resource> search(final String identityId, String resourceType, String resourceIdentifier);
 
     List<Resource> get(final List<ResourceRequest> resourceRequests, final Identity identity);
-
-    List<Resource> getByIds(final List<Long> resourceIds);
 }

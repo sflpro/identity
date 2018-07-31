@@ -88,11 +88,11 @@ public class ResourceServiceImpl implements ResourceService {
 
     @Override
     @Transactional(readOnly = true)
-    public List<Resource> list(String type, String identifier) {
+    public Resource get(String type, String identifier) {
         logger.debug("Trying to to list resources with type: '{}' and identifier: {}.", type, identifier);
-        List<Resource> resources = resourceRepository.search(type, identifier);
-        logger.trace("Finished listing resources with '{}' type and '{}' identifier.", type, identifier);
-        return resources;
+        Resource resource = resourceRepository.findFirstByDeletedIsNullAndTypeAndIdentifier(type, identifier);
+        logger.trace("Finished finding resource with '{}' type and '{}' identifier.", type, identifier);
+        return resource;
     }
 
     @Override
@@ -111,15 +111,6 @@ public class ResourceServiceImpl implements ResourceService {
         List<Resource> resources = new ArrayList<>();
         resourceRequests.forEach(r -> resources.addAll(identityResourceRepository.search(identity.getId(), r.getType(), r.getIdentifier())));
         logger.trace("Complete getting resources for identity {}.", identity);
-        return resources;
-    }
-
-    @Override
-    @Transactional(readOnly = true)
-    public List<Resource> getByIds(final List<Long> resourceIds) {
-        logger.debug("Trying to get resources with ids: '{}'.", resourceIds);
-        List<Resource> resources = resourceRepository.findAllById(resourceIds);
-        logger.trace("Finished getting resources from ids '{}'", resourceIds);
         return resources;
     }
 }

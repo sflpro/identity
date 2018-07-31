@@ -15,6 +15,7 @@ import com.sflpro.identity.core.services.identity.reset.RequestSecretResetReques
 import com.sflpro.identity.core.services.identity.reset.SecretResetRequest;
 import com.sflpro.identity.core.services.notification.NotificationCommunicationService;
 import com.sflpro.identity.core.services.principal.PrincipalService;
+import com.sflpro.identity.core.services.resource.ResourceCreationRequest;
 import com.sflpro.identity.core.services.resource.ResourceService;
 import com.sflpro.identity.core.services.token.*;
 import org.apache.commons.lang3.StringUtils;
@@ -245,13 +246,20 @@ public class IdentityServiceImpl implements IdentityService {
     public List<Resource> updateIdentityResources(IdentityResourceUpdateRequest updateRequest) {
         Assert.notNull(updateRequest, "updateRequest cannot be null");
         Assert.notNull(updateRequest.getIdentityId(), "updateRequest.identity id cannot be null");
-        Assert.notNull(updateRequest.getResourceIds(), "updateRequest.details cannot be null");
+        Assert.notNull(updateRequest.getResourceRequests(), "updateRequest.resourceRequests cannot be null");
         logger.debug("Updating resources of identity: {}", updateRequest);
         Identity identity = get(updateRequest.getIdentityId());
 
         identityResourceRepository.deleteAllByIdentityId(identity.getId());
         entityManager.flush();
-        List<Resource> result = resourceService.getByIds(updateRequest.getResourceIds()).stream()
+        List<Resource> result = updateRequest.getResourceRequests().stream()
+                .map(r -> Optional.ofNullable(resourceService.get(r.getType(), r.getIdentifier()))
+                        .orElseGet(() -> {
+                            ResourceCreationRequest creationRequest = new ResourceCreationRequest();
+                            creationRequest.setType(r.getType());
+                            creationRequest.setIdentifier(r.getIdentifier());
+                            return resourceService.create(creationRequest);
+                        }))
                 .map(r -> insert(identity, r))
                 .map(IdentityResource::getResource)
                 .collect(Collectors.toList());

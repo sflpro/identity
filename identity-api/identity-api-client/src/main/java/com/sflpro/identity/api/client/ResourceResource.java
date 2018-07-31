@@ -10,9 +10,6 @@ import com.sflpro.identity.api.common.dtos.resource.ResourceUpdateRequestDto;
 import javax.ws.rs.client.Client;
 import javax.ws.rs.client.WebTarget;
 import javax.ws.rs.core.GenericType;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Optional;
 
 /**
  * Company: SFL LLC
@@ -39,15 +36,6 @@ public class ResourceResource extends AbstractApiResource {
 
     public ApiResponseDto delete(final long resourceId) {
         return doDelete(Long.toString(resourceId), ApiResponseDto.class);
-    }
-
-    public ApiGenericListResponse<ResourceDto> list(final String type, final String identifier){
-        Map<String, String> params = new HashMap<>();
-        Optional.ofNullable(type)
-                .ifPresent(t -> params.put("type", t));
-        Optional.ofNullable(identifier)
-                .ifPresent(i -> params.put("identifier", i));
-        return doGet("", new GenericType<ApiGenericListResponse<ResourceDto>>() {}, params);
     }
 
     public ApiGenericListResponse<IdentityDto> listIdentities(final long resourceId){
