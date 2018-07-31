@@ -113,13 +113,4 @@ public class ResourceServiceImpl implements ResourceService {
         logger.trace("Complete getting resources for identity {}.", identity);
         return resources;
     }
-
-    @Override
-    @Transactional(readOnly = true)
-    public List<Resource> getByIds(final List<Long> resourceIds) {
-        logger.debug("Trying to get resources with ids: '{}'.", resourceIds);
-        List<Resource> resources = resourceRepository.findAllById(resourceIds);
-        logger.trace("Finished getting resources from ids '{}'", resourceIds);
-        return resources;
-    }
 }

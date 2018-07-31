@@ -26,6 +26,4 @@ public interface ResourceService {
     List<Resource> search(final String identityId, String resourceType, String resourceIdentifier);
 
     List<Resource> get(final List<ResourceRequest> resourceRequests, final Identity identity);
-
-    List<Resource> getByIds(final List<Long> resourceIds);
 }

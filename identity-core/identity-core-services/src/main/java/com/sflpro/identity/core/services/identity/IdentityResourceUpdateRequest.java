@@ -1,5 +1,7 @@
 package com.sflpro.identity.core.services.identity;
 
+import com.sflpro.identity.core.services.resource.ResourceRequest;
+
 import java.util.List;
 
 /**
@@ -12,7 +14,7 @@ public class IdentityResourceUpdateRequest {
 
     private String identityId;
 
-    private List<Long> resourceIds;
+    private List<ResourceRequest> resourceRequests;
 
     public String getIdentityId() {
         return identityId;
@@ -22,11 +24,11 @@ public class IdentityResourceUpdateRequest {
         this.identityId = identityId;
     }
 
-    public List<Long> getResourceIds() {
-        return resourceIds;
+    public List<ResourceRequest> getResourceRequests() {
+        return resourceRequests;
     }
 
-    public void setResourceIds(List<Long> resourceIds) {
-        this.resourceIds = resourceIds;
+    public void setResourceRequests(List<ResourceRequest> resourceRequests) {
+        this.resourceRequests = resourceRequests;
     }
 }
