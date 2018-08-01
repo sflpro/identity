@@ -4,10 +4,9 @@ import com.sflpro.identity.core.datatypes.IdentityContactMethod;
 import com.sflpro.identity.core.datatypes.IdentityStatus;
 import com.sflpro.identity.core.datatypes.PrincipalType;
 import com.sflpro.identity.core.datatypes.TokenType;
-import com.sflpro.identity.core.db.entities.Credential;
-import com.sflpro.identity.core.db.entities.Identity;
-import com.sflpro.identity.core.db.entities.Token;
+import com.sflpro.identity.core.db.entities.*;
 import com.sflpro.identity.core.db.repositories.IdentityRepository;
+import com.sflpro.identity.core.db.repositories.IdentityResourceRepository;
 import com.sflpro.identity.core.services.ResourceNotFoundException;
 import com.sflpro.identity.core.services.auth.AuthenticationServiceException;
 import com.sflpro.identity.core.services.auth.InvalidCredentialsException;
@@ -16,18 +15,25 @@ import com.sflpro.identity.core.services.identity.reset.RequestSecretResetReques
 import com.sflpro.identity.core.services.identity.reset.SecretResetRequest;
 import com.sflpro.identity.core.services.notification.NotificationCommunicationService;
 import com.sflpro.identity.core.services.principal.PrincipalService;
+import com.sflpro.identity.core.services.resource.ResourceCreationRequest;
+import com.sflpro.identity.core.services.resource.ResourceService;
 import com.sflpro.identity.core.services.token.*;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Isolation;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.Assert;
 
+import javax.persistence.EntityManager;
+import javax.persistence.PersistenceContext;
 import javax.validation.constraints.NotNull;
 import java.time.LocalDateTime;
+import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 /**
  * Company: SFL LLC
@@ -39,6 +45,9 @@ import java.util.Optional;
 public class IdentityServiceImpl implements IdentityService {
 
     private static final Logger logger = LoggerFactory.getLogger(IdentityServiceImpl.class);
+
+    @PersistenceContext
+    private EntityManager entityManager;
 
     @Autowired
     private TokenService tokenService;
@@ -54,6 +63,12 @@ public class IdentityServiceImpl implements IdentityService {
 
     @Autowired
     private NotificationCommunicationService notificationCommunicationService;
+
+    @Autowired
+    private IdentityResourceRepository identityResourceRepository;
+
+    @Autowired
+    private ResourceService resourceService;
 
     /**
      * {@inheritDoc}
@@ -204,7 +219,7 @@ public class IdentityServiceImpl implements IdentityService {
             identity.setCreatorId(identityById.get());
         }
         final Identity createdIdentity = identityRepository.save(identity);
-        logger.trace("Complete adding identity - {}", createdIdentity );
+        logger.trace("Complete adding identity - {}", createdIdentity);
         return createdIdentity;
     }
 
@@ -216,6 +231,49 @@ public class IdentityServiceImpl implements IdentityService {
         identity.setDeleted(now);
         identityRepository.save(identity);
         logger.debug("Deleting identity Identity:'{}'.", id);
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public List<Identity> list(long resourceId) {
+        List<Identity> identities = identityResourceRepository.findIdentities(resourceId);
+        logger.debug("Found {} identities for resource:'{}'", identities.size(), resourceId);
+        return identities;
+    }
+
+    @Override
+    @Transactional(isolation = Isolation.SERIALIZABLE)
+    public List<Resource> updateIdentityResources(IdentityResourceUpdateRequest updateRequest) {
+        Assert.notNull(updateRequest, "updateRequest cannot be null");
+        Assert.notNull(updateRequest.getIdentityId(), "updateRequest.identity id cannot be null");
+        Assert.notNull(updateRequest.getResourceRequests(), "updateRequest.resourceRequests cannot be null");
+        logger.debug("Updating resources of identity: {}", updateRequest);
+        Identity identity = get(updateRequest.getIdentityId());
+
+        identityResourceRepository.deleteAllByIdentityId(identity.getId());
+        entityManager.flush();
+        List<Resource> result = updateRequest.getResourceRequests().stream()
+                .map(r -> Optional.ofNullable(resourceService.get(r.getType(), r.getIdentifier()))
+                        .orElseGet(() -> {
+                            ResourceCreationRequest creationRequest = new ResourceCreationRequest();
+                            creationRequest.setType(r.getType());
+                            creationRequest.setIdentifier(r.getIdentifier());
+                            return resourceService.create(creationRequest);
+                        }))
+                .map(r -> insert(identity, r))
+                .map(IdentityResource::getResource)
+                .collect(Collectors.toList());
+        logger.trace("Complete updating resources of identity: {}.", identity);
+        return result;
+    }
+
+    private IdentityResource insert(final Identity identity, final Resource resource) {
+        Assert.notNull(identity, "identity cannot be null");
+        Assert.notNull(resource, "resource cannot be null");
+        IdentityResource identityResource = new IdentityResource();
+        identityResource.setResource(resource);
+        identityResource.setIdentity(identity);
+        return identityResourceRepository.save(identityResource);
     }
 
 }

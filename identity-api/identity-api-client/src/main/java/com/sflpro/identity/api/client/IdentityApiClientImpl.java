@@ -30,6 +30,7 @@ public class IdentityApiClientImpl implements IdentityApiClient {
 
     private final IdentityResource identityResource;
     private final PrincipalResource principalResource;
+    private final ResourceResource resourceResource;
 
     private final ObjectMapper mapper = new ObjectMapper();
 
@@ -57,6 +58,7 @@ public class IdentityApiClientImpl implements IdentityApiClient {
 
         identityResource = new IdentityResource(client, rootTarget);
         principalResource = new PrincipalResource(client, rootTarget);
+        resourceResource = new ResourceResource(client, rootTarget);
     }
 
 
@@ -67,6 +69,11 @@ public class IdentityApiClientImpl implements IdentityApiClient {
 
     public PrincipalResource principal() {
         return principalResource;
+    }
+
+    @Override
+    public ResourceResource resource() {
+        return resourceResource;
     }
 
     @Override

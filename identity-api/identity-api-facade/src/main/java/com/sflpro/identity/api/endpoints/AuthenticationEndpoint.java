@@ -1,10 +1,7 @@
 package com.sflpro.identity.api.endpoints;
 
 import com.sflpro.identity.api.common.dtos.ApiResponseDto;
-import com.sflpro.identity.api.common.dtos.auth.AuthenticationExceptionDto;
-import com.sflpro.identity.api.common.dtos.auth.AuthenticationRequestDetailsDto;
-import com.sflpro.identity.api.common.dtos.auth.AuthenticationRequestDto;
-import com.sflpro.identity.api.common.dtos.auth.AuthenticationResponseDto;
+import com.sflpro.identity.api.common.dtos.auth.*;
 import com.sflpro.identity.api.common.dtos.identity.InactiveIdentityExceptionDtoDto;
 import com.sflpro.identity.api.common.dtos.token.TokenInvalidationRequestDto;
 import com.sflpro.identity.api.mapper.BeanMapper;
@@ -13,6 +10,7 @@ import com.sflpro.identity.core.services.auth.AuthenticationResponse;
 import com.sflpro.identity.core.services.auth.AuthenticationService;
 import com.sflpro.identity.core.services.auth.AuthenticationServiceException;
 import com.sflpro.identity.core.services.identity.InactiveIdentityException;
+import com.sflpro.identity.core.services.token.TokenExpiredException;
 import com.sflpro.identity.core.services.token.TokenInvalidationRequest;
 import com.sflpro.identity.core.services.token.TokenServiceException;
 import io.swagger.annotations.Api;
@@ -73,6 +71,9 @@ public class AuthenticationEndpoint {
         } catch (InactiveIdentityException e) {
             logger.warn("Authentication failed for inactive identity request:'{}'.", requestDto);
             throw new InactiveIdentityExceptionDtoDto(e);
+        } catch (TokenExpiredException e) {
+            logger.warn("Authentication failed for expired token request:'{}'.", requestDto);
+            throw new TokenExpiredExceptionDto(e.getMessage(), e);
         } catch (AuthenticationServiceException e) {
             logger.warn("Authentication failed for request:'{}'.", requestDto);
             throw new AuthenticationExceptionDto(e.getMessage(), e);

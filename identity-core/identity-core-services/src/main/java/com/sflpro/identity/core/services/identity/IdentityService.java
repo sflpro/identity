@@ -1,9 +1,12 @@
 package com.sflpro.identity.core.services.identity;
 
 import com.sflpro.identity.core.db.entities.Identity;
+import com.sflpro.identity.core.db.entities.Resource;
 import com.sflpro.identity.core.services.auth.AuthenticationServiceException;
 import com.sflpro.identity.core.services.identity.reset.RequestSecretResetRequest;
 import com.sflpro.identity.core.services.identity.reset.SecretResetRequest;
+
+import java.util.List;
 
 /**
  * Company: SFL LLC
@@ -67,10 +70,23 @@ public interface IdentityService {
      *
      * @param addRequest identity update request model
      * @return id and details of the created identity
-     * @throws AuthenticationServiceException authentication service exception
      */
     Identity add(final IdentityCreationRequest addRequest);
 
     void delete(String id);
+
+    /**
+     *  Lists all identities for specified resource
+     * @param resourceId id of resource which identities should be retrieved
+     * @return list of resource's identities
+     */
+    List<Identity> list(final long resourceId);
+
+    /**
+     *  Update resources of specified identity
+     * @param updateRequest identity and resources info
+     * @return updated list of identity's resources
+     */
+    List<Resource> updateIdentityResources(IdentityResourceUpdateRequest updateRequest);
 
 }

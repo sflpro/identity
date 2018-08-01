@@ -1,8 +1,12 @@
 package com.sflpro.identity.api.endpoints;
 
+import com.sflpro.identity.api.common.dtos.ApiGenericListResponse;
 import com.sflpro.identity.api.common.dtos.ApiResponseDto;
 import com.sflpro.identity.api.common.dtos.auth.AuthenticationExceptionDto;
+import com.sflpro.identity.api.common.dtos.identity.IdentityResourceUpdateRequestDto;
 import com.sflpro.identity.api.common.dtos.identity.IdentityUpdateRequestDto;
+import com.sflpro.identity.api.common.dtos.resource.ResourceDto;
+import com.sflpro.identity.core.db.entities.Resource;
 import com.sflpro.identity.core.services.auth.AuthenticationServiceException;
 import com.sflpro.identity.core.services.identity.IdentityCreationRequest;
 import com.sflpro.identity.api.common.dtos.identity.IdentityCreationRequestDto;
@@ -15,6 +19,8 @@ import com.sflpro.identity.core.services.identity.IdentityService;
 import com.sflpro.identity.core.services.identity.IdentityUpdateRequest;
 import com.sflpro.identity.core.services.identity.reset.RequestSecretResetRequest;
 import com.sflpro.identity.core.services.identity.reset.SecretResetRequest;
+import com.sflpro.identity.core.services.resource.ResourceService;
+import com.sflpro.identity.core.services.identity.IdentityResourceUpdateRequest;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.SwaggerDefinition;
@@ -30,6 +36,7 @@ import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
+import java.util.List;
 
 /**
  * Company: SFL LLC
@@ -52,6 +59,9 @@ public class IdentityEndpoint {
 
     @Autowired
     private IdentityService identityService;
+
+    @Autowired
+    ResourceService resourceService;
 
     @ApiOperation("Returns identity's details")
     @GET
@@ -125,5 +135,33 @@ public class IdentityEndpoint {
         final Identity identity = identityService.add(creationRequest);
         logger.info("Done creating identity with data :{}....", creationRequest);
         return mapper.map(identity, IdentityDto.class);
+    }
+
+    @ApiOperation("Lists identity's all resources")
+    @GET
+    @Path("/{identityId}/resources")
+    @Transactional(readOnly = true)
+    public ApiGenericListResponse<ResourceDto> listResources(@NotNull @PathParam("identityId") final String identityId,
+                                                             @QueryParam("resourceType") final String resourceType,
+                                                             @QueryParam("resourceIdentifier") final String resourceIdentifier) {
+        // Get resources
+        List<Resource> resources = resourceService.search(identityId, resourceType, resourceIdentifier);
+        logger.info("Found {} resources for identity:'{}'.", resources.size(), identityId);
+        List<ResourceDto> result = mapper.mapAsList(resources, ResourceDto.class);
+        return new ApiGenericListResponse<>(result.size(), result);
+    }
+
+    @ApiOperation("Update resources of identity")
+    @PUT
+    @Path("/{identityId}/resources")
+    @Transactional
+    public ApiGenericListResponse<ResourceDto> updateIdentityResources(@NotNull @PathParam("identityId") final String identityId, @NotNull @Valid IdentityResourceUpdateRequestDto updateRequestDto) {
+        logger.debug("Updating resources of identity: {}", identityId);
+        IdentityResourceUpdateRequest updateRequest = mapper.map(updateRequestDto, IdentityResourceUpdateRequest.class);
+        updateRequest.setIdentityId(identityId);
+        List<Resource> resources = identityService.updateIdentityResources(updateRequest);
+        logger.info("Done updating resources of identity: {}", identityId);
+        List<ResourceDto> result = mapper.mapAsList(resources, ResourceDto.class);
+        return new ApiGenericListResponse<>(result.size(), result);
     }
 }

@@ -25,6 +25,7 @@ public class IdentityJerseyConfig extends GenericJerseyConfig {
         register(RoleEndpoint.class);
         register(StatusEndpoint.class);
         register(PermissionEndpoint.class);
+        register(ResourceEndpoint.class);
 
         // Filters
         register(IdentityJerseyConfig.class);
