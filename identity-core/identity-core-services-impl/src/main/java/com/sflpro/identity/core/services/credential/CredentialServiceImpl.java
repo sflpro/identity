@@ -9,7 +9,9 @@ import org.springframework.stereotype.Service;
 import org.springframework.util.Assert;
 
 import javax.transaction.Transactional;
+import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Set;
 
 /**
  * Company: SFL LLC
@@ -36,6 +38,15 @@ public class CredentialServiceImpl implements CredentialService {
             credential.setType(credentialCreation.getCredentialType());
             credentialRepository.save(credential);
         });
+    }
+
+    @Override
+    @Transactional
+    public void delete(final String identityId) {
+        Assert.notNull(identityId, "identity cannot be null");
+        Set<Credential> credentials = credentialRepository.findAllByIdentityIdAndDeletedIsNull(identityId);
+        credentials.forEach(c -> c.setDeleted(LocalDateTime.now()));
+        credentialRepository.saveAll(credentials);
     }
 
     @Override
