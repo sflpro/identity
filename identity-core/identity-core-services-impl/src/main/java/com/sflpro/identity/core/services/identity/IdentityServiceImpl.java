@@ -11,6 +11,7 @@ import com.sflpro.identity.core.services.ResourceNotFoundException;
 import com.sflpro.identity.core.services.auth.AuthenticationServiceException;
 import com.sflpro.identity.core.services.auth.InvalidCredentialsException;
 import com.sflpro.identity.core.services.auth.SecretHashHelper;
+import com.sflpro.identity.core.services.credential.CredentialService;
 import com.sflpro.identity.core.services.identity.reset.RequestSecretResetRequest;
 import com.sflpro.identity.core.services.identity.reset.SecretResetRequest;
 import com.sflpro.identity.core.services.notification.NotificationCommunicationService;
@@ -69,6 +70,9 @@ public class IdentityServiceImpl implements IdentityService {
 
     @Autowired
     private ResourceService resourceService;
+
+    @Autowired
+    private CredentialService credentialService;
 
     /**
      * {@inheritDoc}
@@ -229,7 +233,7 @@ public class IdentityServiceImpl implements IdentityService {
         Identity identity = get(id);
         final LocalDateTime now = LocalDateTime.now();
         identity.setDeleted(now);
-        identityRepository.save(identity);
+        credentialService.delete(identity.getId());
         logger.debug("Deleting identity Identity:'{}'.", id);
     }
 
