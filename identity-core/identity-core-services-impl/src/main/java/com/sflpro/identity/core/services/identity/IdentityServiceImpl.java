@@ -33,6 +33,7 @@ import javax.persistence.PersistenceContext;
 import javax.validation.constraints.NotNull;
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
@@ -203,7 +204,7 @@ public class IdentityServiceImpl implements IdentityService {
 
     @Override
     public boolean isIdentityActive(Identity identity) {
-        return identity.getStatus() == IdentityStatus.ACTIVE;
+        return Objects.isNull(identity.getDeleted()) && identity.getStatus() == IdentityStatus.ACTIVE;
     }
 
     @Override
@@ -233,6 +234,7 @@ public class IdentityServiceImpl implements IdentityService {
         Identity identity = get(id);
         final LocalDateTime now = LocalDateTime.now();
         identity.setDeleted(now);
+        identity.setStatus(IdentityStatus.DISABLED);
         credentialService.delete(identity.getId());
         logger.debug("Deleting identity Identity:'{}'.", id);
     }
