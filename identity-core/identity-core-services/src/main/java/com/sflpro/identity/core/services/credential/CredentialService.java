@@ -30,6 +30,13 @@ public interface CredentialService {
     void store(final Identity identity, final List<CredentialCreation> credentialCreations);
 
     /**
+     *  Deletes all credentials of identity
+     *
+     * @param identityId  id of identity whose credentials should be deleted
+     */
+    void delete(final String identityId);
+
+    /**
      * Updates failed attempts Credential
      *
      * @param credential credential need to update

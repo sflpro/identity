@@ -11,6 +11,7 @@ import com.sflpro.identity.core.services.ResourceNotFoundException;
 import com.sflpro.identity.core.services.auth.AuthenticationServiceException;
 import com.sflpro.identity.core.services.auth.InvalidCredentialsException;
 import com.sflpro.identity.core.services.auth.SecretHashHelper;
+import com.sflpro.identity.core.services.credential.CredentialService;
 import com.sflpro.identity.core.services.identity.reset.RequestSecretResetRequest;
 import com.sflpro.identity.core.services.identity.reset.SecretResetRequest;
 import com.sflpro.identity.core.services.notification.NotificationCommunicationService;
@@ -32,6 +33,7 @@ import javax.persistence.PersistenceContext;
 import javax.validation.constraints.NotNull;
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
@@ -69,6 +71,9 @@ public class IdentityServiceImpl implements IdentityService {
 
     @Autowired
     private ResourceService resourceService;
+
+    @Autowired
+    private CredentialService credentialService;
 
     /**
      * {@inheritDoc}
@@ -199,7 +204,7 @@ public class IdentityServiceImpl implements IdentityService {
 
     @Override
     public boolean isIdentityActive(Identity identity) {
-        return identity.getStatus() == IdentityStatus.ACTIVE;
+        return Objects.isNull(identity.getDeleted()) && identity.getStatus() == IdentityStatus.ACTIVE;
     }
 
     @Override
@@ -229,7 +234,8 @@ public class IdentityServiceImpl implements IdentityService {
         Identity identity = get(id);
         final LocalDateTime now = LocalDateTime.now();
         identity.setDeleted(now);
-        identityRepository.save(identity);
+        identity.setStatus(IdentityStatus.DISABLED);
+        credentialService.delete(identity.getId());
         logger.debug("Deleting identity Identity:'{}'.", id);
     }
 
