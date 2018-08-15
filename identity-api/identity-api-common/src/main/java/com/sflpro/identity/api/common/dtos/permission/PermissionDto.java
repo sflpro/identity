@@ -1,7 +1,6 @@
 package com.sflpro.identity.api.common.dtos.permission;
 
 import com.sflpro.identity.api.common.dtos.AbstractApiResponse;
-import com.sflpro.identity.core.datatypes.PermissionType;
 import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
 import org.apache.commons.lang3.builder.ToStringBuilder;
@@ -18,7 +17,7 @@ public class PermissionDto extends AbstractApiResponse {
 
     private String name;
 
-    private PermissionType type;
+    private String type;
 
     public PermissionDto() {
         super();
@@ -40,11 +39,11 @@ public class PermissionDto extends AbstractApiResponse {
         this.name = name;
     }
 
-    public PermissionType getType() {
+    public String getType() {
         return type;
     }
 
-    public void setType(PermissionType type) {
+    public void setType(String type) {
         this.type = type;
     }
 
