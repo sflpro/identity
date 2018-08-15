@@ -1,6 +1,5 @@
 package com.sflpro.identity.core.db.entities;
 
-import com.sflpro.identity.core.datatypes.PermissionType;
 import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
 import org.apache.commons.lang3.builder.ToStringBuilder;
@@ -32,9 +31,8 @@ public class Permission {
     @Column(name = "name", nullable = false)
     private String name;
 
-    @Enumerated(EnumType.STRING)
     @Column(name = "type", nullable = false)
-    private PermissionType type;
+    private String type;
 
     @Column(name = "created", nullable = false)
     private LocalDateTime created;
@@ -61,11 +59,11 @@ public class Permission {
         this.name = name;
     }
 
-    public PermissionType getType() {
+    public String getType() {
         return type;
     }
 
-    public void setType(PermissionType type) {
+    public void setType(String type) {
         this.type = type;
     }
 

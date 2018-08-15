@@ -1,7 +1,5 @@
 package com.sflpro.identity.api.common.dtos.permission;
 
-import com.sflpro.identity.core.datatypes.PermissionType;
-
 import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
 
@@ -17,7 +15,7 @@ public class PermissionCreationRequestDto {
     private String name;
 
     @NotNull
-    private PermissionType type;
+    private String type;
 
     public String getName() {
         return name;
@@ -27,11 +25,11 @@ public class PermissionCreationRequestDto {
         this.name = name;
     }
 
-    public PermissionType getType() {
+    public String getType() {
         return type;
     }
 
-    public void setType(PermissionType type) {
+    public void setType(String type) {
         this.type = type;
     }
 }
