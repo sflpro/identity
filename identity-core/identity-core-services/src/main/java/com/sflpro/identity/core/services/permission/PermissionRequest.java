@@ -1,7 +1,5 @@
 package com.sflpro.identity.core.services.permission;
 
-import com.sflpro.identity.core.datatypes.PermissionType;
-
 import javax.validation.constraints.NotEmpty;
 
 /**
@@ -17,7 +15,7 @@ public class PermissionRequest {
     @NotEmpty
     private String name;
 
-    private PermissionType type;
+    private String type;
 
     public PermissionRequest() {
         super();
@@ -39,11 +37,11 @@ public class PermissionRequest {
         this.name = name;
     }
 
-    public PermissionType getType() {
+    public String getType() {
         return type;
     }
 
-    public void setType(PermissionType type) {
+    public void setType(String type) {
         this.type = type;
     }
 }
