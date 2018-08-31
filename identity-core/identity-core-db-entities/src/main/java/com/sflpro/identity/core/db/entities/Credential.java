@@ -39,6 +39,9 @@ public class Credential {
     @Column(name = "failed_attempts")
     private Integer failedAttempts;
 
+    @Column(name = "last_failed_attempt")
+    private LocalDateTime lastFailedAttempt;
+
     @Column(name = "details")
     private String details;
 
@@ -81,6 +84,14 @@ public class Credential {
 
     public void setFailedAttempts(int failedAttempts) {
         this.failedAttempts = failedAttempts;
+    }
+
+    public LocalDateTime getLastFailedAttempt() {
+        return lastFailedAttempt;
+    }
+
+    public void setLastFailedAttempt(LocalDateTime lastFailedAttempt) {
+        this.lastFailedAttempt = lastFailedAttempt;
     }
 
     public String getDetails() {
@@ -153,6 +164,7 @@ public class Credential {
                 .append(identity)
                 .append(type)
                 .append(failedAttempts)
+                .append(lastFailedAttempt)
                 .append(details)
                 .append(created)
                 .append(updated)
@@ -166,6 +178,7 @@ public class Credential {
                 .append("id", id)
                 .append("type", type)
                 .append("failedAttempts", failedAttempts)
+                .append("lastFailedAttempt", lastFailedAttempt)
                 .append("details", details)
                 .append("created", created)
                 .append("updated", updated)

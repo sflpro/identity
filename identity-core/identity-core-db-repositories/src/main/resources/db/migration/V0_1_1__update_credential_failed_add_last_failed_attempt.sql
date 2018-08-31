@@ -1,0 +1,1 @@
+alter table credential add column last_failed_attempt timestamp null;

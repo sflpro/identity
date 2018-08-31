@@ -17,11 +17,14 @@ import com.sflpro.identity.core.services.token.TokenServiceException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Objects;
 
 /**
  * Company: SFL LLC
@@ -46,6 +49,12 @@ public class AuthenticationServiceImpl implements AuthenticationService {
 
     private final CredentialService credentialService;
 
+    @Value("${auth.attempts.limitCount}")
+    private int authAttemptsLimitCount;
+
+    @Value("${auth.attempts.limitMinutes}")
+    private int authAttemptsLimitMinutes;
+
     @Autowired
     public AuthenticationServiceImpl(AuthenticatorRegistry authenticatorRegistry, PrincipalService principalService,
                                      TokenService tokenService, ResourceService resourceService, RoleService roleService, CredentialService credentialService, PlatformTransactionManager platformTransactionManager) {
@@ -66,6 +75,11 @@ public class AuthenticationServiceImpl implements AuthenticationService {
 
         T credential = authenticatorRegistry.getCredentialStore(details.getCredentialIdentifier().getGenericClass()).get(details.getCredentialIdentifier());
 
+        if(credential.getFailedAttempts() > authAttemptsLimitCount
+                && Objects.nonNull(credential.getLastFailedAttempt())
+                && LocalDateTime.now().isBefore(credential.getLastFailedAttempt().plusMinutes(authAttemptsLimitMinutes))) {
+            throw new AuthenticationAttemptLimitReachedException();
+        }
         Authenticator<T, E, AuthenticationRequestDetails<T, E>> authenticator = authenticatorRegistry.getAuthenticator(clazz);
         if (authenticator.getSupportedCredentialType() != details.getCredentialType()) {
             throw new IllegalStateException(String.format("Not supported credential type for request %s", request.getCredentialType()));
