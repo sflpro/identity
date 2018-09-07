@@ -78,6 +78,7 @@ public class AuthenticationServiceImpl implements AuthenticationService {
         if(credential.getFailedAttempts() > authAttemptsLimitCount
                 && Objects.nonNull(credential.getLastFailedAttempt())
                 && LocalDateTime.now().isBefore(credential.getLastFailedAttempt().plusMinutes(authAttemptsLimitMinutes))) {
+            credentialService.updateFailedAttempts(credential, credential.getFailedAttempts() + 1);
             throw new AuthenticationAttemptLimitReachedException();
         }
         Authenticator<T, E, AuthenticationRequestDetails<T, E>> authenticator = authenticatorRegistry.getAuthenticator(clazz);
