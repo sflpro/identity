@@ -1,6 +1,7 @@
 package com.sflpro.identity.api.endpoints;
 
 import com.sflpro.identity.api.common.dtos.ApiResponseDto;
+import com.sflpro.identity.api.common.dtos.IdentityApiExceptionDto;
 import com.sflpro.identity.api.common.dtos.auth.*;
 import com.sflpro.identity.api.common.dtos.identity.InactiveIdentityExceptionDtoDto;
 import com.sflpro.identity.api.common.dtos.token.TokenInvalidationRequestDto;
@@ -53,7 +54,7 @@ public class AuthenticationEndpoint {
     @ApiOperation("Authenticating by credential type")
     @POST
     @Path("/authenticate")
-    @Transactional(noRollbackFor = {AuthenticationExceptionDto.class})
+    @Transactional(noRollbackFor = {IdentityApiExceptionDto.class})
     public <T extends AuthenticationRequestDetailsDto> AuthenticationResponseDto authenticate(@Valid AuthenticationRequestDto<T> requestDto) {
         Assert.notNull(requestDto, "request cannot be null");
         Assert.notNull(requestDto.getDetails(), "request details cannot be null");
