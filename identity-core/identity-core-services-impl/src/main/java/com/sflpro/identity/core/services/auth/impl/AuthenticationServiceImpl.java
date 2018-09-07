@@ -67,7 +67,7 @@ public class AuthenticationServiceImpl implements AuthenticationService {
     }
 
     @Override
-    @Transactional(noRollbackFor = {InvalidCredentialsException.class, TokenExpiredException.class})
+    @Transactional(noRollbackFor = {InvalidCredentialsException.class, TokenExpiredException.class, AuthenticationAttemptLimitReachedException.class})
     public <T extends Credential, E extends CredentialIdentifier<T>, S extends AuthenticationRequestDetails<T, E>> AuthenticationResponse authenticate(AuthenticationRequest<T, E, S> request) throws AuthenticationServiceException {
         S details = request.getDetails();
         Class<AuthenticationRequestDetails<T, E>> clazz = request.getDetails().getGenericClass();
@@ -78,6 +78,7 @@ public class AuthenticationServiceImpl implements AuthenticationService {
         if(credential.getFailedAttempts() > authAttemptsLimitCount
                 && Objects.nonNull(credential.getLastFailedAttempt())
                 && LocalDateTime.now().isBefore(credential.getLastFailedAttempt().plusMinutes(authAttemptsLimitMinutes))) {
+            credentialService.updateFailedAttempts(credential, credential.getFailedAttempts() + 1);
             throw new AuthenticationAttemptLimitReachedException();
         }
         Authenticator<T, E, AuthenticationRequestDetails<T, E>> authenticator = authenticatorRegistry.getAuthenticator(clazz);
