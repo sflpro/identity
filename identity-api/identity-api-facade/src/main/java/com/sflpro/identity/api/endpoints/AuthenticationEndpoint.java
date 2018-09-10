@@ -1,14 +1,12 @@
 package com.sflpro.identity.api.endpoints;
 
 import com.sflpro.identity.api.common.dtos.ApiResponseDto;
+import com.sflpro.identity.api.common.dtos.IdentityApiExceptionDto;
 import com.sflpro.identity.api.common.dtos.auth.*;
 import com.sflpro.identity.api.common.dtos.identity.InactiveIdentityExceptionDtoDto;
 import com.sflpro.identity.api.common.dtos.token.TokenInvalidationRequestDto;
 import com.sflpro.identity.api.mapper.BeanMapper;
-import com.sflpro.identity.core.services.auth.AuthenticationRequest;
-import com.sflpro.identity.core.services.auth.AuthenticationResponse;
-import com.sflpro.identity.core.services.auth.AuthenticationService;
-import com.sflpro.identity.core.services.auth.AuthenticationServiceException;
+import com.sflpro.identity.core.services.auth.*;
 import com.sflpro.identity.core.services.identity.InactiveIdentityException;
 import com.sflpro.identity.core.services.token.TokenExpiredException;
 import com.sflpro.identity.core.services.token.TokenInvalidationRequest;
@@ -56,7 +54,7 @@ public class AuthenticationEndpoint {
     @ApiOperation("Authenticating by credential type")
     @POST
     @Path("/authenticate")
-    @Transactional(noRollbackFor = {AuthenticationExceptionDto.class})
+    @Transactional(noRollbackFor = {IdentityApiExceptionDto.class})
     public <T extends AuthenticationRequestDetailsDto> AuthenticationResponseDto authenticate(@Valid AuthenticationRequestDto<T> requestDto) {
         Assert.notNull(requestDto, "request cannot be null");
         Assert.notNull(requestDto.getDetails(), "request details cannot be null");
@@ -74,6 +72,9 @@ public class AuthenticationEndpoint {
         } catch (TokenExpiredException e) {
             logger.warn("Authentication failed for expired token request:'{}'.", requestDto);
             throw new TokenExpiredExceptionDto(e.getMessage(), e);
+        } catch (AuthenticationAttemptLimitReachedException e) {
+            logger.warn("Authentication failed for expired token request:'{}'.", requestDto);
+            throw new AuthenticationAttemptLimitReachedExceptionDto(e.getMessage(), e);
         } catch (AuthenticationServiceException e) {
             logger.warn("Authentication failed for request:'{}'.", requestDto);
             throw new AuthenticationExceptionDto(e.getMessage(), e);

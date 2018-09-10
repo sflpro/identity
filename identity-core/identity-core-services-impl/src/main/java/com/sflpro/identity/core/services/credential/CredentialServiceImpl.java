@@ -54,6 +54,7 @@ public class CredentialServiceImpl implements CredentialService {
     public Credential updateFailedAttempts(final Credential credential, final int val) {
         Assert.notNull(credential, "credential cannot be null");
         credential.setFailedAttempts(val);
+        credential.setLastFailedAttempt(LocalDateTime.now());
         return credentialRepository.save(credential);
     }
 }
