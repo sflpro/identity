@@ -1,0 +1,1 @@
+create index i_credential_identity on credential (identity_id) where deleted is null;
