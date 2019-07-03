@@ -3,31 +3,33 @@ package com.sflpro.identity.api.endpoints;
 import com.sflpro.identity.api.common.dtos.ApiGenericListResponse;
 import com.sflpro.identity.api.common.dtos.ApiResponseDto;
 import com.sflpro.identity.api.common.dtos.auth.AuthenticationExceptionDto;
+import com.sflpro.identity.api.common.dtos.identity.IdentityCreationRequestDto;
+import com.sflpro.identity.api.common.dtos.identity.IdentityDto;
 import com.sflpro.identity.api.common.dtos.identity.IdentityResourceUpdateRequestDto;
 import com.sflpro.identity.api.common.dtos.identity.IdentityUpdateRequestDto;
+import com.sflpro.identity.api.common.dtos.identity.reset.RequestSecretResetRequestDto;
+import com.sflpro.identity.api.common.dtos.identity.reset.SecretResetRequestDto;
 import com.sflpro.identity.api.common.dtos.resource.ResourceDto;
+import com.sflpro.identity.api.mapper.BeanMapper;
+import com.sflpro.identity.core.db.entities.Identity;
 import com.sflpro.identity.core.db.entities.Resource;
 import com.sflpro.identity.core.services.auth.AuthenticationServiceException;
 import com.sflpro.identity.core.services.identity.IdentityCreationRequest;
-import com.sflpro.identity.api.common.dtos.identity.IdentityCreationRequestDto;
-import com.sflpro.identity.api.common.dtos.identity.IdentityDto;
-import com.sflpro.identity.api.common.dtos.identity.reset.RequestSecretResetRequestDto;
-import com.sflpro.identity.api.common.dtos.identity.reset.SecretResetRequestDto;
-import com.sflpro.identity.api.mapper.BeanMapper;
-import com.sflpro.identity.core.db.entities.Identity;
+import com.sflpro.identity.core.services.identity.IdentityResourceUpdateRequest;
 import com.sflpro.identity.core.services.identity.IdentityService;
 import com.sflpro.identity.core.services.identity.IdentityUpdateRequest;
 import com.sflpro.identity.core.services.identity.reset.RequestSecretResetRequest;
 import com.sflpro.identity.core.services.identity.reset.SecretResetRequest;
 import com.sflpro.identity.core.services.resource.ResourceService;
-import com.sflpro.identity.core.services.identity.IdentityResourceUpdateRequest;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.SwaggerDefinition;
 import io.swagger.annotations.Tag;
+import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.Assert;
@@ -62,6 +64,9 @@ public class IdentityEndpoint {
 
     @Autowired
     ResourceService resourceService;
+
+    @Value("${redirect.uri}")
+    private String redirectUri;
 
     @ApiOperation("Returns identity's details")
     @GET
@@ -106,6 +111,12 @@ public class IdentityEndpoint {
     @Path("/secret-reset/request-token")
     @Transactional
     public ApiResponseDto requestSecretReset(@Valid RequestSecretResetRequestDto requestDto) {
+        if (StringUtils.isEmpty(requestDto.getEmailTemplateName())) {
+            requestDto.setEmailTemplateName("Forgot Password");
+        }
+        if (StringUtils.isEmpty(requestDto.getRedirectUri())) {
+            requestDto.setRedirectUri(redirectUri);
+        }
         RequestSecretResetRequest request = mapper.map(requestDto, RequestSecretResetRequest.class);
         identityService.requestSecretReset(request);
         logger.info("Reset password request completed for user:'{}'.", requestDto.getEmail());

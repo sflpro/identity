@@ -135,7 +135,7 @@ public class IdentityServiceImpl implements IdentityService {
                 new TokenRequest(TokenType.SECRET_RESET, resetRequest.getExpiresInHours()), credential
         );
 
-        notificationCommunicationService.sendSecretResetEmail(resetRequest.getEmail(), token);
+        notificationCommunicationService.sendSecretResetEmail(resetRequest, token);
 
         logger.debug("Email sent to User {} for password reset.", identity);
     }

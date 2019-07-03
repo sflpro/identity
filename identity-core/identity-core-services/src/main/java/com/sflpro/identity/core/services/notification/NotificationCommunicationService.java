@@ -1,7 +1,9 @@
 package com.sflpro.identity.core.services.notification;
 
 import com.sflpro.identity.core.db.entities.Token;
+import com.sflpro.identity.core.services.identity.reset.RequestSecretResetRequest;
 
+import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 
 /**
@@ -15,8 +17,8 @@ public interface NotificationCommunicationService {
   /**
    * Creates new identity
    *
-   * @param email email
+   * @param resetRequest request
    * @param token secret reset token
    */
-  void sendSecretResetEmail(@NotNull final String email, @NotNull final Token token);
+  void sendSecretResetEmail(@Valid final RequestSecretResetRequest resetRequest, @NotNull final Token token);
 }
