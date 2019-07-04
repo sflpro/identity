@@ -1,21 +1,15 @@
 package com.sflpro.identity.core.services.notification;
 
-import com.sflpro.identity.core.datatypes.PrincipalType;
-import com.sflpro.identity.core.db.entities.Principal;
-import com.sflpro.identity.core.db.entities.Token;
 import com.sflpro.identity.core.services.identity.IdentityServiceException;
-import com.sflpro.identity.core.services.principal.PrincipalService;
-import com.sflpro.notifier.api.internal.client.rest.notification.email.template.ApplicationNotificationProcessorResourceClient;
-import com.sflpro.notifier.core.api.internal.model.common.result.ResultResponseModel;
-import com.sflpro.notifier.core.api.internal.model.email.response.CreateEmailNotificationResponse;
-import com.sflpro.notifier.core.api.internal.model.email.template.forgotpassword.ResetPasswordEmailClientModel;
-import com.sflpro.notifier.core.api.internal.model.email.template.request.ForgotPasswordRequest;
+import com.sflpro.notifier.api.client.notification.email.EmailNotificationResourceClient;
+import com.sflpro.notifier.api.model.common.result.ResultResponseModel;
+import com.sflpro.notifier.api.model.email.request.CreateEmailNotificationRequest;
+import com.sflpro.notifier.api.model.email.response.CreateEmailNotificationResponse;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.util.Assert;
 
-import javax.validation.constraints.NotNull;
+import javax.validation.Valid;
 
 /**
  * Company: SFL LLC
@@ -26,42 +20,27 @@ import javax.validation.constraints.NotNull;
 @Service
 public class NotificationCommunicationServiceImpl implements NotificationCommunicationService {
 
-    @Value("${redirect.uri}")
-    private String redirectUri;
-
     @Autowired
-    private PrincipalService principalService;
-
-    private ApplicationNotificationProcessorResourceClient applicationNotificationProcessorResourceClient;
+    private EmailNotificationResourceClient emailNotificationResourceClient;
 
     /**
      * {@inheritDoc}
      */
     @Override
-    public void sendSecretResetEmail(@NotNull final String email, @NotNull final Token token) {
-        Assert.notNull(email, "email cannot be null");
-        Assert.notNull(token, "secret reset token cannot be null");
-        Assert.notNull(token.getValue(), "secret reset token value cannot be null");
+    public void sendSecretResetEmail(@Valid SecretResetNotificationRequest notificationRequest) {
+        Assert.notNull(notificationRequest.getEmail(), "email cannot be null");
 
-        ForgotPasswordRequest forgotPasswordRequest = new ForgotPasswordRequest();
-        forgotPasswordRequest.setSenderEmail("sender@weadapt.digital");
-        forgotPasswordRequest.setRecipientEmail(email);
-        //forgotPasswordRequest.setRecipientEmail("davit.harutyunyan@sflpro.com");
-        ResetPasswordEmailClientModel templateModel = new ResetPasswordEmailClientModel();
-        // templateModel.setToken(token.getValue());
-        templateModel.setVerificationToken(token.getValue());
-        Principal principal = principalService.get(PrincipalType.MAIL, email);
-        templateModel.setEmail(principal.getName());
-        templateModel.setName(token.getIdentity().getDescription());
-        templateModel.setRedirectUri(redirectUri);
-        forgotPasswordRequest.setTemplateModel(templateModel);
-        ResultResponseModel<CreateEmailNotificationResponse> response = applicationNotificationProcessorResourceClient.processForgotPassword(forgotPasswordRequest);
-        if (response.hasErrors()) {
+        CreateEmailNotificationRequest emailNotificationRequest = new CreateEmailNotificationRequest();
+        emailNotificationRequest.setRecipientEmail(notificationRequest.getEmail());
+        emailNotificationRequest.setSenderEmail("sender@weadapt.digital");
+        emailNotificationRequest.setSubject("Weadapt " + notificationRequest.getEmailTemplateName());
+        emailNotificationRequest.setProperties(notificationRequest.getEmailTemplateProperties());
+        emailNotificationRequest.setTemplateName(notificationRequest.getEmailTemplateName());
+
+
+        ResultResponseModel<CreateEmailNotificationResponse> emailNotificationResponse = emailNotificationResourceClient.createEmailNotification(emailNotificationRequest);
+        if (emailNotificationResponse.hasErrors()) {
             throw new IdentityServiceException("Mail was not sent");
-        } // TODO think something here too
-    }
-
-    public void setApplicationNotificationProcessorResourceClient(final ApplicationNotificationProcessorResourceClient applicationNotificationProcessorResourceClient) {
-        this.applicationNotificationProcessorResourceClient = applicationNotificationProcessorResourceClient;
+        }
     }
 }

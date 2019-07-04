@@ -1,8 +1,6 @@
 package com.sflpro.identity.core.services.notification;
 
-import com.sflpro.identity.core.db.entities.Token;
-
-import javax.validation.constraints.NotNull;
+import javax.validation.Valid;
 
 /**
  * Company: SFL LLC
@@ -15,8 +13,7 @@ public interface NotificationCommunicationService {
   /**
    * Creates new identity
    *
-   * @param email email
-   * @param token secret reset token
+   * @param notificationRequest request
    */
-  void sendSecretResetEmail(@NotNull final String email, @NotNull final Token token);
+  void sendSecretResetEmail(@Valid final SecretResetNotificationRequest notificationRequest);
 }

@@ -6,6 +6,8 @@ import com.sflpro.identity.api.common.dtos.identity.IdentityCreationRequestDto;
 import com.sflpro.identity.api.common.dtos.identity.IdentityDto;
 import com.sflpro.identity.api.common.dtos.identity.IdentityUpdateRequestDto;
 import com.sflpro.identity.api.common.dtos.identity.IdentityResourceUpdateRequestDto;
+import com.sflpro.identity.api.common.dtos.identity.reset.RequestSecretResetRequestDto;
+import com.sflpro.identity.api.common.dtos.identity.reset.SecretResetRequestDto;
 import com.sflpro.identity.api.common.dtos.resource.ResourceDto;
 
 import javax.ws.rs.client.Client;
@@ -54,5 +56,13 @@ public class IdentityResource extends AbstractApiResource {
 
     public ApiGenericListResponse<ResourceDto> updateIdentityResources(final String identityId, IdentityResourceUpdateRequestDto updateRequestDto) {
         return doPut(String.format("/%s/resources", identityId), updateRequestDto, new GenericType<ApiGenericListResponse<ResourceDto>>(){});
+    }
+
+    public ApiResponseDto secretReset(SecretResetRequestDto secretResetRequestDto) {
+        return doPut("/secret-reset/secret", secretResetRequestDto, ApiResponseDto.class);
+    }
+
+    public ApiResponseDto requestSecretReset(RequestSecretResetRequestDto requestSecretResetRequestDto) {
+        return doPut("/secret-reset/request-token", requestSecretResetRequestDto, ApiResponseDto.class);
     }
 }
