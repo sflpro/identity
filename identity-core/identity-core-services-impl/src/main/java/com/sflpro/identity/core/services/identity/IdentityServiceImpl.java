@@ -15,6 +15,7 @@ import com.sflpro.identity.core.services.credential.CredentialService;
 import com.sflpro.identity.core.services.identity.reset.RequestSecretResetRequest;
 import com.sflpro.identity.core.services.identity.reset.SecretResetRequest;
 import com.sflpro.identity.core.services.notification.NotificationCommunicationService;
+import com.sflpro.identity.core.services.notification.SecretResetNotificationRequest;
 import com.sflpro.identity.core.services.principal.PrincipalService;
 import com.sflpro.identity.core.services.resource.ResourceCreationRequest;
 import com.sflpro.identity.core.services.resource.ResourceService;
@@ -33,6 +34,7 @@ import javax.persistence.PersistenceContext;
 import javax.validation.constraints.NotNull;
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -135,7 +137,11 @@ public class IdentityServiceImpl implements IdentityService {
                 new TokenRequest(TokenType.SECRET_RESET, resetRequest.getExpiresInHours()), credential
         );
 
-        notificationCommunicationService.sendSecretResetEmail(resetRequest, token);
+        SecretResetNotificationRequest notificationRequest = new SecretResetNotificationRequest(resetRequest.getEmail(),
+                resetRequest.getEmailTemplateName(),
+                Map.of("RESET_TOKEN", token.getValue(), "REDIRECT_URI", resetRequest.getRedirectUri()));
+
+        notificationCommunicationService.sendSecretResetEmail(notificationRequest);
 
         logger.debug("Email sent to User {} for password reset.", identity);
     }

@@ -5,7 +5,7 @@
     <parent>
         <groupId>org.springframework.boot</groupId>
         <artifactId>spring-boot-starter-parent</artifactId>
-        <version>2.0.4.RELEASE</version>
+        <version>2.1.4.RELEASE</version>
         <relativePath /> <!-- lookup parent from repository -->
     </parent>
 
@@ -51,7 +51,7 @@
         <developerConnection>scm:git:ssh://github.com:sflpro/identity.git</developerConnection>
         <url>http://github.com/sflpro/identity/tree/master</url>
     </scm>
-    <!-- End of nformation required by maven central -->
+    <!-- End of information required by maven central -->
 
     <profiles>
         <profile>
@@ -454,4 +454,16 @@
         </dependencies>
     </dependencyManagement>
 
+    <repositories>
+        <repository>
+            <id>snapshot</id>
+            <url>http://oss.sonatype.org/content/repositories/snapshots</url>
+            <releases>
+                <enabled>false</enabled>
+            </releases>
+            <snapshots>
+                <enabled>true</enabled>
+            </snapshots>
+        </repository>
+    </repositories>
 </project>

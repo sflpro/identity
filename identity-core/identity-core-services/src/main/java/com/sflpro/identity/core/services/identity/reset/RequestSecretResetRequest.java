@@ -2,7 +2,6 @@ package com.sflpro.identity.core.services.identity.reset;
 
 import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
-import java.util.Map;
 
 /**
  * Company: SFL LLC
@@ -24,8 +23,6 @@ public class RequestSecretResetRequest {
     @NotEmpty
     private String redirectUri;
 
-    @NotEmpty
-    private Map<String, String> emailTemplateProperties;
 
     public String getEmail() {
         return email;
@@ -49,14 +46,6 @@ public class RequestSecretResetRequest {
 
     public void setEmailTemplateName(String emailTemplateName) {
         this.emailTemplateName = emailTemplateName;
-    }
-
-    public Map<String, String> getEmailTemplateProperties() {
-        return emailTemplateProperties;
-    }
-
-    public void setEmailTemplateProperties(Map<String, String> emailTemplateProperties) {
-        this.emailTemplateProperties = emailTemplateProperties;
     }
 
     public String getRedirectUri() {

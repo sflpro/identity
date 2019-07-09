@@ -23,9 +23,6 @@ public class RequestSecretResetRequestDto {
 
     private String redirectUri;
 
-    private Map<String, String> emailTemplateProperties;
-
-
     public String getEmail() {
         return email;
     }
@@ -48,14 +45,6 @@ public class RequestSecretResetRequestDto {
 
     public void setEmailTemplateName(String emailTemplateName) {
         this.emailTemplateName = emailTemplateName;
-    }
-
-    public Map<String, String> getEmailTemplateProperties() {
-        return emailTemplateProperties;
-    }
-
-    public void setEmailTemplateProperties(Map<String, String> emailTemplateProperties) {
-        this.emailTemplateProperties = emailTemplateProperties;
     }
 
     public String getRedirectUri() {

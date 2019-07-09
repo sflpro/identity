@@ -1,9 +1,6 @@
 package com.sflpro.identity.core.services.notification;
 
-import com.sflpro.identity.core.db.entities.Token;
 import com.sflpro.identity.core.services.identity.IdentityServiceException;
-import com.sflpro.identity.core.services.identity.reset.RequestSecretResetRequest;
-import com.sflpro.identity.core.services.principal.PrincipalService;
 import com.sflpro.notifier.api.client.notification.email.EmailNotificationResourceClient;
 import com.sflpro.notifier.api.model.common.result.ResultResponseModel;
 import com.sflpro.notifier.api.model.email.request.CreateEmailNotificationRequest;
@@ -13,9 +10,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.util.Assert;
 
 import javax.validation.Valid;
-import javax.validation.constraints.NotNull;
-import java.util.HashMap;
-import java.util.Map;
 
 /**
  * Company: SFL LLC
@@ -33,25 +27,15 @@ public class NotificationCommunicationServiceImpl implements NotificationCommuni
      * {@inheritDoc}
      */
     @Override
-    public void sendSecretResetEmail(@Valid RequestSecretResetRequest request, @NotNull Token token) {
-        Assert.notNull(request.getEmail(), "email cannot be null");
-        Assert.notNull(token, "secret reset token cannot be null");
-        Assert.notNull(token.getValue(), "secret reset token value cannot be null");
-
-        Map<String, String> propertiesMap = new HashMap<>();
-        propertiesMap.put("RESET_TOKEN", token.getValue());
-        propertiesMap.put("REDIRECT_URI", request.getRedirectUri());
-        if (request.getEmailTemplateProperties() != null) {
-            propertiesMap.putAll(request.getEmailTemplateProperties());
-        }
-
+    public void sendSecretResetEmail(@Valid SecretResetNotificationRequest notificationRequest) {
+        Assert.notNull(notificationRequest.getEmail(), "email cannot be null");
 
         CreateEmailNotificationRequest emailNotificationRequest = new CreateEmailNotificationRequest();
-        emailNotificationRequest.setRecipientEmail(request.getEmail());
+        emailNotificationRequest.setRecipientEmail(notificationRequest.getEmail());
         emailNotificationRequest.setSenderEmail("sender@weadapt.digital");
-        emailNotificationRequest.setSubject("Weadapt Sign Up");
-        emailNotificationRequest.setProperties(propertiesMap);
-        emailNotificationRequest.setTemplateName(request.getEmailTemplateName());
+        emailNotificationRequest.setSubject("Weadapt " + notificationRequest.getEmailTemplateName());
+        emailNotificationRequest.setProperties(notificationRequest.getEmailTemplateProperties());
+        emailNotificationRequest.setTemplateName(notificationRequest.getEmailTemplateName());
 
 
         ResultResponseModel<CreateEmailNotificationResponse> emailNotificationResponse = emailNotificationResourceClient.createEmailNotification(emailNotificationRequest);
