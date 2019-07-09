@@ -36,7 +36,10 @@ then
     -Dsonar.login=$SONARCLOUD_KEY \
     -Dsonar.analysis.mode=preview \
     -Dsonar.github.repository=sflpro/identity \
-    -Dsonar.github.pullRequest=$TRAVIS_PULL_REQUEST \
+    -Dsonar.pullrequest.key=$TRAVIS_PULL_REQUEST \
+    -Dsonar.pullrequest.branch=$TRAVIS_PULL_REQUEST_BRANCH \
+    -Dsonar.pullrequest.provider=GitHub \
+    -Dsonar.pullrequest.github.repository=sflpro/identity \
     -Dsonar.github.oauth=$SONAR_GITHUB_OAUTH_TOKEN
 else
     echo "Running build without sonar analysis."
