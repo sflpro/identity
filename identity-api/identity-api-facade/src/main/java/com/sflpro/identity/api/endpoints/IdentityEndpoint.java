@@ -73,6 +73,7 @@ public class IdentityEndpoint {
         boolean result = a.equals("text");
         try  {
             DataInputStream s = new DataInputStream(new FileInputStream("test"));
+            s.read();
         } catch (IOException io) {
 
         }
