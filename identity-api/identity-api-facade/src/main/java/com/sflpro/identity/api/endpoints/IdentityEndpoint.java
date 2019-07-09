@@ -64,6 +64,11 @@ public class IdentityEndpoint {
     @Autowired
     ResourceService resourceService;
 
+    {
+        String a = null;
+        boolean result = a.equals("text");
+    }
+
     @ApiOperation("Returns identity's details")
     @GET
     @Path("/{identityId}")
