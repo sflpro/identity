@@ -34,7 +34,6 @@ then
     -Dsonar.host.url=https://sonarcloud.io \
     -Dsonar.organization=sfl \
     -Dsonar.login=$SONARCLOUD_KEY \
-    -Dsonar.analysis.mode=preview \
     -Dsonar.github.repository=sflpro/identity \
     -Dsonar.github.pullRequest=$TRAVIS_PULL_REQUEST \
     -Dsonar.github.oauth=$SONAR_GITHUB_OAUTH_TOKEN
