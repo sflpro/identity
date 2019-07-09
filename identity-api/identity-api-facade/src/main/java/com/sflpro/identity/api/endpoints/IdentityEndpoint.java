@@ -36,6 +36,10 @@ import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
+import java.io.DataInputStream;
+import java.io.EOFException;
+import java.io.FileInputStream;
+import java.io.IOException;
 import java.util.Collections;
 import java.util.List;
 
@@ -67,6 +71,11 @@ public class IdentityEndpoint {
     {
         String a = null;
         boolean result = a.equals("text");
+        try  {
+            DataInputStream s = new DataInputStream(new FileInputStream("test"));
+        } catch (IOException io) {
+
+        }
     }
 
     @ApiOperation("Returns identity's details")
