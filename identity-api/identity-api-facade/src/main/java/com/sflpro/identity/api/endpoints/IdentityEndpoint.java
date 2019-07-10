@@ -115,7 +115,7 @@ public class IdentityEndpoint {
     @Transactional
     public ApiResponseDto requestSecretReset(@Valid RequestSecretResetRequestDto requestDto) {
         if (StringUtils.isEmpty(requestDto.getEmailTemplateName())) {
-            requestDto.setEmailTemplateName("Forgot Password");
+            requestDto.setEmailTemplateName(emailDefaultTemplateName);
         }
         if (StringUtils.isEmpty(requestDto.getRedirectUri())) {
             requestDto.setRedirectUri(emailRedirectUri);
