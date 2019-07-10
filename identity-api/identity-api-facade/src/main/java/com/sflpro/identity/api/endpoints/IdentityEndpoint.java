@@ -65,8 +65,11 @@ public class IdentityEndpoint {
     @Autowired
     ResourceService resourceService;
 
-    @Value("${redirect.uri}")
-    private String redirectUri;
+    @Value("${email.default.redirect.uri}")
+    private String emailRedirectUri;
+
+    @Value("${email.default.template.name}")
+    private String emailDefaultTemplateName;
 
     @ApiOperation("Returns identity's details")
     @GET
@@ -115,7 +118,7 @@ public class IdentityEndpoint {
             requestDto.setEmailTemplateName("Forgot Password");
         }
         if (StringUtils.isEmpty(requestDto.getRedirectUri())) {
-            requestDto.setRedirectUri(redirectUri);
+            requestDto.setRedirectUri(emailRedirectUri);
         }
         RequestSecretResetRequest request = mapper.map(requestDto, RequestSecretResetRequest.class);
         identityService.requestSecretReset(request);

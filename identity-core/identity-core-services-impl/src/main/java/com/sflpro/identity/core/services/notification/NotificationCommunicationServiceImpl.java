@@ -6,6 +6,7 @@ import com.sflpro.notifier.api.model.common.result.ResultResponseModel;
 import com.sflpro.notifier.api.model.email.request.CreateEmailNotificationRequest;
 import com.sflpro.notifier.api.model.email.response.CreateEmailNotificationResponse;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.util.Assert;
 
@@ -20,6 +21,12 @@ import javax.validation.Valid;
 @Service
 public class NotificationCommunicationServiceImpl implements NotificationCommunicationService {
 
+    @Value("${sender.email}")
+    private String senderEmail;
+
+    @Value("${email.subject.prefix}")
+    private String subjectPrefix;
+
     @Autowired
     private EmailNotificationResourceClient emailNotificationResourceClient;
 
@@ -32,8 +39,8 @@ public class NotificationCommunicationServiceImpl implements NotificationCommuni
 
         CreateEmailNotificationRequest emailNotificationRequest = new CreateEmailNotificationRequest();
         emailNotificationRequest.setRecipientEmail(notificationRequest.getEmail());
-        emailNotificationRequest.setSenderEmail("sender@weadapt.digital");
-        emailNotificationRequest.setSubject("Weadapt " + notificationRequest.getEmailTemplateName());
+        emailNotificationRequest.setSenderEmail(senderEmail);
+        emailNotificationRequest.setSubject(String.format("%s %s", subjectPrefix, notificationRequest.getEmailTemplateName()));
         emailNotificationRequest.setProperties(notificationRequest.getEmailTemplateProperties());
         emailNotificationRequest.setTemplateName(notificationRequest.getEmailTemplateName());
 

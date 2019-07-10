@@ -24,6 +24,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Isolation;
 import org.springframework.transaction.annotation.Transactional;
@@ -76,6 +77,12 @@ public class IdentityServiceImpl implements IdentityService {
 
     @Autowired
     private CredentialService credentialService;
+
+    @Value("${email.token.key}")
+    private String emailTokenKey;
+
+    @Value("${email.redirect.uri.key}")
+    private String emailRedirectUriKey;
 
     /**
      * {@inheritDoc}
@@ -139,7 +146,7 @@ public class IdentityServiceImpl implements IdentityService {
 
         SecretResetNotificationRequest notificationRequest = new SecretResetNotificationRequest(resetRequest.getEmail(),
                 resetRequest.getEmailTemplateName(),
-                Map.of("RESET_TOKEN", token.getValue(), "REDIRECT_URI", resetRequest.getRedirectUri()));
+                Map.of(emailTokenKey, token.getValue(), emailRedirectUriKey, resetRequest.getRedirectUri()));
 
         notificationCommunicationService.sendSecretResetEmail(notificationRequest);
 
