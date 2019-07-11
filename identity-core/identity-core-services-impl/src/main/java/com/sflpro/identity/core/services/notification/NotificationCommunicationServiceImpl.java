@@ -21,7 +21,7 @@ import javax.validation.Valid;
 @Service
 public class NotificationCommunicationServiceImpl implements NotificationCommunicationService {
 
-    @Value("${sender.email}")
+    @Value("${email.sender}")
     private String senderEmail;
 
     @Value("${email.subject.prefix}")
