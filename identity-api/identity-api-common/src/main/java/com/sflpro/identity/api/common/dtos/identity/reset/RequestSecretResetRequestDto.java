@@ -2,7 +2,6 @@ package com.sflpro.identity.api.common.dtos.identity.reset;
 
 import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
-import java.util.Map;
 
 /**
  * Company: SFL LLC
@@ -18,7 +17,6 @@ public class RequestSecretResetRequestDto {
     @NotNull
     private Integer expiresInHours;
 
-    @NotEmpty
     private String emailTemplateName;
 
     private String redirectUri;
