@@ -17,6 +17,10 @@ public class RequestSecretResetRequestDto {
     @NotNull
     private Integer expiresInHours;
 
+    private String emailTemplateName;
+
+    private String redirectUri;
+
     public String getEmail() {
         return email;
     }
@@ -31,5 +35,21 @@ public class RequestSecretResetRequestDto {
 
     public void setExpiresInHours(Integer expiresInHours) {
         this.expiresInHours = expiresInHours;
+    }
+
+    public String getEmailTemplateName() {
+        return emailTemplateName;
+    }
+
+    public void setEmailTemplateName(String emailTemplateName) {
+        this.emailTemplateName = emailTemplateName;
+    }
+
+    public String getRedirectUri() {
+        return redirectUri;
+    }
+
+    public void setRedirectUri(String redirectUri) {
+        this.redirectUri = redirectUri;
     }
 }

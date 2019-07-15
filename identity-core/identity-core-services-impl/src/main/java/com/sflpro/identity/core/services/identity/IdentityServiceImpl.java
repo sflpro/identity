@@ -15,6 +15,7 @@ import com.sflpro.identity.core.services.credential.CredentialService;
 import com.sflpro.identity.core.services.identity.reset.RequestSecretResetRequest;
 import com.sflpro.identity.core.services.identity.reset.SecretResetRequest;
 import com.sflpro.identity.core.services.notification.NotificationCommunicationService;
+import com.sflpro.identity.core.services.notification.SecretResetNotificationRequest;
 import com.sflpro.identity.core.services.principal.PrincipalService;
 import com.sflpro.identity.core.services.resource.ResourceCreationRequest;
 import com.sflpro.identity.core.services.resource.ResourceService;
@@ -23,6 +24,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Isolation;
 import org.springframework.transaction.annotation.Transactional;
@@ -33,6 +35,7 @@ import javax.persistence.PersistenceContext;
 import javax.validation.constraints.NotNull;
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -74,6 +77,12 @@ public class IdentityServiceImpl implements IdentityService {
 
     @Autowired
     private CredentialService credentialService;
+
+    @Value("${email.token.key}")
+    private String emailTokenKey;
+
+    @Value("${email.redirect.uri.key}")
+    private String emailRedirectUriKey;
 
     /**
      * {@inheritDoc}
@@ -135,7 +144,11 @@ public class IdentityServiceImpl implements IdentityService {
                 new TokenRequest(TokenType.SECRET_RESET, resetRequest.getExpiresInHours()), credential
         );
 
-        notificationCommunicationService.sendSecretResetEmail(resetRequest.getEmail(), token);
+        SecretResetNotificationRequest notificationRequest = new SecretResetNotificationRequest(resetRequest.getEmail(),
+                resetRequest.getEmailTemplateName(),
+                Map.of(emailTokenKey, token.getValue(), emailRedirectUriKey, resetRequest.getRedirectUri()));
+
+        notificationCommunicationService.sendSecretResetEmail(notificationRequest);
 
         logger.debug("Email sent to User {} for password reset.", identity);
     }

@@ -29,18 +29,9 @@
     </bean>
 
     <!--Notification communicator service-->
-    <bean id="applicationNotificationProcessorResourceClient"
-          class="com.sflpro.notifier.api.internal.client.rest.notification.email.template.impl.ApplicationNotificationProcessorResourceClientImpl">
+    <bean id="emailNotificationResourceClient" class="com.sflpro.notifier.api.client.notification.email.impl.EmailNotificationResourceClientImpl">
         <property name="client" ref="jerseyClient"/>
         <property name="apiPath" value="${microservice.notification.url}"/>
-    </bean>
-    <bean id="emailNotificationResourceClient" class="com.sflpro.notifier.api.internal.client.rest.notification.email.impl.EmailNotificationResourceClientImpl">
-        <property name="client" ref="jerseyClient"/>
-        <property name="apiPath" value="${microservice.notification.url}"/>
-    </bean>
-    <bean id="notificationCommunicationService"
-          class="com.sflpro.identity.core.services.notification.NotificationCommunicationServiceImpl">
-        <property name="applicationNotificationProcessorResourceClient" ref="applicationNotificationProcessorResourceClient"/>
     </bean>
 
 </beans>
