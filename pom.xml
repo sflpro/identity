@@ -142,10 +142,10 @@
         <hikaricp.version>2.7.3</hikaricp.version>
 
         <!-- maven plugins -->
-        <maven.failsafe.plugin.version>2.20.1</maven.failsafe.plugin.version>
-        <maven.surefire.plugin.version>2.20.1</maven.surefire.plugin.version>
+        <maven.failsafe.plugin.version>3.0.0-M4</maven.failsafe.plugin.version>
+        <maven.surefire.plugin.version>3.0.0-M4</maven.surefire.plugin.version>
         <dockerfile.maven.plugin.version>1.3.6</dockerfile.maven.plugin.version>
-        <jacoco.maven.plugin.version>0.7.9</jacoco.maven.plugin.version>
+        <jacoco.maven.plugin.version>0.8.5</jacoco.maven.plugin.version>
         <gitflow.plugin.version>1.9.0</gitflow.plugin.version>
 
         <!-- maven plugin dependencies -->
