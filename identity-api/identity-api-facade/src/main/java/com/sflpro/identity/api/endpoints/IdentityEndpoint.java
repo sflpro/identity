@@ -63,7 +63,7 @@ public class IdentityEndpoint {
     private IdentityService identityService;
 
     @Autowired
-    ResourceService resourceService;
+    private ResourceService resourceService;
 
     @Value("${email.default.redirect.uri}")
     private String emailRedirectUri;

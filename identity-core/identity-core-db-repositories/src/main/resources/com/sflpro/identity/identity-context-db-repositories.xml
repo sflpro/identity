@@ -3,13 +3,11 @@
        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
        xmlns:context="http://www.springframework.org/schema/context"
        xmlns:jpa="http://www.springframework.org/schema/data/jpa"
-       xmlns:tx="http://www.springframework.org/schema/tx"
        xsi:schemaLocation="http://www.springframework.org/schema/data/jpa
         http://www.springframework.org/schema/data/jpa/spring-jpa.xsd
         http://www.springframework.org/schema/beans
         http://www.springframework.org/schema/beans/spring-beans.xsd
-        http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context.xsd
-        http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx.xsd">
+        http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context.xsd">
 
     <import resource="identity-context-core-db-entities.xml"/>
 
@@ -32,10 +30,17 @@
     <bean id="ehCacheUri" factory-bean="hibernateEhCacheConfigLocator" factory-method="getconfigUri"/>
 
     <beans profile="!test">
-        <bean id="flyway" class="org.flywaydb.core.Flyway" init-method="migrate">
+
+        <bean id="flywayConfig" class="org.flywaydb.core.api.configuration.ClassicConfiguration">
             <property name="dataSource" ref="dataSource"/>
             <property name="baselineOnMigrate" value="true"/>
             <property name="baselineVersionAsString" value="0"/>
+            <property name="placeholderReplacement" value="false"/>
+            <property name="table" value="flyway_schema_history"/>
+        </bean>
+
+        <bean id="flyway" class="org.flywaydb.core.Flyway" init-method="migrate">
+            <constructor-arg ref="flywayConfig"/>
         </bean>
 
         <bean id="hikariConfig" class="com.zaxxer.hikari.HikariConfig">
@@ -71,11 +76,9 @@
                     <entry key="hibernate.hbm2ddl.auto" value="${hibernate.hbm2ddl.auto}"/>
                     <entry key="hibernate.globally_quoted_identifiers" value="true"/>
                     <entry key="hibernate.cache.use_query_cache" value="true"/>
-                    <entry key="hibernate.cache.region.factory_class"
-                           value="org.hibernate.cache.jcache.JCacheRegionFactory"/>
+                    <entry key="hibernate.cache.region.factory_class" value="org.hibernate.cache.jcache.JCacheRegionFactory"/>
                     <entry key="hibernate.javax.cache.provider" value="org.ehcache.jsr107.EhcacheCachingProvider"/>
                     <entry key="hibernate.javax.cache.uri" value-ref="ehCacheUri"/>
-                    <!-- TODO check with Yervand -->
                     <entry key="hibernate.jdbc.lob.non_contextual_creation" value="true"/>
                 </map>
             </property>

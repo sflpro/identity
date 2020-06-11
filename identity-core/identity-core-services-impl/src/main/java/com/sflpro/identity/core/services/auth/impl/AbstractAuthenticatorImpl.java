@@ -26,7 +26,7 @@ public abstract class AbstractAuthenticatorImpl<T extends Credential, E extends 
 
     public final AuthenticationResponse authenticate(@NotNull T credential, @NotNull S authenticationRequestDetails) throws AuthenticationServiceException {
         if (supportedCredentialType != authenticationRequestDetails.getCredentialType()) {
-            logger.debug("Unsupported authenticationRequestDetails of type %s passed to to %s",
+            logger.debug("Unsupported authenticationRequestDetails of type {} passed to to {}",
                     authenticationRequestDetails.getClass().getCanonicalName(),
                     getClass().getCanonicalName());
             throw new IllegalStateException(String.format("Unsupported authenticationRequestDetails of type %s passed to %s",

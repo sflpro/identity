@@ -10,6 +10,7 @@ import com.sflpro.identity.core.services.auth.*;
 import com.sflpro.identity.core.services.identity.InactiveIdentityException;
 import com.sflpro.identity.core.services.token.TokenExpiredException;
 import com.sflpro.identity.core.services.token.TokenInvalidationRequest;
+import com.sflpro.identity.core.services.token.TokenService;
 import com.sflpro.identity.core.services.token.TokenServiceException;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
@@ -23,11 +24,9 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.Assert;
 
 import javax.validation.Valid;
-import javax.ws.rs.Consumes;
-import javax.ws.rs.POST;
-import javax.ws.rs.Path;
-import javax.ws.rs.Produces;
+import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
+import java.util.Set;
 
 /**
  * Company: SFL LLC
@@ -51,6 +50,9 @@ public class AuthenticationEndpoint {
     @Autowired
     private AuthenticationService authService;
 
+    @Autowired
+    private TokenService tokenService;
+
     @ApiOperation("Authenticating by credential type")
     @POST
     @Path("/authenticate")
@@ -60,7 +62,7 @@ public class AuthenticationEndpoint {
         Assert.notNull(requestDto.getDetails(), "request details cannot be null");
         logger.debug("Authenticating by credential type: {}...", requestDto.getDetails().getCredentialType());
         //Compose authentication request
-        AuthenticationRequest authRequest = mapper.map(requestDto, AuthenticationRequest.class);
+        AuthenticationRequest<?, ?, ?> authRequest = mapper.map(requestDto, AuthenticationRequest.class);
         //Try to authenticate
         try {
             AuthenticationResponse authResponse = authService.authenticate(authRequest);
@@ -101,5 +103,15 @@ public class AuthenticationEndpoint {
             logger.warn("Invalidating token failed for request:'{}'.", requestDto);
             throw new AuthenticationExceptionDto(e.getMessage(), e);
         }
+    }
+
+    @ApiOperation("Invalidate token")
+    @GET
+    @Path("/.well-known/jwks.json")
+    public JwksResponseDto wellKnownJwks() {
+        logger.debug("Getting well known jwks...");
+        final Object jwk = tokenService.wellKnownJwks();
+        logger.info("Done getting well known jwks...");
+        return new JwksResponseDto(Set.of(jwk));
     }
 }

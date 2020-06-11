@@ -95,7 +95,7 @@ public class AuthenticationServiceImpl implements AuthenticationService {
         credentialService.updateFailedAttempts(credential, 0);
         if (authenticationResponse.getStatus() == AuthenticationStatus.AUTHENTICATED) {
             if (!request.getTokenRequests().isEmpty()) {
-                List<Token> tokens = tokenService.createNewTokens(request.getTokenRequests(), credential);
+                List<Token> tokens = tokenService.createNewTokens(request.getTokenRequests(), credential, request.getResourceRequests());
                 authenticationResponse.setTokens(tokens);
             }
             if (!request.getResourceRequests().isEmpty()) {
