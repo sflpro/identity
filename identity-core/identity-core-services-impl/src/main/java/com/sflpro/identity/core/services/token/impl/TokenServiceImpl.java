@@ -3,17 +3,27 @@ package com.sflpro.identity.core.services.token.impl;
 import com.sflpro.identity.core.datatypes.CredentialType;
 import com.sflpro.identity.core.datatypes.TokenType;
 import com.sflpro.identity.core.db.entities.Credential;
+import com.sflpro.identity.core.db.entities.Resource;
+import com.sflpro.identity.core.db.entities.Role;
 import com.sflpro.identity.core.db.entities.Token;
 import com.sflpro.identity.core.db.repositories.TokenRepository;
 import com.sflpro.identity.core.services.ResourceNotFoundException;
+import com.sflpro.identity.core.services.resource.ResourceRequest;
+import com.sflpro.identity.core.services.resource.ResourceService;
 import com.sflpro.identity.core.services.token.*;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.util.Assert;
 
 import java.time.Duration;
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Map;
+import java.util.Optional;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 /**
@@ -25,8 +35,16 @@ import java.util.stream.Collectors;
 @Service
 public class TokenServiceImpl implements TokenService {
 
+    private static final Logger logger = LoggerFactory.getLogger(JwtTokenGenerator.class);
+
+    @Value("${token.generation.strategy}")
+    private String generationStrategy;
+
     @Autowired
     private TokenRepository tokenRepository;
+
+    @Autowired
+    private ResourceService resourceService;
 
     @Autowired
     private TokenGenerator tokenGenerator;
@@ -38,7 +56,7 @@ public class TokenServiceImpl implements TokenService {
     }
 
     @Override
-    public Token createNewToken(final TokenRequest tokenRequest, final Credential credential) {
+    public Token createNewToken(final TokenRequest tokenRequest, final Credential credential, final List<ResourceRequest> resourceRequests) {
         LocalDateTime currentLocalDateTime = LocalDateTime.now();
 
         Iterable<Token> existingTokens = tokenRepository.findAllByTokenTypeAndIssuedBy(
@@ -55,7 +73,21 @@ public class TokenServiceImpl implements TokenService {
             tokenRepository.saveAll(existingTokens);
         }
 
-        Token token = new Token(tokenGenerator.generate(), tokenRequest.getTokenType(),
+        final TokenGenerationRequest tokenGenerationRequest = new TokenGenerationRequest();
+        tokenGenerationRequest.setExpiresIn(tokenRequest.getExpiresInHours() * 3600L);
+        tokenGenerationRequest.setIdentityId(credential.getIdentity().getId());
+        tokenGenerationRequest.setRoles(Optional.ofNullable(credential.getIdentity().getRoles()).orElse(Set.of())
+                .stream()
+                .map(Role::getName)
+                .collect(Collectors.toSet()));
+        if (resourceRequests != null && !resourceRequests.isEmpty()) {
+            List<Resource> resources = resourceService.get(resourceRequests, credential.getIdentity());
+            final Map<String, List<String>> resourceMap = resources.stream()
+                    .collect(Collectors.groupingBy(Resource::getType, Collectors.mapping(Resource::getIdentifier, Collectors.toList())));
+            tokenGenerationRequest.setResources(resourceMap);
+        }
+
+        Token token = new Token(tokenGenerator.generate(tokenGenerationRequest), tokenRequest.getTokenType(),
                 currentLocalDateTime.plus(Duration.ofHours(tokenRequest.getExpiresInHours())), credential);
 
         token.setType(CredentialType.TOKEN);
@@ -67,10 +99,14 @@ public class TokenServiceImpl implements TokenService {
         return token;
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
-    public List<Token> createNewTokens(final List<TokenRequest> tokens, final Credential credential) {
+    public List<Token> createNewTokens(final List<TokenRequest> tokens, final Credential credential, final List<ResourceRequest> resourceRequests) {
+        logger.trace("Creating token for request:{}, credential:{}, resourceRequests:{}", tokens, credential, resourceRequests);
         return tokens.stream()
-                .map(tokenRequest -> createNewToken(tokenRequest, credential))
+                .map(tokenRequest -> createNewToken(tokenRequest, credential, resourceRequests))
                 .collect(Collectors.toList());
     }
 
@@ -98,6 +134,19 @@ public class TokenServiceImpl implements TokenService {
         existingValidToken.setExpirationDate(currentLocalDateTime); // TODO check with Mr Smith to we need to set used date, instead of making token expired
 
         return tokenRepository.save(existingValidToken);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public Object wellKnownJwks() {
+        logger.trace("Getting well known jwk...");
+        if ("jwt".equals(generationStrategy)) {
+            return ((JwtTokenGenerator) tokenGenerator).jwks();
+        }
+        logger.debug("Done getting well known jwk...");
+        return null;
     }
 
     private Token getExistingValidToken(final String tokenValue, final TokenType tokenType, final LocalDateTime requestLocalDateTime) throws InvalidTokenException {

@@ -8,5 +8,11 @@ package com.sflpro.identity.core.services.token;
  */
 public interface TokenGenerator {
 
-    String generate();
+    /**
+     * Generate jwt token for provided request
+     *
+     * @param tokenGenerationRequest
+     * @return created token
+     */
+    String generate(TokenGenerationRequest tokenGenerationRequest);
 }
