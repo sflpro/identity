@@ -12,7 +12,6 @@ import com.nimbusds.jwt.JWTClaimsSet;
 import com.nimbusds.jwt.SignedJWT;
 import com.sflpro.identity.core.services.token.TokenGenerationRequest;
 import com.sflpro.identity.core.services.token.TokenGenerator;
-import net.minidev.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
@@ -21,6 +20,8 @@ import org.springframework.stereotype.Component;
 import org.springframework.util.Assert;
 
 import java.text.ParseException;
+import java.time.LocalDateTime;
+import java.time.ZoneOffset;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
@@ -100,12 +101,14 @@ public class JwtTokenGenerator implements TokenGenerator {
         }
 
         // Prepare JWT with claims set
+        final Date issuedAt = Date.from((LocalDateTime.now()).toInstant(ZoneOffset.UTC));
+        final Date expirationTime = Date.from(LocalDateTime.now().plusSeconds(tokenGenerationRequest.getExpiresIn()).toInstant(ZoneOffset.UTC));
         final JWTClaimsSet.Builder builder = new JWTClaimsSet.Builder()
                 .claim("identity_id", tokenGenerationRequest.getIdentityId())
                 .claim("roles", tokenGenerationRequest.getRoles())
                 .issuer(jwtIssuer)
-                .issueTime(new Date())
-                .expirationTime(new Date(new Date().getTime() + 60 * tokenGenerationRequest.getExpiresIn()));
+                .issueTime(issuedAt)
+                .expirationTime(expirationTime);
         if (tokenGenerationRequest.getResources() != null) {
             for (Map.Entry<String, List<String>> resource : tokenGenerationRequest.getResources().entrySet()) {
                 builder.claim(resource.getKey(), resource.getValue());
