@@ -226,7 +226,7 @@ public class IdentityServiceImpl implements IdentityService {
         logger.debug("Creating identity  {}", addRequest);
         final Identity identity = new Identity();
         identity.setContactMethod(IdentityContactMethod.valueOf(addRequest.getContactMethod()));
-        if (addRequest.getSecret() != null) {
+        if (StringUtils.isNotBlank(addRequest.getSecret())) {
             identity.setSecret(secretHashHelper.hashSecret(addRequest.getSecret()));
         }
         identity.setDescription(addRequest.getDescription());
