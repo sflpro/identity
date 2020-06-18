@@ -10,7 +10,6 @@ public class IdentityCreationRequestDto {
     @NotEmpty
     private  String contactMethod;
 
-    @NotEmpty
     private  String secret;
 
     private String status;
