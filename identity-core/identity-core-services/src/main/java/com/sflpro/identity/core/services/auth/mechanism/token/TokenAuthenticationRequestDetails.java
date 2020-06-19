@@ -70,7 +70,6 @@ public class TokenAuthenticationRequestDetails extends AuthenticationRequestDeta
         return new ToStringBuilder(this)
                 .appendSuper(super.toString())
                 .append("tokenType", tokenType)
-                .append("token", token)
                 .toString();
     }
 }
