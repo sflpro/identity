@@ -8,6 +8,7 @@ import com.sflpro.identity.core.db.entities.Role;
 import com.sflpro.identity.core.db.entities.Token;
 import com.sflpro.identity.core.db.repositories.TokenRepository;
 import com.sflpro.identity.core.services.ResourceNotFoundException;
+import com.sflpro.identity.core.services.auth.mechanism.token.TokenAuthenticationRequestDetails;
 import com.sflpro.identity.core.services.resource.ResourceRequest;
 import com.sflpro.identity.core.services.resource.ResourceService;
 import com.sflpro.identity.core.services.token.*;
@@ -39,6 +40,9 @@ public class TokenServiceImpl implements TokenService {
 
     @Value("${token.generation.strategy}")
     private String generationStrategy;
+
+    @Value("${jwt.token.rotation.allowed.offset.in.seconds}")
+    private Long allowedOffsetInSeconds;
 
     @Autowired
     private TokenRepository tokenRepository;
@@ -147,6 +151,21 @@ public class TokenServiceImpl implements TokenService {
         }
         logger.debug("Done getting well known jwk...");
         return null;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public Token rotateToken(final TokenAuthenticationRequestDetails request) throws InvalidTokenException {
+        Assert.notNull(request, "request cannot be null");
+        Assert.notNull(request.getTokenType(), "request.tokenType cannot be null");
+        Assert.notNull(request.getToken(), "request.token cannot be null");
+        logger.trace("Rotating token for request:{}...", request);
+        final LocalDateTime allowedTime = LocalDateTime.now().plusSeconds(allowedOffsetInSeconds);
+        final Token token = this.getExistingValidToken(request.getToken(), request.getTokenType(), allowedTime);
+        logger.debug("Done rotating token for request:{}", request);
+        return token;
     }
 
     private Token getExistingValidToken(final String tokenValue, final TokenType tokenType, final LocalDateTime requestLocalDateTime) throws InvalidTokenException {

@@ -4,6 +4,9 @@ import com.sflpro.identity.core.datatypes.CredentialType;
 import com.sflpro.identity.core.datatypes.TokenType;
 import com.sflpro.identity.core.db.entities.Token;
 import com.sflpro.identity.core.services.auth.AuthenticationRequestDetails;
+import org.apache.commons.lang3.builder.EqualsBuilder;
+import org.apache.commons.lang3.builder.HashCodeBuilder;
+import org.apache.commons.lang3.builder.ToStringBuilder;
 
 import javax.validation.constraints.NotNull;
 
@@ -40,4 +43,34 @@ public class TokenAuthenticationRequestDetails extends AuthenticationRequestDeta
         return new TokenCredentialIdentifier(tokenType, token);
     }
 
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+
+        if (o == null || getClass() != o.getClass()) return false;
+
+        TokenAuthenticationRequestDetails that = (TokenAuthenticationRequestDetails) o;
+
+        return new EqualsBuilder()
+                .append(tokenType, that.tokenType)
+                .append(token, that.token)
+                .isEquals();
+    }
+
+    @Override
+    public int hashCode() {
+        return new HashCodeBuilder(17, 37)
+                .append(tokenType)
+                .append(token)
+                .toHashCode();
+    }
+
+    @Override
+    public String toString() {
+        return new ToStringBuilder(this)
+                .appendSuper(super.toString())
+                .append("tokenType", tokenType)
+                .append("token", token)
+                .toString();
+    }
 }
