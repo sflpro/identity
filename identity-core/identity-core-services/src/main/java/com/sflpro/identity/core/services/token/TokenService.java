@@ -3,6 +3,7 @@ package com.sflpro.identity.core.services.token;
 import com.sflpro.identity.core.datatypes.TokenType;
 import com.sflpro.identity.core.db.entities.Credential;
 import com.sflpro.identity.core.db.entities.Token;
+import com.sflpro.identity.core.services.auth.mechanism.token.TokenAuthenticationRequestDetails;
 import com.sflpro.identity.core.services.resource.ResourceRequest;
 
 import java.util.List;
@@ -68,4 +69,11 @@ public interface TokenService {
      * @return
      */
     Object wellKnownJwks();
+
+    /**
+     * Rotate token for provided request
+     *
+     * @param request token rotation request
+     */
+    Token rotateToken(TokenAuthenticationRequestDetails request) throws InvalidTokenException;
 }

@@ -4,9 +4,13 @@ import com.sflpro.identity.api.common.dtos.ApiResponseDto;
 import com.sflpro.identity.api.common.dtos.IdentityApiExceptionDto;
 import com.sflpro.identity.api.common.dtos.auth.*;
 import com.sflpro.identity.api.common.dtos.identity.InactiveIdentityExceptionDtoDto;
+import com.sflpro.identity.api.common.dtos.token.TokenDto;
 import com.sflpro.identity.api.common.dtos.token.TokenInvalidationRequestDto;
+import com.sflpro.identity.api.common.dtos.token.TokenRotationRequestDetailsDto;
 import com.sflpro.identity.api.mapper.BeanMapper;
+import com.sflpro.identity.core.db.entities.Token;
 import com.sflpro.identity.core.services.auth.*;
+import com.sflpro.identity.core.services.auth.mechanism.token.TokenAuthenticationRequestDetails;
 import com.sflpro.identity.core.services.identity.InactiveIdentityException;
 import com.sflpro.identity.core.services.token.TokenExpiredException;
 import com.sflpro.identity.core.services.token.TokenInvalidationRequest;
@@ -101,6 +105,28 @@ public class AuthenticationEndpoint {
             return new ApiResponseDto();
         } catch (TokenServiceException e) {
             logger.warn("Invalidating token failed for request:'{}'.", requestDto);
+            throw new AuthenticationExceptionDto(e.getMessage(), e);
+        }
+    }
+
+    @ApiOperation("Roteate token")
+    @POST
+    @Path("/rotate-token")
+    @Transactional
+    public TokenDto rotateToken(@Valid TokenRotationRequestDetailsDto requestDto) {
+        Assert.notNull(requestDto, "request cannot be null");
+        Assert.notNull(requestDto.getToken(), "request token cannot be null");
+        Assert.notNull(requestDto.getTokenType(), "request token type cannot be null");
+        logger.debug("Rotating token:{}...", requestDto.getToken());
+        //Compose authentication request
+        final TokenAuthenticationRequestDetails request = mapper.map(requestDto, TokenAuthenticationRequestDetails.class);
+        //Try to invalidate token
+        try {
+            final Token token = tokenService.rotateToken(request);
+            logger.info("Done rotating token:'{}'.", requestDto.getToken());
+            return mapper.map(token, TokenDto.class);
+        } catch (TokenServiceException e) {
+            logger.warn("Rotating token failed for request:{}.", requestDto);
             throw new AuthenticationExceptionDto(e.getMessage(), e);
         }
     }

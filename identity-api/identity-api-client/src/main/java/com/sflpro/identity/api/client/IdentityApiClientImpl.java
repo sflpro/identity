@@ -28,6 +28,7 @@ public class IdentityApiClientImpl implements IdentityApiClient {
     private final Client client;
     private final WebTarget rootTarget;
 
+    private final AuthResource authResource;
     private final IdentityResource identityResource;
     private final PrincipalResource principalResource;
     private final ResourceResource resourceResource;
@@ -56,9 +57,16 @@ public class IdentityApiClientImpl implements IdentityApiClient {
 
         rootTarget = client.target(apiUrl);
 
+        authResource = new AuthResource(client, rootTarget);
         identityResource = new IdentityResource(client, rootTarget);
         principalResource = new PrincipalResource(client, rootTarget);
         resourceResource = new ResourceResource(client, rootTarget);
+    }
+
+
+    @Override
+    public AuthResource auth() {
+        return authResource;
     }
 
 

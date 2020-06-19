@@ -10,6 +10,7 @@ import java.io.Closeable;
  */
 public interface IdentityApiClient extends Closeable {
 
+    AuthResource auth();
     IdentityResource identity();
     PrincipalResource principal();
     ResourceResource resource();
