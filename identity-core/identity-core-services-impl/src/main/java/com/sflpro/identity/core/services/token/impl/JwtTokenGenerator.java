@@ -14,6 +14,7 @@ import com.sflpro.identity.core.services.token.TokenGenerationRequest;
 import com.sflpro.identity.core.services.token.TokenGenerator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.stereotype.Component;
@@ -34,7 +35,7 @@ import java.util.UUID;
  * @author Davit Harutyunyan
  */
 @Component
-@ConditionalOnProperty(name = "token.generation.strategy", havingValue = "jwt")
+@Qualifier("jwtTokenGenerator")
 public class JwtTokenGenerator implements TokenGenerator {
 
     private static final Logger logger = LoggerFactory.getLogger(JwtTokenGenerator.class);

@@ -15,6 +15,7 @@ import com.sflpro.identity.core.services.token.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.util.Assert;
@@ -38,8 +39,8 @@ public class TokenServiceImpl implements TokenService {
 
     private static final Logger logger = LoggerFactory.getLogger(JwtTokenGenerator.class);
 
-    @Value("${token.generation.strategy}")
-    private String generationStrategy;
+    @Value("${jwt.token.generation.strategy.enabled}")
+    private boolean jwtStrategyEnabled;
 
     @Value("${jwt.token.rotation.allowed.offset.in.seconds}")
     private Long allowedOffsetInSeconds;
@@ -51,7 +52,12 @@ public class TokenServiceImpl implements TokenService {
     private ResourceService resourceService;
 
     @Autowired
-    private TokenGenerator tokenGenerator;
+    @Qualifier("jwtTokenGenerator")
+    private TokenGenerator jwtTokenGenerator;
+
+    @Autowired
+    @Qualifier("secureRandomTokenGenerator")
+    private TokenGenerator secureRandomTokenGenerator;
 
     @Override
     public Token get(final TokenType tokenType, final String tokenValue) {
@@ -70,7 +76,7 @@ public class TokenServiceImpl implements TokenService {
 
         if (existingTokens.iterator().hasNext()) {
             for (Token existingToken : existingTokens) {
-                if (existingToken.getExpirationDate().isAfter(currentLocalDateTime)) {
+                if (existingToken.getExpirationDate() != null && existingToken.getExpirationDate().isAfter(currentLocalDateTime)) {
                     existingToken.setExpirationDate(currentLocalDateTime);
                 }
             }
@@ -78,7 +84,7 @@ public class TokenServiceImpl implements TokenService {
         }
 
         final TokenGenerationRequest tokenGenerationRequest = new TokenGenerationRequest();
-        tokenGenerationRequest.setExpiresIn(tokenRequest.getExpiresInHours() * 3600L);
+        tokenGenerationRequest.setExpiresIn(tokenRequest.getExpiresInHours() == null ? null : tokenRequest.getExpiresInHours() * 3600L);
         tokenGenerationRequest.setIdentityId(credential.getIdentity().getId());
         tokenGenerationRequest.setRoles(Optional.ofNullable(credential.getIdentity().getRoles()).orElse(Set.of())
                 .stream()
@@ -90,9 +96,14 @@ public class TokenServiceImpl implements TokenService {
                     .collect(Collectors.groupingBy(Resource::getType, Collectors.mapping(Resource::getIdentifier, Collectors.toList())));
             tokenGenerationRequest.setResources(resourceMap);
         }
-
-        Token token = new Token(tokenGenerator.generate(tokenGenerationRequest), tokenRequest.getTokenType(),
-                currentLocalDateTime.plus(Duration.ofHours(tokenRequest.getExpiresInHours())), credential);
+        final String generatedToken;
+        if (jwtStrategyEnabled && tokenRequest.getTokenType() == TokenType.ACCESS) {
+            generatedToken = jwtTokenGenerator.generate(tokenGenerationRequest);
+        } else {
+            generatedToken = secureRandomTokenGenerator.generate(tokenGenerationRequest);
+        }
+        Token token = new Token(generatedToken, tokenRequest.getTokenType(),
+                tokenRequest.getExpiresInHours() == null ? null : currentLocalDateTime.plus(Duration.ofHours(tokenRequest.getExpiresInHours())), credential);
 
         token.setType(CredentialType.TOKEN);
         token.setIdentity(credential.getIdentity());
@@ -146,8 +157,8 @@ public class TokenServiceImpl implements TokenService {
     @Override
     public Object wellKnownJwks() {
         logger.trace("Getting well known jwk...");
-        if ("jwt".equals(generationStrategy)) {
-            return ((JwtTokenGenerator) tokenGenerator).jwks();
+        if (jwtStrategyEnabled) {
+            return ((JwtTokenGenerator) jwtTokenGenerator).jwks();
         }
         logger.debug("Done getting well known jwk...");
         return null;
