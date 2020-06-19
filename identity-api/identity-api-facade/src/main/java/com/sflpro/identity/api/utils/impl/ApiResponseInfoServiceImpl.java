@@ -5,7 +5,6 @@ import com.sflpro.identity.api.utils.ApiResponseInfoAspect;
 import com.sflpro.identity.api.utils.ApiResponseInfoService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.stereotype.Service;
 
 /**
  * Company: SFL LLC
@@ -13,14 +12,19 @@ import org.springframework.stereotype.Service;
  *
  * @author Davit Harutyunyan
  */
-@Service
 public class ApiResponseInfoServiceImpl implements ApiResponseInfoService {
 
     private static final Logger logger = LoggerFactory.getLogger(ApiResponseInfoAspect.class);
 
+    private final String apiVersion;
+
+    public ApiResponseInfoServiceImpl() {
+        this.apiVersion = this.getVersion();
+    }
+
     public void propagateApiResponse(final AbstractApiResponse abstractApiResponse, final Long startTime) {
         abstractApiResponse.setTimeSpent(getTimeElapsed(startTime));
-        abstractApiResponse.setApiVersion(getVersion());
+        abstractApiResponse.setApiVersion(apiVersion);
     }
 
     private long getTimeElapsed(long nanoTimeStart) {

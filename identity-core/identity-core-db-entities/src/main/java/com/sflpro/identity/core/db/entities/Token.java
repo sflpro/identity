@@ -42,7 +42,7 @@ public class Token extends Credential {
         super();
     }
 
-    public Token(/*Credential credential, */String value, TokenType tokenType,
+    public Token(String value, TokenType tokenType,
                  LocalDateTime expirationDate, Credential issuedBy) {
         this();
         this.value = value;

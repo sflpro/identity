@@ -23,8 +23,11 @@ public class ApiResponseInfoAspect {
 
     private static final Logger logger = LoggerFactory.getLogger(ApiResponseInfoAspect.class);
 
-    @Autowired
-    private ApiResponseInfoServiceImpl responseTimeService;
+    private ApiResponseInfoService responseTimeService;
+
+    public ApiResponseInfoAspect() {
+        this.responseTimeService = new ApiResponseInfoServiceImpl();
+    }
 
     // the execution of any method defined in the endpoints package or a sub-package:
     @Pointcut("execution(* com.sflpro.identity.api.endpoints..*.*(..))")
