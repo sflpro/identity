@@ -3,16 +3,17 @@ package com.sflpro.identity.api.endpoints;
 import com.sflpro.identity.api.common.dtos.ApiGenericListResponse;
 import com.sflpro.identity.api.common.dtos.ApiResponseDto;
 import com.sflpro.identity.api.common.dtos.auth.AuthenticationExceptionDto;
-import com.sflpro.identity.api.common.dtos.identity.IdentityCreationRequestDto;
-import com.sflpro.identity.api.common.dtos.identity.IdentityDto;
-import com.sflpro.identity.api.common.dtos.identity.IdentityResourceUpdateRequestDto;
-import com.sflpro.identity.api.common.dtos.identity.IdentityUpdateRequestDto;
+import com.sflpro.identity.api.common.dtos.identity.*;
 import com.sflpro.identity.api.common.dtos.identity.reset.RequestSecretResetRequestDto;
 import com.sflpro.identity.api.common.dtos.identity.reset.SecretResetRequestDto;
 import com.sflpro.identity.api.common.dtos.resource.ResourceDto;
+import com.sflpro.identity.api.common.dtos.token.TokenDto;
 import com.sflpro.identity.api.mapper.BeanMapper;
+import com.sflpro.identity.core.datatypes.IdentityStatus;
+import com.sflpro.identity.core.datatypes.TokenType;
 import com.sflpro.identity.core.db.entities.Identity;
 import com.sflpro.identity.core.db.entities.Resource;
+import com.sflpro.identity.core.db.entities.Token;
 import com.sflpro.identity.core.services.auth.AuthenticationServiceException;
 import com.sflpro.identity.core.services.identity.IdentityCreationRequest;
 import com.sflpro.identity.core.services.identity.IdentityResourceUpdateRequest;
@@ -21,6 +22,8 @@ import com.sflpro.identity.core.services.identity.IdentityUpdateRequest;
 import com.sflpro.identity.core.services.identity.reset.RequestSecretResetRequest;
 import com.sflpro.identity.core.services.identity.reset.SecretResetRequest;
 import com.sflpro.identity.core.services.resource.ResourceService;
+import com.sflpro.identity.core.services.token.TokenRequest;
+import com.sflpro.identity.core.services.token.TokenService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.SwaggerDefinition;
@@ -56,6 +59,12 @@ public class IdentityEndpoint {
 
     private static final Logger logger = LoggerFactory.getLogger(IdentityEndpoint.class);
 
+    @Value("${email.default.redirect.uri}")
+    private String emailRedirectUri;
+
+    @Value("${email.default.template.name}")
+    private String emailDefaultTemplateName;
+
     @Autowired
     private BeanMapper mapper;
 
@@ -65,11 +74,8 @@ public class IdentityEndpoint {
     @Autowired
     private ResourceService resourceService;
 
-    @Value("${email.default.redirect.uri}")
-    private String emailRedirectUri;
-
-    @Value("${email.default.template.name}")
-    private String emailDefaultTemplateName;
+    @Autowired
+    private TokenService tokenService;
 
     @ApiOperation("Returns identity's details")
     @GET
@@ -141,14 +147,19 @@ public class IdentityEndpoint {
     @PUT
     @Path("/")
     @Transactional
-    public IdentityDto createIdentity(
-           @NotNull @Valid final IdentityCreationRequestDto request) {
+    public IdentityWithTokenDto createIdentity(@NotNull @Valid final IdentityCreationRequestDto request) {
         Assert.notNull(request, "request cannot be null");
         logger.debug("Creating identity  with data :{}...", request);
         final IdentityCreationRequest creationRequest = mapper.map(request, IdentityCreationRequest.class);
         final Identity identity = identityService.add(creationRequest);
+        final IdentityWithTokenDto result = mapper.map(identity, IdentityWithTokenDto.class);
+        if (identity.getStatus() == IdentityStatus.ACTIVE) {
+            final Token token = tokenService.createNewToken(new TokenRequest(TokenType.REFRESH, null),
+                    null, null);
+            result.setToken(mapper.map(token, TokenDto.class));
+        }
         logger.info("Done creating identity with data :{}....", creationRequest);
-        return mapper.map(identity, IdentityDto.class);
+        return result;
     }
 
     @ApiOperation("Lists identity's all resources")
