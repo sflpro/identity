@@ -6,6 +6,7 @@ import org.apache.commons.lang3.builder.ToStringBuilder;
 
 import javax.persistence.*;
 import java.time.LocalDateTime;
+import java.util.Set;
 
 /**
  * Company: SFL LLC
@@ -33,6 +34,13 @@ public class Resource {
 
     @Column(name = "identifier", nullable = false)
     private String identifier;
+
+    @ManyToMany(fetch = FetchType.LAZY)
+    @JoinTable(name = "identity_role",
+            joinColumns = {@JoinColumn(name = "resource_id")},
+            inverseJoinColumns = {@JoinColumn(name = "role_id")}
+    )
+    private Set<Role> roles;
 
     @Column(name = "created", nullable = false)
     private LocalDateTime created;
@@ -74,6 +82,14 @@ public class Resource {
         this.identifier = identifier;
     }
 
+    public Set<Role> getRoles() {
+        return roles;
+    }
+
+    public void setRoles(final Set<Role> roles) {
+        this.roles = roles;
+    }
+
     public LocalDateTime getCreated() {
         return created;
     }
@@ -110,6 +126,7 @@ public class Resource {
                 .append(id, resource.id)
                 .append(type, resource.type)
                 .append(identifier, resource.identifier)
+                .append(roles, resource.roles)
                 .append(created, resource.created)
                 .append(updated, resource.updated)
                 .append(deleted, resource.deleted)
@@ -122,6 +139,7 @@ public class Resource {
                 .append(id)
                 .append(type)
                 .append(identifier)
+                .append(roles)
                 .append(created)
                 .append(updated)
                 .append(deleted)
@@ -134,6 +152,7 @@ public class Resource {
                 .append("id", id)
                 .append("type", type)
                 .append("identifier", identifier)
+                .append("roles", roles)
                 .append("created", created)
                 .append("updated", updated)
                 .append("deleted", deleted)
