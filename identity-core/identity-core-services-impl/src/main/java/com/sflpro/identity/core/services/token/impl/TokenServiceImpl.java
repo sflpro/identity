@@ -9,8 +9,10 @@ import com.sflpro.identity.core.db.entities.Token;
 import com.sflpro.identity.core.db.repositories.TokenRepository;
 import com.sflpro.identity.core.services.ResourceNotFoundException;
 import com.sflpro.identity.core.services.auth.mechanism.token.TokenAuthenticationRequestDetails;
+import com.sflpro.identity.core.services.identity.resource.role.IdentityResourceRoleService;
 import com.sflpro.identity.core.services.resource.ResourceRequest;
 import com.sflpro.identity.core.services.resource.ResourceService;
+import com.sflpro.identity.core.services.role.RoleService;
 import com.sflpro.identity.core.services.token.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -19,13 +21,13 @@ import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.util.Assert;
+import org.springframework.util.CollectionUtils;
 
 import java.time.Duration;
 import java.time.LocalDateTime;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
-import java.util.Set;
 import java.util.stream.Collectors;
 
 /**
@@ -50,6 +52,12 @@ public class TokenServiceImpl implements TokenService {
 
     @Autowired
     private ResourceService resourceService;
+    
+    @Autowired
+    private RoleService roleService;
+
+    @Autowired
+    private IdentityResourceRoleService identityResourceRoleService;
 
     @Autowired
     @Qualifier("jwtTokenGenerator")
@@ -90,15 +98,19 @@ public class TokenServiceImpl implements TokenService {
 
         final TokenGenerationRequest tokenGenerationRequest = new TokenGenerationRequest();
         tokenGenerationRequest.setExpiresIn(tokenRequest.getExpiresInHours() == null ? null : tokenRequest.getExpiresInHours() * 3600L);
-        tokenGenerationRequest.setIdentityId(credential.getIdentity().getId());
-        tokenGenerationRequest.setRoles(Optional.ofNullable(credential.getIdentity().getRoles()).orElse(Set.of())
-                .stream()
-                .map(Role::getName)
-                .collect(Collectors.toSet()));
-        if (resourceRequests != null && !resourceRequests.isEmpty()) {
+        final String identityId = credential.getIdentity().getId();
+        tokenGenerationRequest.setIdentityId(identityId);
+        
+        if (CollectionUtils.isEmpty(resourceRequests)) {
             List<Resource> resources = resourceService.get(resourceRequests, credential.getIdentity());
             final Map<String, List<String>> resourceMap = resources.stream()
                     .collect(Collectors.groupingBy(Resource::getType, Collectors.mapping(Resource::getIdentifier, Collectors.toList())));
+            tokenGenerationRequest.setRoles(CollectionUtils.isEmpty(resources) ? Collections.emptySet() : resources.parallelStream()
+                    .map(resource -> identityResourceRoleService.getAllByIdentityIdAndResourceId(identityId, resource.getId()))
+                    .flatMap(identityResourceRoles -> identityResourceRoles.parallelStream()
+                            .map(identityResourceRole -> roleService.get(identityResourceRole.getRoleId()))
+                            .map(Role::getName)
+                    ).collect(Collectors.toUnmodifiableSet()));
             tokenGenerationRequest.setResources(resourceMap);
         }
         final String generatedToken;

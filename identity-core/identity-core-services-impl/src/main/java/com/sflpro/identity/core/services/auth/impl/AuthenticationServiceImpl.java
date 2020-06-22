@@ -1,12 +1,10 @@
 package com.sflpro.identity.core.services.auth.impl;
 
 import com.sflpro.identity.core.datatypes.AuthenticationStatus;
-import com.sflpro.identity.core.db.entities.Credential;
-import com.sflpro.identity.core.db.entities.Identity;
-import com.sflpro.identity.core.db.entities.Resource;
-import com.sflpro.identity.core.db.entities.Token;
+import com.sflpro.identity.core.db.entities.*;
 import com.sflpro.identity.core.services.auth.*;
 import com.sflpro.identity.core.services.credential.CredentialService;
+import com.sflpro.identity.core.services.identity.resource.role.IdentityResourceRoleService;
 import com.sflpro.identity.core.services.principal.PrincipalService;
 import com.sflpro.identity.core.services.resource.ResourceService;
 import com.sflpro.identity.core.services.role.RoleService;
@@ -19,12 +17,15 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.Assert;
+import org.springframework.util.CollectionUtils;
 
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Objects;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 /**
  * Company: SFL LLC
@@ -48,6 +49,8 @@ public class AuthenticationServiceImpl implements AuthenticationService {
     private final RoleService roleService;
 
     private final CredentialService credentialService;
+    
+    private final IdentityResourceRoleService identityResourceRoleService;
 
     @Value("${auth.attempts.limitCount}")
     private int authAttemptsLimitCount;
@@ -56,14 +59,20 @@ public class AuthenticationServiceImpl implements AuthenticationService {
     private int authAttemptsLimitMinutes;
 
     @Autowired
-    public AuthenticationServiceImpl(AuthenticatorRegistry authenticatorRegistry, PrincipalService principalService,
-                                     TokenService tokenService, ResourceService resourceService, RoleService roleService, CredentialService credentialService, PlatformTransactionManager platformTransactionManager) {
+    public AuthenticationServiceImpl(final AuthenticatorRegistry authenticatorRegistry,
+                                     final PrincipalService principalService,
+                                     final TokenService tokenService,
+                                     final ResourceService resourceService,
+                                     final RoleService roleService,
+                                     final CredentialService credentialService,
+                                     final IdentityResourceRoleService identityResourceRoleService) {
         this.authenticatorRegistry = authenticatorRegistry;
         this.principalService = principalService;
         this.tokenService = tokenService;
         this.resourceService = resourceService;
         this.roleService = roleService;
         this.credentialService = credentialService;
+        this.identityResourceRoleService = identityResourceRoleService;
     }
 
     @Override
@@ -93,21 +102,27 @@ public class AuthenticationServiceImpl implements AuthenticationService {
             throw e;
         }
         credentialService.updateFailedAttempts(credential, 0);
+        final Identity identity = credential.getIdentity();
         if (authenticationResponse.getStatus() == AuthenticationStatus.AUTHENTICATED) {
             if (!request.getTokenRequests().isEmpty()) {
                 List<Token> tokens = tokenService.createNewTokens(request.getTokenRequests(), credential, request.getResourceRequests());
                 authenticationResponse.setTokens(tokens);
             }
-            if (!request.getResourceRequests().isEmpty()) {
+            if (!CollectionUtils.isEmpty(request.getResourceRequests())) {
                 List<Resource> resources = resourceService.get(request.getResourceRequests(), credential.getIdentity());
                 authenticationResponse.setResources(resources);
+                if (!CollectionUtils.isEmpty(resources)) {
+                    authenticationResponse.setPermissions(roleService.getPermissions(resources.parallelStream()
+                            .map(resource -> getIdentityResourceRoles(identity.getId(), resource.getId()))
+                            .flatMap(identityResourceRoles -> identityResourceRoles.parallelStream()
+                                    .map(identityResourceRole -> roleService.get(identityResourceRole.getRoleId())))
+                            .collect(Collectors.toUnmodifiableSet())));
+                }
             }
         }
-        final Identity identity = credential.getIdentity();
         authenticationResponse.setCredentialTypeUsed(credential.getType());
         authenticationResponse.setIdentity(identity);
-        authenticationResponse.setPrincipals(principalService.findAllByIdentity(credential.getIdentity()));
-        authenticationResponse.setPermissions(roleService.getPermissions(identity.getRoles()));
+        authenticationResponse.setPrincipals(principalService.findAllByIdentity(identity));
         credentialService.updateFailedAttempts(credential, 0);
         return authenticationResponse;
     }
@@ -116,6 +131,14 @@ public class AuthenticationServiceImpl implements AuthenticationService {
     @Transactional
     public void invalidateToken(TokenInvalidationRequest tokenRequest) throws TokenServiceException {
         tokenService.invalidateToken(tokenRequest);
+    }
+
+    private Set<IdentityResourceRole> getIdentityResourceRoles(final String identityId, final Long resourceId) {
+        Assert.hasText(identityId, "The identityId should not be null or empty");
+        Assert.notNull(resourceId, "The resourceId should not be null");
+        return identityResourceRoleService.getAllByIdentityIdAndResourceId(identityId, resourceId)
+                .parallelStream()
+                .collect(Collectors.toUnmodifiableSet());
     }
 }
 
