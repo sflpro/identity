@@ -1,6 +1,7 @@
 package com.sflpro.identity.core.services.role;
 
 import com.sflpro.identity.core.services.permission.PermissionRequest;
+import com.sflpro.identity.core.services.resource.ResourceRequest;
 
 import javax.validation.constraints.NotEmpty;
 import java.util.List;
@@ -19,6 +20,8 @@ public class RoleRequest {
     private String name;
 
     private List<PermissionRequest> permission;
+
+    private List<ResourceRequest> resource;
 
     public Long getId() {
         return id;
@@ -42,5 +45,13 @@ public class RoleRequest {
 
     public void setPermission(List<PermissionRequest> permission) {
         this.permission = permission;
+    }
+
+    public List<ResourceRequest> getResource() {
+        return resource;
+    }
+
+    public void setResource(final List<ResourceRequest> resource) {
+        this.resource = resource;
     }
 }

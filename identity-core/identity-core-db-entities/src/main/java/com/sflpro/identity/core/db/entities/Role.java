@@ -38,6 +38,12 @@ public class Role {
             inverseJoinColumns = {@JoinColumn(name = "permission_id")})
     private Set<Permission> permissions;
 
+    @ManyToMany(fetch = FetchType.LAZY)
+    @JoinTable(name = "role_resource",
+            joinColumns = {@JoinColumn(name = "role_id")},
+            inverseJoinColumns = {@JoinColumn(name = "resource_id")})
+    private Set<Resource> resources;
+
     @Column(name = "created", nullable = false)
     private LocalDateTime created;
 
@@ -69,6 +75,14 @@ public class Role {
 
     public void setPermissions(Set<Permission> permissions) {
         this.permissions = permissions;
+    }
+
+    public Set<Resource> getResources() {
+        return resources;
+    }
+
+    public void setResources(final Set<Resource> resources) {
+        this.resources = resources;
     }
 
     public LocalDateTime getCreated() {
@@ -118,6 +132,7 @@ public class Role {
                 .append(id, role.id)
                 .append(name, role.name)
                 .append(permissions, role.permissions)
+                .append(resources, role.resources)
                 .append(created, role.created)
                 .append(updated, role.updated)
                 .append(deleted, role.deleted)
@@ -130,6 +145,7 @@ public class Role {
                 .append(id)
                 .append(name)
                 .append(permissions)
+                .append(resources)
                 .append(created)
                 .append(updated)
                 .append(deleted)
@@ -142,6 +158,7 @@ public class Role {
                 .append("id", id)
                 .append("name", name)
                 .append("permissions", permissions)
+                .append("resources", resources)
                 .append("created", created)
                 .append("updated", updated)
                 .append("deleted", deleted)
