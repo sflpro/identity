@@ -136,6 +136,7 @@
         <hibernate.validator.version>6.0.5.Final</hibernate.validator.version>
         <commons.lang3.version>3.7</commons.lang3.version>
         <tomakehurst.wiremock.version>2.14.0</tomakehurst.wiremock.version>
+        <google.java.cloud.logging.version>0.117.0-alpha</google.java.cloud.logging.version>
 
         <!-- DB -->
         <hibernate.version>5.2.12.Final</hibernate.version>
@@ -450,6 +451,20 @@
                 <groupId>io.swagger</groupId>
                 <artifactId>swagger-models</artifactId>
                 <version>${swagger.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>com.google.cloud</groupId>
+                <artifactId>google-cloud-logging-logback</artifactId>
+                <version>${google.java.cloud.logging.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>com.google.cloud</groupId>
+                <artifactId>google-cloud-bom</artifactId>
+                <version>${google.java.cloud.version}</version>
+                <type>pom</type>
+                <scope>import</scope>
             </dependency>
         </dependencies>
     </dependencyManagement>
