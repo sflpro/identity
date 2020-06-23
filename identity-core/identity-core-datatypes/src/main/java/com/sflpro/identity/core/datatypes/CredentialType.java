@@ -7,5 +7,5 @@ package com.sflpro.identity.core.datatypes;
  * @author Davit Harutyunyan
  */
 public enum CredentialType {
-    PRINCIPAL, TOKEN
+    DEFAULT, PRINCIPAL, TOKEN
 }

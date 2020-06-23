@@ -66,6 +66,11 @@ public class TokenServiceImpl implements TokenService {
     }
 
     @Override
+    public Token createNewToken(TokenRequest tokenRequest, Credential credential) {
+        return createNewToken(tokenRequest, credential, List.of());
+    }
+
+    @Override
     public Token createNewToken(final TokenRequest tokenRequest, final Credential credential, final List<ResourceRequest> resourceRequests) {
         LocalDateTime currentLocalDateTime = LocalDateTime.now();
 

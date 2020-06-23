@@ -14,6 +14,11 @@ public class TokenRequest {
 
     private Integer expiresInHours;
 
+    public TokenRequest(TokenType tokenType) {
+        this.tokenType = tokenType;
+        this.expiresInHours = null;
+    }
+
     public TokenRequest(TokenType tokenType, Integer expiresInHours) {
         this.tokenType = tokenType;
         this.expiresInHours = expiresInHours;
