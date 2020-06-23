@@ -30,6 +30,15 @@ public interface TokenService {
      *
      * @param tokenRequest token data to be generated
      * @param credential the credential token are issued by
+     * @return created entity
+     */
+    Token createNewToken(final TokenRequest tokenRequest, final Credential credential);
+
+    /**
+     * Creates new token
+     *
+     * @param tokenRequest token data to be generated
+     * @param credential the credential token are issued by
      * @param resourceRequests request for resource access for credential
      * @return created entity
      */
