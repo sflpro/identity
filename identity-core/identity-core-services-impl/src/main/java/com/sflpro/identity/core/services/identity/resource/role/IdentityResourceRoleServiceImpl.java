@@ -9,6 +9,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.Assert;
 
+import javax.persistence.EntityManager;
+import javax.persistence.PersistenceContext;
 import java.util.Set;
 
 /**
@@ -19,10 +21,31 @@ import java.util.Set;
  */
 @Service
 public class IdentityResourceRoleServiceImpl implements IdentityResourceRoleService {
+
     private static final Logger logger = LoggerFactory.getLogger(IdentityResourceRoleServiceImpl.class);
+
+    @PersistenceContext
+    private EntityManager em;
 
     @Autowired
     private IdentityResourceRoleRepository identityResourceRoleRepository;
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public IdentityResourceRole create(final IdentityResourceRoleCreationRequest creationRequest) {
+        Assert.notNull(creationRequest, "creationRequest cannot be null");
+        logger.trace("Creating identityResourceRole for request:{}...", creationRequest);
+        final IdentityResourceRole identityResourceRole = new IdentityResourceRole();
+        identityResourceRole.setIdentityId(creationRequest.getIdentityId());
+        identityResourceRole.setRoleId(creationRequest.getRoleId());
+        identityResourceRole.setResourceId(creationRequest.getResourceId());
+        final var saved = identityResourceRoleRepository.save(identityResourceRole);
+        em.flush();
+        logger.debug("Done creating identityResourceRole for request:{}...", creationRequest);
+        return saved;
+    }
 
     /**
      * {@inheritDoc}

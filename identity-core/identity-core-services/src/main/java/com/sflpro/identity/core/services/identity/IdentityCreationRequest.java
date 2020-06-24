@@ -16,6 +16,8 @@ public class IdentityCreationRequest {
 
     private String creatorId;
 
+    private Set<RoleAdditionRequest> roles;
+
     private Set<TokenRequest> tokenRequests;
 
     public String getDescription() {
@@ -56,6 +58,14 @@ public class IdentityCreationRequest {
 
     public void setCreatorId(String creatorId) {
         this.creatorId = creatorId;
+    }
+
+    public Set<RoleAdditionRequest> getRoles() {
+        return roles;
+    }
+
+    public void setRoles(Set<RoleAdditionRequest> roles) {
+        this.roles = roles;
     }
 
     public Set<TokenRequest> getTokenRequests() {

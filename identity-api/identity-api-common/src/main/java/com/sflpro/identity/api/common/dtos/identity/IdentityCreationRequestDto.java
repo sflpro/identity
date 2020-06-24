@@ -19,6 +19,8 @@ public class IdentityCreationRequestDto {
 
     private String creatorId;
 
+    private Set<RoleAdditionRequestDto> roles;
+
     private Set<TokenRequestDto> tokenRequests;
 
     public String getDescription() {
@@ -59,6 +61,14 @@ public class IdentityCreationRequestDto {
 
     public void setCreatorId(String creatorId) {
         this.creatorId = creatorId;
+    }
+
+    public Set<RoleAdditionRequestDto> getRoles() {
+        return roles;
+    }
+
+    public void setRoles(Set<RoleAdditionRequestDto> roles) {
+        this.roles = roles;
     }
 
     public Set<TokenRequestDto> getTokenRequests() {

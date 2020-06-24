@@ -1,6 +1,7 @@
 package com.sflpro.identity.core.services.identity.resource.role;
 
 import com.sflpro.identity.core.db.entities.IdentityResourceRole;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Set;
 
@@ -11,6 +12,15 @@ import java.util.Set;
  * @author Manuk Gharslyan
  */
 public interface IdentityResourceRoleService {
+
+    /**
+     * Creates IdentityResourceRole for provided request
+     *
+     * @param
+     * @return
+     */
+    @Transactional
+    IdentityResourceRole create(IdentityResourceRoleCreationRequest creationRequest);
 
     /**
      * Get set of identity role resources by identity id and resource id

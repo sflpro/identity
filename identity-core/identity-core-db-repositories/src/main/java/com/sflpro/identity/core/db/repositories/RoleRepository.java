@@ -14,5 +14,6 @@ import java.util.Optional;
 public interface RoleRepository extends JpaRepository<Role, Long> {
     
     Optional<Role> findByDeletedIsNullAndId(final Long id);
-    
+
+    Optional<Role> findByNameAndDeletedIsNull(String name);
 }
