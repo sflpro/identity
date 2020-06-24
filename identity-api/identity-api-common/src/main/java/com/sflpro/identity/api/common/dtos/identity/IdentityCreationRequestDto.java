@@ -1,5 +1,7 @@
 package com.sflpro.identity.api.common.dtos.identity;
 
+import com.sflpro.identity.api.common.dtos.resource.ResourceRequestDto;
+
 import javax.validation.constraints.NotEmpty;
 
 public class IdentityCreationRequestDto {
@@ -15,6 +17,8 @@ public class IdentityCreationRequestDto {
     private String status;
 
     private String creatorId;
+    
+    private ResourceRequestDto resourceRequestDto;
 
     public String getDescription() {
         return description;
@@ -54,5 +58,13 @@ public class IdentityCreationRequestDto {
 
     public void setCreatorId(String creatorId) {
         this.creatorId = creatorId;
+    }
+
+    public ResourceRequestDto getResourceRequestDto() {
+        return resourceRequestDto;
+    }
+
+    public void setResourceRequestDto(final ResourceRequestDto resourceRequestDto) {
+        this.resourceRequestDto = resourceRequestDto;
     }
 }

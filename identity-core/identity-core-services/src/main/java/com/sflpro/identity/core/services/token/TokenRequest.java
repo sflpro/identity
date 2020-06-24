@@ -17,9 +17,10 @@ public class TokenRequest {
     
     private ResourceRequest resourceRequest;
 
-    public TokenRequest(TokenType tokenType) {
+    public TokenRequest(TokenType tokenType, final ResourceRequest resourceRequest) {
         this.tokenType = tokenType;
         this.expiresInHours = null;
+        this.resourceRequest = resourceRequest;
     }
 
     public TokenRequest(TokenType tokenType, Integer expiresInHours, final ResourceRequest resourceRequest) {
