@@ -17,13 +17,13 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.util.Assert;
-import org.springframework.util.CollectionUtils;
 
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -49,7 +49,7 @@ public class AuthenticationServiceImpl implements AuthenticationService {
     private final RoleService roleService;
 
     private final CredentialService credentialService;
-    
+
     private final IdentityResourceRoleService identityResourceRoleService;
 
     @Value("${auth.attempts.limitCount}")
@@ -59,13 +59,8 @@ public class AuthenticationServiceImpl implements AuthenticationService {
     private int authAttemptsLimitMinutes;
 
     @Autowired
-    public AuthenticationServiceImpl(final AuthenticatorRegistry authenticatorRegistry,
-                                     final PrincipalService principalService,
-                                     final TokenService tokenService,
-                                     final ResourceService resourceService,
-                                     final RoleService roleService,
-                                     final CredentialService credentialService,
-                                     final IdentityResourceRoleService identityResourceRoleService) {
+    public AuthenticationServiceImpl(AuthenticatorRegistry authenticatorRegistry, PrincipalService principalService,
+                                     TokenService tokenService, ResourceService resourceService, RoleService roleService, CredentialService credentialService, PlatformTransactionManager platformTransactionManager, final IdentityResourceRoleService identityResourceRoleService) {
         this.authenticatorRegistry = authenticatorRegistry;
         this.principalService = principalService;
         this.tokenService = tokenService;
@@ -84,7 +79,7 @@ public class AuthenticationServiceImpl implements AuthenticationService {
 
         T credential = authenticatorRegistry.getCredentialStore(details.getCredentialIdentifier().getGenericClass()).get(details.getCredentialIdentifier());
 
-        if(credential.getFailedAttempts() > authAttemptsLimitCount
+        if (credential.getFailedAttempts() > authAttemptsLimitCount
                 && Objects.nonNull(credential.getLastFailedAttempt())
                 && LocalDateTime.now().isBefore(credential.getLastFailedAttempt().plusMinutes(authAttemptsLimitMinutes))) {
             credentialService.updateFailedAttempts(credential, credential.getFailedAttempts() + 1);
@@ -96,33 +91,32 @@ public class AuthenticationServiceImpl implements AuthenticationService {
         }
         AuthenticationResponse authenticationResponse;
         try {
-             authenticationResponse = authenticator.authenticate(credential, details);
+            authenticationResponse = authenticator.authenticate(credential, details);
         } catch (InvalidCredentialsException | TokenExpiredException e) {
             credentialService.updateFailedAttempts(credential, credential.getFailedAttempts() + 1);
             throw e;
         }
         credentialService.updateFailedAttempts(credential, 0);
-        final Identity identity = credential.getIdentity();
         if (authenticationResponse.getStatus() == AuthenticationStatus.AUTHENTICATED) {
             if (!request.getTokenRequests().isEmpty()) {
                 List<Token> tokens = tokenService.createNewTokens(request.getTokenRequests(), credential, request.getResourceRequests());
                 authenticationResponse.setTokens(tokens);
             }
-            if (!CollectionUtils.isEmpty(request.getResourceRequests())) {
+            if (!request.getResourceRequests().isEmpty()) {
                 List<Resource> resources = resourceService.get(request.getResourceRequests(), credential.getIdentity());
                 authenticationResponse.setResources(resources);
-                if (!CollectionUtils.isEmpty(resources)) {
-                    authenticationResponse.setPermissions(roleService.getPermissions(resources.parallelStream()
-                            .map(resource -> getIdentityResourceRoles(identity.getId(), resource.getId()))
-                            .flatMap(identityResourceRoles -> identityResourceRoles.parallelStream()
-                                    .map(identityResourceRole -> roleService.get(identityResourceRole.getRoleId())))
-                            .collect(Collectors.toUnmodifiableSet())));
-                }
             }
         }
+        final Identity identity = credential.getIdentity();
         authenticationResponse.setCredentialTypeUsed(credential.getType());
         authenticationResponse.setIdentity(identity);
-        authenticationResponse.setPrincipals(principalService.findAllByIdentity(identity));
+        authenticationResponse.setPrincipals(principalService.findAllByIdentity(credential.getIdentity()));
+        authenticationResponse.setPermissions(
+                Optional.ofNullable(request.getResourceRequest())
+                        .map(resourceRequest -> resourceService.get(resourceRequest.getType(), resourceRequest.getIdentifier()))
+                        .map(resource -> getResourceRolesPermissions(identity, resource.getId()))
+                        .orElseGet(() -> getResourceRolesPermissions(identity, null))
+        );
         credentialService.updateFailedAttempts(credential, 0);
         return authenticationResponse;
     }
@@ -133,11 +127,12 @@ public class AuthenticationServiceImpl implements AuthenticationService {
         tokenService.invalidateToken(tokenRequest);
     }
 
-    private Set<IdentityResourceRole> getIdentityResourceRoles(final String identityId, final Long resourceId) {
-        Assert.hasText(identityId, "The identityId should not be null or empty");
-        Assert.notNull(resourceId, "The resourceId should not be null");
-        return identityResourceRoleService.getAllByIdentityIdAndResourceId(identityId, resourceId)
-                .parallelStream()
+    private Set<Permission> getResourceRolesPermissions(final Identity identity, final Long id) {
+        return identityResourceRoleService.getAllByIdentityIdAndResourceId(identity.getId(), id)
+                .stream()
+                .map(IdentityResourceRole::getRoleId)
+                .map(roleService::get)
+                .flatMap(role -> role.getPermissions().stream())
                 .collect(Collectors.toUnmodifiableSet());
     }
 }

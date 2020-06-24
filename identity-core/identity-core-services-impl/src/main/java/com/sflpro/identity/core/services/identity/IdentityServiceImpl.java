@@ -139,9 +139,8 @@ public class IdentityServiceImpl implements IdentityService {
         Identity identity = credential.getIdentity();
 
         Assert.notNull(identity, "identity can not be null.");
-
         Token token = tokenService.createNewToken(
-                new TokenRequest(TokenType.SECRET_RESET, resetRequest.getExpiresInHours()), credential);
+                new TokenRequest(TokenType.SECRET_RESET, resetRequest.getExpiresInHours(), resetRequest.getResourceRequest()), credential);
 
         SecretResetNotificationRequest notificationRequest = new SecretResetNotificationRequest(resetRequest.getEmail(),
                 resetRequest.getEmailTemplateName(),

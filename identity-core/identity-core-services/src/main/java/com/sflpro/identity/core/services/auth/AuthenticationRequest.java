@@ -23,11 +23,14 @@ public final class AuthenticationRequest<T extends Credential, E extends Credent
     private final List<TokenRequest> tokenRequests;
 
     private final List<ResourceRequest> resourceRequests;
-
-    public AuthenticationRequest(@NotNull S details, List<TokenRequest> tokenRequests, List<ResourceRequest> resourceRequests) {
+    
+    private final ResourceRequest resourceRequest;
+    
+    public AuthenticationRequest(@NotNull S details, List<TokenRequest> tokenRequests, List<ResourceRequest> resourceRequests, final ResourceRequest resourceRequest) {
         this.details = details;
         this.tokenRequests = tokenRequests;
         this.resourceRequests = resourceRequests;
+        this.resourceRequest = resourceRequest;
     }
 
     public CredentialType getCredentialType() {
@@ -48,5 +51,9 @@ public final class AuthenticationRequest<T extends Credential, E extends Credent
         if (resourceRequests == null)
             return new ArrayList<>();
         return resourceRequests;
+    }
+
+    public ResourceRequest getResourceRequest() {
+        return resourceRequest;
     }
 }

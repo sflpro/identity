@@ -31,7 +31,6 @@ public class IdentityResourceRoleServiceImpl implements IdentityResourceRoleServ
     @Transactional(readOnly = true)
     public Set<IdentityResourceRole> getAllByIdentityIdAndResourceId(final String identityId, final Long resourceId) {
         Assert.hasText(identityId, "The identityId should not be null or empty");
-        Assert.notNull(resourceId, "The resourceId should not be null");
         logger.trace("Getting the identity resource roles for identityId - {} and resourceId - {}", identityId, resourceId);
         final Set<IdentityResourceRole> response = identityResourceRoleRepository.findAllByDeletedIsNullAndIdentityIdAndResourceId(identityId, resourceId);
         logger.debug("Done getting the identity resource roles for identityId - {} and resourceId - {}", identityId, resourceId);

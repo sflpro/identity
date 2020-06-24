@@ -2,10 +2,7 @@ package com.sflpro.identity.core.services.token.impl;
 
 import com.sflpro.identity.core.datatypes.CredentialType;
 import com.sflpro.identity.core.datatypes.TokenType;
-import com.sflpro.identity.core.db.entities.Credential;
-import com.sflpro.identity.core.db.entities.Resource;
-import com.sflpro.identity.core.db.entities.Role;
-import com.sflpro.identity.core.db.entities.Token;
+import com.sflpro.identity.core.db.entities.*;
 import com.sflpro.identity.core.db.repositories.TokenRepository;
 import com.sflpro.identity.core.services.ResourceNotFoundException;
 import com.sflpro.identity.core.services.auth.mechanism.token.TokenAuthenticationRequestDetails;
@@ -21,13 +18,10 @@ import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.util.Assert;
-import org.springframework.util.CollectionUtils;
 
 import java.time.Duration;
 import java.time.LocalDateTime;
-import java.util.Collections;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.stream.Collectors;
 
 /**
@@ -55,7 +49,7 @@ public class TokenServiceImpl implements TokenService {
     
     @Autowired
     private RoleService roleService;
-
+    
     @Autowired
     private IdentityResourceRoleService identityResourceRoleService;
 
@@ -98,19 +92,18 @@ public class TokenServiceImpl implements TokenService {
 
         final TokenGenerationRequest tokenGenerationRequest = new TokenGenerationRequest();
         tokenGenerationRequest.setExpiresIn(tokenRequest.getExpiresInHours() == null ? null : tokenRequest.getExpiresInHours() * 3600L);
-        final String identityId = credential.getIdentity().getId();
-        tokenGenerationRequest.setIdentityId(identityId);
-        
-        if (CollectionUtils.isEmpty(resourceRequests)) {
+        tokenGenerationRequest.setIdentityId(credential.getIdentity().getId());
+        final ResourceRequest resourceRequest = tokenRequest.getResourceRequest();
+        tokenGenerationRequest.setRoles(
+                Optional.ofNullable(resourceRequest)
+                        .map(request -> resourceService.get(request.getType(), request.getIdentifier()))
+                        .map(resource -> getResourceRoles(credential.getIdentity(), resource.getId()))
+                        .orElseGet(() -> getResourceRoles(credential.getIdentity(), null))
+        );
+        if (resourceRequests != null && !resourceRequests.isEmpty()) {
             List<Resource> resources = resourceService.get(resourceRequests, credential.getIdentity());
             final Map<String, List<String>> resourceMap = resources.stream()
                     .collect(Collectors.groupingBy(Resource::getType, Collectors.mapping(Resource::getIdentifier, Collectors.toList())));
-            tokenGenerationRequest.setRoles(CollectionUtils.isEmpty(resources) ? Collections.emptySet() : resources.parallelStream()
-                    .map(resource -> identityResourceRoleService.getAllByIdentityIdAndResourceId(identityId, resource.getId()))
-                    .flatMap(identityResourceRoles -> identityResourceRoles.parallelStream()
-                            .map(identityResourceRole -> roleService.get(identityResourceRole.getRoleId()))
-                            .map(Role::getName)
-                    ).collect(Collectors.toUnmodifiableSet()));
             tokenGenerationRequest.setResources(resourceMap);
         }
         final String generatedToken;
@@ -125,9 +118,10 @@ public class TokenServiceImpl implements TokenService {
         token.setType(CredentialType.TOKEN);
         token.setIdentity(credential.getIdentity());
         token.setFailedAttempts(0); // TODO work here
-
+        if (Objects.nonNull(resourceRequest)) {
+            token.setResourceId(resourceService.get(resourceRequest.getType(), resourceRequest.getIdentifier()).getId());
+        }
         tokenRepository.save(token);
-
         return token;
     }
 
@@ -217,5 +211,14 @@ public class TokenServiceImpl implements TokenService {
         }
 
         return existingToken;
+    }
+
+    private Set<String> getResourceRoles(final Identity identity, final Long id) {
+        return identityResourceRoleService.getAllByIdentityIdAndResourceId(identity.getId(), id)
+                .stream()
+                .map(IdentityResourceRole::getRoleId)
+                .map(roleService::get)
+                .map(Role::getName)
+                .collect(Collectors.toUnmodifiableSet());
     }
 }
