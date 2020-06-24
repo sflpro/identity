@@ -1,5 +1,6 @@
 package com.sflpro.identity.api.common.dtos.auth;
 
+import com.sflpro.identity.api.common.dtos.resource.ResourceRequestDto;
 import com.sflpro.identity.api.common.dtos.token.TokenRequestDto;
 
 import javax.validation.constraints.NotNull;
