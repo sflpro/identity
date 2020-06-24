@@ -21,8 +21,6 @@ public class AuthenticationResponse {
 
     private Set<Principal> principals;
 
-    private Set<Permission> permissions;
-
     private List<Token> tokens;
 
     private List<Resource> resources;
@@ -56,14 +54,6 @@ public class AuthenticationResponse {
 
     public void setPrincipals(Set<Principal> principals) {
         this.principals = principals;
-    }
-
-    public Set<Permission> getPermissions() {
-        return permissions;
-    }
-
-    public void setPermissions(Set<Permission> permissions) {
-        this.permissions = permissions;
     }
 
     public List<Token> getTokens() {

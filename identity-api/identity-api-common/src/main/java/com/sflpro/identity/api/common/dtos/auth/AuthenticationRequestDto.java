@@ -21,8 +21,6 @@ public class AuthenticationRequestDto<T extends AuthenticationRequestDetailsDto>
 
     private List<ResourceRequestDto> resourceRequests;
     
-    private ResourceRequestDto resourceRequest;
-
     public T getDetails() {
         return details;
     }
@@ -45,13 +43,5 @@ public class AuthenticationRequestDto<T extends AuthenticationRequestDetailsDto>
 
     public void setResourceRequests(List<ResourceRequestDto> resourceRequests) {
         this.resourceRequests = resourceRequests;
-    }
-
-    public ResourceRequestDto getResourceRequest() {
-        return resourceRequest;
-    }
-
-    public void setResourceRequest(final ResourceRequestDto resourceRequest) {
-        this.resourceRequest = resourceRequest;
     }
 }

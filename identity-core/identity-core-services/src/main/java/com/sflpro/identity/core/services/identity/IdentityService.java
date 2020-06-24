@@ -71,7 +71,7 @@ public interface IdentityService {
      * @param addRequest identity update request model
      * @return id and details of the created identity
      */
-    Identity add(final IdentityCreationRequest addRequest);
+    IdentityResponse add(final IdentityCreationRequest addRequest);
 
     void delete(String id);
 

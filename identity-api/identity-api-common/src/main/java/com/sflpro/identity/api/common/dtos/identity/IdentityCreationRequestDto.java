@@ -1,24 +1,25 @@
 package com.sflpro.identity.api.common.dtos.identity;
 
-import com.sflpro.identity.api.common.dtos.resource.ResourceRequestDto;
+import com.sflpro.identity.api.common.dtos.token.TokenRequestDto;
 
 import javax.validation.constraints.NotEmpty;
+import java.util.Set;
 
 public class IdentityCreationRequestDto {
 
     @NotEmpty
-    private  String description;
+    private String description;
 
     @NotEmpty
-    private  String contactMethod;
+    private String contactMethod;
 
-    private  String secret;
+    private String secret;
 
     private String status;
 
     private String creatorId;
-    
-    private ResourceRequestDto resourceRequestDto;
+
+    private Set<TokenRequestDto> tokenRequests;
 
     public String getDescription() {
         return description;
@@ -60,11 +61,11 @@ public class IdentityCreationRequestDto {
         this.creatorId = creatorId;
     }
 
-    public ResourceRequestDto getResourceRequestDto() {
-        return resourceRequestDto;
+    public Set<TokenRequestDto> getTokenRequests() {
+        return tokenRequests;
     }
 
-    public void setResourceRequestDto(final ResourceRequestDto resourceRequestDto) {
-        this.resourceRequestDto = resourceRequestDto;
+    public void setTokenRequests(Set<TokenRequestDto> tokenRequests) {
+        this.tokenRequests = tokenRequests;
     }
 }
