@@ -2,15 +2,14 @@ package com.sflpro.identity.core.services.token.impl;
 
 import com.sflpro.identity.core.datatypes.CredentialType;
 import com.sflpro.identity.core.datatypes.TokenType;
-import com.sflpro.identity.core.db.entities.Credential;
-import com.sflpro.identity.core.db.entities.Resource;
-import com.sflpro.identity.core.db.entities.Role;
-import com.sflpro.identity.core.db.entities.Token;
+import com.sflpro.identity.core.db.entities.*;
 import com.sflpro.identity.core.db.repositories.TokenRepository;
 import com.sflpro.identity.core.services.ResourceNotFoundException;
 import com.sflpro.identity.core.services.auth.mechanism.token.TokenAuthenticationRequestDetails;
+import com.sflpro.identity.core.services.identity.resource.role.IdentityResourceRoleService;
 import com.sflpro.identity.core.services.resource.ResourceRequest;
 import com.sflpro.identity.core.services.resource.ResourceService;
+import com.sflpro.identity.core.services.role.RoleService;
 import com.sflpro.identity.core.services.token.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -22,10 +21,7 @@ import org.springframework.util.Assert;
 
 import java.time.Duration;
 import java.time.LocalDateTime;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Collectors;
 
 /**
@@ -50,6 +46,12 @@ public class TokenServiceImpl implements TokenService {
 
     @Autowired
     private ResourceService resourceService;
+    
+    @Autowired
+    private RoleService roleService;
+    
+    @Autowired
+    private IdentityResourceRoleService identityResourceRoleService;
 
     @Autowired
     @Qualifier("jwtTokenGenerator")
@@ -91,10 +93,13 @@ public class TokenServiceImpl implements TokenService {
         final TokenGenerationRequest tokenGenerationRequest = new TokenGenerationRequest();
         tokenGenerationRequest.setExpiresIn(tokenRequest.getExpiresInHours() == null ? null : tokenRequest.getExpiresInHours() * 3600L);
         tokenGenerationRequest.setIdentityId(credential.getIdentity().getId());
-        tokenGenerationRequest.setRoles(Optional.ofNullable(credential.getIdentity().getRoles()).orElse(Set.of())
-                .stream()
-                .map(Role::getName)
-                .collect(Collectors.toSet()));
+        final ResourceRequest resourceRequest = tokenRequest.getResourceRequest();
+        tokenGenerationRequest.setRoles(
+                Optional.ofNullable(resourceRequest)
+                        .map(request -> resourceService.get(request.getType(), request.getIdentifier()))
+                        .map(resource -> getResourceRoles(credential.getIdentity(), resource.getId()))
+                        .orElseGet(() -> getResourceRoles(credential.getIdentity(), null))
+        );
         if (resourceRequests != null && !resourceRequests.isEmpty()) {
             List<Resource> resources = resourceService.get(resourceRequests, credential.getIdentity());
             final Map<String, List<String>> resourceMap = resources.stream()
@@ -113,9 +118,10 @@ public class TokenServiceImpl implements TokenService {
         token.setType(CredentialType.TOKEN);
         token.setIdentity(credential.getIdentity());
         token.setFailedAttempts(0); // TODO work here
-
+        if (Objects.nonNull(resourceRequest)) {
+            token.setResourceId(resourceService.get(resourceRequest.getType(), resourceRequest.getIdentifier()).getId());
+        }
         tokenRepository.save(token);
-
         return token;
     }
 
@@ -205,5 +211,14 @@ public class TokenServiceImpl implements TokenService {
         }
 
         return existingToken;
+    }
+
+    private Set<String> getResourceRoles(final Identity identity, final Long id) {
+        return identityResourceRoleService.getAllByIdentityIdAndResourceId(identity.getId(), id)
+                .stream()
+                .map(IdentityResourceRole::getRoleId)
+                .map(roleService::get)
+                .map(Role::getName)
+                .collect(Collectors.toUnmodifiableSet());
     }
 }

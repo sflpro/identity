@@ -25,6 +25,7 @@ import com.sflpro.identity.core.services.identity.IdentityService;
 import com.sflpro.identity.core.services.identity.IdentityUpdateRequest;
 import com.sflpro.identity.core.services.identity.reset.RequestSecretResetRequest;
 import com.sflpro.identity.core.services.identity.reset.SecretResetRequest;
+import com.sflpro.identity.core.services.resource.ResourceRequest;
 import com.sflpro.identity.core.services.resource.ResourceService;
 import com.sflpro.identity.core.services.token.TokenRequest;
 import com.sflpro.identity.core.services.token.TokenService;
@@ -46,6 +47,7 @@ import javax.validation.constraints.NotNull;
 import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
 import java.util.List;
+import java.util.Optional;
 
 /**
  * Company: SFL LLC
@@ -165,7 +167,10 @@ public class IdentityEndpoint {
             credentialCreation.setCredentialType(CredentialType.DEFAULT);
             credentialCreation.setDetails("No credential, default token");
             final Credential credential = credentialService.store(identity, credentialCreation);
-            final Token token = tokenService.createNewToken(new TokenRequest(TokenType.REFRESH), credential);
+            final ResourceRequest resourceRequest = Optional.ofNullable(request.getResourceRequestDto())
+                    .map(dto -> mapper.map(dto, ResourceRequest.class))
+                    .orElse(null);
+            final Token token = tokenService.createNewToken(new TokenRequest(TokenType.REFRESH, resourceRequest), credential);
             result.setToken(mapper.map(token, TokenDto.class));
         }
         logger.info("Done creating identity with data :{}....", creationRequest);
