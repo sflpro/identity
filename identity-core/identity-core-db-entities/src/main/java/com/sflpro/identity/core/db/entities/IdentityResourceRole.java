@@ -16,9 +16,7 @@ import java.time.LocalDateTime;
 @Entity
 @Table(name = "identity_resource_role",
         uniqueConstraints = {
-                @UniqueConstraint(name = "uk_identity_role", columnNames = {"identity_id", "role_id"}),
                 @UniqueConstraint(name = "uk_identity_role_deleted", columnNames = {"identity_id", "role_id", "deleted"}),
-                @UniqueConstraint(name = "uk_identity_resource_role", columnNames = {"identity_id", "resource_id", "role_id"}),
                 @UniqueConstraint(name = "uk_identity_resource_role_deleted", columnNames = {"identity_id", "resource_id", "role_id", "deleted"})
         }
 )
