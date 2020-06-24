@@ -1,5 +1,7 @@
 package com.sflpro.identity.api.common.dtos.identity.reset;
 
+import com.sflpro.identity.api.common.dtos.resource.ResourceRequestDto;
+
 import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
 
@@ -20,6 +22,8 @@ public class RequestSecretResetRequestDto {
     private String emailTemplateName;
 
     private String redirectUri;
+    
+    private ResourceRequestDto resourceRequest;
 
     public String getEmail() {
         return email;
@@ -51,5 +55,13 @@ public class RequestSecretResetRequestDto {
 
     public void setRedirectUri(String redirectUri) {
         this.redirectUri = redirectUri;
+    }
+
+    public ResourceRequestDto getResourceRequest() {
+        return resourceRequest;
+    }
+
+    public void setResourceRequest(final ResourceRequestDto resourceRequest) {
+        this.resourceRequest = resourceRequest;
     }
 }
