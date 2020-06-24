@@ -12,17 +12,11 @@ import com.sflpro.identity.api.mapper.BeanMapper;
 import com.sflpro.identity.core.datatypes.CredentialType;
 import com.sflpro.identity.core.datatypes.IdentityStatus;
 import com.sflpro.identity.core.datatypes.TokenType;
-import com.sflpro.identity.core.db.entities.Credential;
-import com.sflpro.identity.core.db.entities.Identity;
-import com.sflpro.identity.core.db.entities.Resource;
-import com.sflpro.identity.core.db.entities.Token;
+import com.sflpro.identity.core.db.entities.*;
 import com.sflpro.identity.core.services.auth.AuthenticationServiceException;
 import com.sflpro.identity.core.services.credential.CredentialCreation;
 import com.sflpro.identity.core.services.credential.CredentialService;
-import com.sflpro.identity.core.services.identity.IdentityCreationRequest;
-import com.sflpro.identity.core.services.identity.IdentityResourceUpdateRequest;
-import com.sflpro.identity.core.services.identity.IdentityService;
-import com.sflpro.identity.core.services.identity.IdentityUpdateRequest;
+import com.sflpro.identity.core.services.identity.*;
 import com.sflpro.identity.core.services.identity.reset.RequestSecretResetRequest;
 import com.sflpro.identity.core.services.identity.reset.SecretResetRequest;
 import com.sflpro.identity.core.services.resource.ResourceRequest;
@@ -160,19 +154,8 @@ public class IdentityEndpoint {
         Assert.notNull(request, "request cannot be null");
         logger.debug("Creating identity  with data :{}...", request);
         final IdentityCreationRequest creationRequest = mapper.map(request, IdentityCreationRequest.class);
-        final Identity identity = identityService.add(creationRequest);
+        final IdentityResponse identity = identityService.add(creationRequest);
         final IdentityWithTokenDto result = mapper.map(identity, IdentityWithTokenDto.class);
-        if (identity.getStatus() == IdentityStatus.ACTIVE) {
-            final CredentialCreation credentialCreation = new CredentialCreation();
-            credentialCreation.setCredentialType(CredentialType.DEFAULT);
-            credentialCreation.setDetails("No credential, default token");
-            final Credential credential = credentialService.store(identity, credentialCreation);
-            final ResourceRequest resourceRequest = Optional.ofNullable(request.getResourceRequestDto())
-                    .map(dto -> mapper.map(dto, ResourceRequest.class))
-                    .orElse(null);
-            final Token token = tokenService.createNewToken(new TokenRequest(TokenType.REFRESH, resourceRequest), credential);
-            result.setToken(mapper.map(token, TokenDto.class));
-        }
         logger.info("Done creating identity with data :{}....", creationRequest);
         return result;
     }

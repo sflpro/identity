@@ -1,9 +1,6 @@
 package com.sflpro.identity.core.services.identity;
 
-import com.sflpro.identity.core.datatypes.IdentityContactMethod;
-import com.sflpro.identity.core.datatypes.IdentityStatus;
-import com.sflpro.identity.core.datatypes.PrincipalType;
-import com.sflpro.identity.core.datatypes.TokenType;
+import com.sflpro.identity.core.datatypes.*;
 import com.sflpro.identity.core.db.entities.*;
 import com.sflpro.identity.core.db.repositories.IdentityRepository;
 import com.sflpro.identity.core.db.repositories.IdentityResourceRepository;
@@ -11,6 +8,7 @@ import com.sflpro.identity.core.services.ResourceNotFoundException;
 import com.sflpro.identity.core.services.auth.AuthenticationServiceException;
 import com.sflpro.identity.core.services.auth.InvalidCredentialsException;
 import com.sflpro.identity.core.services.auth.SecretHashHelper;
+import com.sflpro.identity.core.services.credential.CredentialCreation;
 import com.sflpro.identity.core.services.credential.CredentialService;
 import com.sflpro.identity.core.services.identity.reset.RequestSecretResetRequest;
 import com.sflpro.identity.core.services.identity.reset.SecretResetRequest;
@@ -34,10 +32,7 @@ import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import javax.validation.constraints.NotNull;
 import java.time.LocalDateTime;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
-import java.util.Optional;
+import java.util.*;
 import java.util.stream.Collectors;
 
 /**
@@ -218,8 +213,11 @@ public class IdentityServiceImpl implements IdentityService {
         return Objects.isNull(identity.getDeleted()) && identity.getStatus() == IdentityStatus.ACTIVE;
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
-    public Identity add(IdentityCreationRequest addRequest) {
+    public IdentityResponse add(final IdentityCreationRequest addRequest) {
         Assert.notNull(addRequest, "addRequest cannot be null");
         logger.debug("Creating identity  {}", addRequest);
         final Identity identity = new Identity();
@@ -237,8 +235,21 @@ public class IdentityServiceImpl implements IdentityService {
             identity.setCreatorId(identityById.get());
         }
         final Identity createdIdentity = identityRepository.save(identity);
-        logger.trace("Complete adding identity - {}", createdIdentity);
-        return createdIdentity;
+        entityManager.flush();
+
+        final CredentialCreation credentialCreation = new CredentialCreation();
+        credentialCreation.setCredentialType(CredentialType.DEFAULT);
+        credentialCreation.setDetails("No credential, default token");
+        final Credential credential = credentialService.store(identity, credentialCreation);
+        final Set<Token> tokens = new HashSet<>();
+        for (TokenRequest tokenRequest : addRequest.getTokenRequests()) {
+            tokens.add(tokenService.createNewToken(new TokenRequest(TokenType.REFRESH, tokenRequest.getRoleResource()), credential));
+        }
+        final IdentityResponse identityResponse = new IdentityResponse(createdIdentity.getId(),
+                createdIdentity.getDescription(), createdIdentity.getContactMethod(),
+                createdIdentity.getStatus(), tokens);
+        logger.trace("Complete adding identity - {} with result - {}", createdIdentity, identityResponse);
+        return identityResponse;
     }
 
     @Override

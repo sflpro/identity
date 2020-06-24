@@ -5,6 +5,8 @@ import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
 import org.apache.commons.lang3.builder.ToStringBuilder;
 
+import java.util.Set;
+
 /**
  * Company: SFL LLC
  * Created on 24/11/2017
@@ -13,14 +15,14 @@ import org.apache.commons.lang3.builder.ToStringBuilder;
  */
 public class IdentityWithTokenDto extends IdentityDto {
 
-    private TokenDto token;
+    private Set<TokenDto> tokens;
 
-    public TokenDto getToken() {
-        return token;
+    public Set<TokenDto> getTokens() {
+        return tokens;
     }
 
-    public void setToken(TokenDto token) {
-        this.token = token;
+    public void setTokens(Set<TokenDto> tokens) {
+        this.tokens = tokens;
     }
 
     @Override
@@ -33,7 +35,7 @@ public class IdentityWithTokenDto extends IdentityDto {
 
         return new EqualsBuilder()
                 .appendSuper(super.equals(o))
-                .append(token, that.token)
+                .append(tokens, that.tokens)
                 .isEquals();
     }
 
@@ -41,7 +43,7 @@ public class IdentityWithTokenDto extends IdentityDto {
     public int hashCode() {
         return new HashCodeBuilder(17, 37)
                 .appendSuper(super.hashCode())
-                .append(token)
+                .append(tokens)
                 .toHashCode();
     }
 
@@ -49,6 +51,7 @@ public class IdentityWithTokenDto extends IdentityDto {
     public String toString() {
         return new ToStringBuilder(this)
                 .appendSuper(super.toString())
+                .append("tokens", tokens)
                 .toString();
     }
 }

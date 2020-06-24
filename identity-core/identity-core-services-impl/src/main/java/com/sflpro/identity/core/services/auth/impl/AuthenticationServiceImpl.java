@@ -23,7 +23,6 @@ import org.springframework.transaction.annotation.Transactional;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Objects;
-import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -111,12 +110,6 @@ public class AuthenticationServiceImpl implements AuthenticationService {
         authenticationResponse.setCredentialTypeUsed(credential.getType());
         authenticationResponse.setIdentity(identity);
         authenticationResponse.setPrincipals(principalService.findAllByIdentity(credential.getIdentity()));
-        authenticationResponse.setPermissions(
-                Optional.ofNullable(request.getResourceRequest())
-                        .map(resourceRequest -> resourceService.get(resourceRequest.getType(), resourceRequest.getIdentifier()))
-                        .map(resource -> getResourceRolesPermissions(identity, resource.getId()))
-                        .orElseGet(() -> getResourceRolesPermissions(identity, null))
-        );
         credentialService.updateFailedAttempts(credential, 0);
         return authenticationResponse;
     }

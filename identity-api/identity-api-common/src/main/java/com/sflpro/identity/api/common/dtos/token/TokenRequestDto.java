@@ -1,5 +1,6 @@
 package com.sflpro.identity.api.common.dtos.token;
 
+import com.sflpro.identity.api.common.dtos.resource.ResourceRequestDto;
 import com.sflpro.identity.core.datatypes.TokenType;
 
 /**
@@ -13,6 +14,8 @@ public class TokenRequestDto {
     private TokenType tokenType;
 
     private Integer expiresInHours;
+
+    private ResourceRequestDto roleResource;
 
     public TokenType getTokenType() {
         return tokenType;
@@ -28,5 +31,13 @@ public class TokenRequestDto {
 
     public void setExpiresInHours(Integer expiresInHours) {
         this.expiresInHours = expiresInHours;
+    }
+
+    public ResourceRequestDto getRoleResource() {
+        return roleResource;
+    }
+
+    public void setRoleResource(ResourceRequestDto roleResource) {
+        this.roleResource = roleResource;
     }
 }

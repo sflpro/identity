@@ -14,19 +14,19 @@ public class TokenRequest {
     private TokenType tokenType;
 
     private Integer expiresInHours;
-    
-    private ResourceRequest resourceRequest;
 
-    public TokenRequest(TokenType tokenType, final ResourceRequest resourceRequest) {
+    private ResourceRequest roleResource;
+
+    public TokenRequest(TokenType tokenType, final ResourceRequest roleResource) {
         this.tokenType = tokenType;
         this.expiresInHours = null;
-        this.resourceRequest = resourceRequest;
+        this.roleResource = roleResource;
     }
 
-    public TokenRequest(TokenType tokenType, Integer expiresInHours, final ResourceRequest resourceRequest) {
+    public TokenRequest(TokenType tokenType, Integer expiresInHours, final ResourceRequest roleResource) {
         this.tokenType = tokenType;
         this.expiresInHours = expiresInHours;
-        this.resourceRequest = resourceRequest;
+        this.roleResource = roleResource;
     }
 
     public TokenType getTokenType() {
@@ -45,11 +45,11 @@ public class TokenRequest {
         this.expiresInHours = expiresInHours;
     }
 
-    public ResourceRequest getResourceRequest() {
-        return resourceRequest;
+    public ResourceRequest getRoleResource() {
+        return roleResource;
     }
 
-    public void setResourceRequest(final ResourceRequest resourceRequest) {
-        this.resourceRequest = resourceRequest;
+    public void setRoleResource(final ResourceRequest roleResource) {
+        this.roleResource = roleResource;
     }
 }

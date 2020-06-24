@@ -93,7 +93,7 @@ public class TokenServiceImpl implements TokenService {
         final TokenGenerationRequest tokenGenerationRequest = new TokenGenerationRequest();
         tokenGenerationRequest.setExpiresIn(tokenRequest.getExpiresInHours() == null ? null : tokenRequest.getExpiresInHours() * 3600L);
         tokenGenerationRequest.setIdentityId(credential.getIdentity().getId());
-        final ResourceRequest resourceRequest = tokenRequest.getResourceRequest();
+        final ResourceRequest resourceRequest = tokenRequest.getRoleResource();
         tokenGenerationRequest.setRoles(
                 Optional.ofNullable(resourceRequest)
                         .map(request -> resourceService.get(request.getType(), request.getIdentifier()))
