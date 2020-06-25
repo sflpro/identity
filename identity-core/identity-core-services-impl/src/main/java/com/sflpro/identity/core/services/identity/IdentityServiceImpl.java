@@ -12,11 +12,14 @@ import com.sflpro.identity.core.services.credential.CredentialCreation;
 import com.sflpro.identity.core.services.credential.CredentialService;
 import com.sflpro.identity.core.services.identity.reset.RequestSecretResetRequest;
 import com.sflpro.identity.core.services.identity.reset.SecretResetRequest;
+import com.sflpro.identity.core.services.identity.resource.role.IdentityResourceRoleCreationRequest;
+import com.sflpro.identity.core.services.identity.resource.role.IdentityResourceRoleService;
 import com.sflpro.identity.core.services.notification.NotificationCommunicationService;
 import com.sflpro.identity.core.services.notification.SecretResetNotificationRequest;
 import com.sflpro.identity.core.services.principal.PrincipalService;
 import com.sflpro.identity.core.services.resource.ResourceCreationRequest;
 import com.sflpro.identity.core.services.resource.ResourceService;
+import com.sflpro.identity.core.services.role.RoleService;
 import com.sflpro.identity.core.services.token.*;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
@@ -46,6 +49,12 @@ public class IdentityServiceImpl implements IdentityService {
 
     private static final Logger logger = LoggerFactory.getLogger(IdentityServiceImpl.class);
 
+    @Value("${email.token.key}")
+    private String emailTokenKey;
+
+    @Value("${email.redirect.uri.key}")
+    private String emailRedirectUriKey;
+
     @PersistenceContext
     private EntityManager entityManager;
 
@@ -68,16 +77,16 @@ public class IdentityServiceImpl implements IdentityService {
     private IdentityResourceRepository identityResourceRepository;
 
     @Autowired
+    private RoleService roleService;
+
+    @Autowired
+    private IdentityResourceRoleService identityResourceRoleService;
+
+    @Autowired
     private ResourceService resourceService;
 
     @Autowired
     private CredentialService credentialService;
-
-    @Value("${email.token.key}")
-    private String emailTokenKey;
-
-    @Value("${email.redirect.uri.key}")
-    private String emailRedirectUriKey;
 
     /**
      * {@inheritDoc}
@@ -220,6 +229,8 @@ public class IdentityServiceImpl implements IdentityService {
     public IdentityResponse add(final IdentityCreationRequest addRequest) {
         Assert.notNull(addRequest, "addRequest cannot be null");
         logger.debug("Creating identity  {}", addRequest);
+
+        // create identity
         final Identity identity = new Identity();
         identity.setContactMethod(IdentityContactMethod.valueOf(addRequest.getContactMethod()));
         if (StringUtils.isNotBlank(addRequest.getSecret())) {
@@ -237,6 +248,20 @@ public class IdentityServiceImpl implements IdentityService {
         final Identity createdIdentity = identityRepository.save(identity);
         entityManager.flush();
 
+        // add roles
+        for (RoleAdditionRequest request : addRequest.getRoles()) {
+            final IdentityResourceRoleCreationRequest identityResourceRoleCreationRequest;
+            final Role role = roleService.getByName(request.getName());
+            if (request.getResource() != null) {
+                final Resource resource = resourceService.get(request.getResource().getType(), request.getResource().getIdentifier());
+                identityResourceRoleCreationRequest = new IdentityResourceRoleCreationRequest(identity.getId(), role.getId(), resource.getId());
+            } else {
+                identityResourceRoleCreationRequest = new IdentityResourceRoleCreationRequest(identity.getId(), role.getId());
+            }
+            identityResourceRoleService.create(identityResourceRoleCreationRequest);
+        }
+
+        // add tokens
         final CredentialCreation credentialCreation = new CredentialCreation();
         credentialCreation.setCredentialType(CredentialType.DEFAULT);
         credentialCreation.setDetails("No credential, default token");

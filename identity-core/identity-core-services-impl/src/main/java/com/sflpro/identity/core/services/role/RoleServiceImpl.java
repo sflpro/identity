@@ -7,6 +7,7 @@ import com.sflpro.identity.core.services.ResourceNotFoundException;
 import com.sflpro.identity.core.services.permission.PermissionService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.Assert;
 
 import java.time.LocalDateTime;
@@ -77,6 +78,17 @@ public class RoleServiceImpl implements RoleService {
         Assert.notNull(roleId, "roleId cannot be null");
         return roleRepository.findByDeletedIsNullAndId(roleId)
                 .orElseThrow(() -> new ResourceNotFoundException(String.format("Role with id: %s not found", roleId)));
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    @Transactional(readOnly = true)
+    public Role getByName(final String name) {
+        Assert.notNull(name, name);
+        return roleRepository.findByNameAndDeletedIsNull(name)
+                .orElseThrow(() -> new ResourceNotFoundException(String.format("Role with name:%s not found", name)));
     }
 
     /**
