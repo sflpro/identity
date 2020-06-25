@@ -21,6 +21,8 @@ public class TokenDto extends AbstractApiResponse {
     private String value;
 
     private String tokenType;
+    
+    private Long resourceId;
 
     @JsonFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss")
     @JsonSerialize(using = LocalDateTimeSerializer.class)
@@ -59,5 +61,13 @@ public class TokenDto extends AbstractApiResponse {
 
     public void setIssuedBy(CredentialDto issuedBy) {
         this.issuedBy = issuedBy;
+    }
+
+    public Long getResourceId() {
+        return resourceId;
+    }
+
+    public void setResourceId(final Long resourceId) {
+        this.resourceId = resourceId;
     }
 }

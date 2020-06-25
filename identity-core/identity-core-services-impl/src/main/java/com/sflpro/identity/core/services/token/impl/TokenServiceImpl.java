@@ -94,12 +94,22 @@ public class TokenServiceImpl implements TokenService {
         tokenGenerationRequest.setExpiresIn(tokenRequest.getExpiresInHours() == null ? null : tokenRequest.getExpiresInHours() * 3600L);
         tokenGenerationRequest.setIdentityId(credential.getIdentity().getId());
         final ResourceRequest resourceRequest = tokenRequest.getRoleResource();
-        tokenGenerationRequest.setRoles(
-                Optional.ofNullable(resourceRequest)
-                        .map(request -> resourceService.get(request.getType(), request.getIdentifier()))
-                        .map(resource -> getResourceRoles(credential.getIdentity(), resource.getId()))
-                        .orElseGet(() -> getResourceRoles(credential.getIdentity(), null))
+        final Optional<Resource> optionalResource = Optional.ofNullable(resourceRequest)
+                .map(theRequest -> resourceService.get(theRequest.getType(), theRequest.getIdentifier()));
+        final Set<Role> roles = optionalResource.map(resource -> getResourceRoles(credential.getIdentity(), resource.getId()))
+                .orElseGet(() -> getResourceRoles(credential.getIdentity(), null));
+        tokenGenerationRequest.setRoles(roles.stream()
+                .map(Role::getName)
+                .collect(Collectors.toUnmodifiableSet())
         );
+        optionalResource.ifPresent(resource -> tokenGenerationRequest.setResourceId(resource.getId()));
+        tokenGenerationRequest.setPermissions(roles.stream()
+                .map(Role::getPermissions)
+                .flatMap(Collection::stream)
+                .map(Permission::getName)
+                .collect(Collectors.toUnmodifiableSet())
+        );
+        
         if (resourceRequests != null && !resourceRequests.isEmpty()) {
             List<Resource> resources = resourceService.get(resourceRequests, credential.getIdentity());
             final Map<String, List<String>> resourceMap = resources.stream()
@@ -118,9 +128,7 @@ public class TokenServiceImpl implements TokenService {
         token.setType(CredentialType.TOKEN);
         token.setIdentity(credential.getIdentity());
         token.setFailedAttempts(0); // TODO work here
-        if (Objects.nonNull(resourceRequest)) {
-            token.setResourceId(resourceService.get(resourceRequest.getType(), resourceRequest.getIdentifier()).getId());
-        }
+        optionalResource.ifPresent(resource -> token.setResourceId(resource.getId()));
         tokenRepository.save(token);
         return token;
     }
@@ -213,12 +221,11 @@ public class TokenServiceImpl implements TokenService {
         return existingToken;
     }
 
-    private Set<String> getResourceRoles(final Identity identity, final Long id) {
+    private Set<Role> getResourceRoles(final Identity identity, final Long id) {
         return identityResourceRoleService.getAllByIdentityIdAndResourceId(identity.getId(), id)
                 .stream()
                 .map(IdentityResourceRole::getRoleId)
                 .map(roleService::get)
-                .map(Role::getName)
                 .collect(Collectors.toUnmodifiableSet());
     }
 }
