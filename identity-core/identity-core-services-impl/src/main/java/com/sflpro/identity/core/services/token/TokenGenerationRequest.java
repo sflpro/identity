@@ -19,6 +19,8 @@ public class TokenGenerationRequest {
     private String identityId;
     private Long expiresIn;
     private Set<String> roles;
+    private Set<String> permissions;
+    private Long resourceId;
     private Map<String, List<String>> resources;
 
     public String getIdentityId() {
@@ -53,6 +55,22 @@ public class TokenGenerationRequest {
         this.roles = roles;
     }
 
+    public Set<String> getPermissions() {
+        return permissions;
+    }
+
+    public void setPermissions(final Set<String> permissions) {
+        this.permissions = permissions;
+    }
+
+    public Long getResourceId() {
+        return resourceId;
+    }
+
+    public void setResourceId(final Long resourceId) {
+        this.resourceId = resourceId;
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
@@ -65,6 +83,8 @@ public class TokenGenerationRequest {
                 .append(identityId, that.identityId)
                 .append(expiresIn, that.expiresIn)
                 .append(roles, that.roles)
+                .append(permissions, that.permissions)
+                .append(resourceId, that.resourceId)
                 .append(resources, that.resources)
                 .isEquals();
     }
@@ -75,6 +95,8 @@ public class TokenGenerationRequest {
                 .append(identityId)
                 .append(expiresIn)
                 .append(roles)
+                .append(permissions)
+                .append(resourceId)
                 .append(resources)
                 .toHashCode();
     }
@@ -85,6 +107,8 @@ public class TokenGenerationRequest {
                 .append("identityId", identityId)
                 .append("expiresIn", expiresIn)
                 .append("roles", roles)
+                .append("permissions", permissions)
+                .append("resourceId", resourceId)
                 .append("resources", resources)
                 .toString();
     }

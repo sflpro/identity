@@ -16,7 +16,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.stereotype.Component;
 import org.springframework.util.Assert;
 
@@ -107,6 +106,8 @@ public class JwtTokenGenerator implements TokenGenerator {
         final JWTClaimsSet.Builder builder = new JWTClaimsSet.Builder()
                 .claim("identity_id", tokenGenerationRequest.getIdentityId())
                 .claim("roles", tokenGenerationRequest.getRoles())
+                .claim("permissions", tokenGenerationRequest.getPermissions())
+                .claim("customer_id", tokenGenerationRequest.getResourceId())
                 .issuer(jwtIssuer)
                 .issueTime(issuedAt)
                 .expirationTime(expirationTime);
