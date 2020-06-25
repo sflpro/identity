@@ -114,12 +114,15 @@ public class IdentityServiceImpl implements IdentityService {
         Assert.notNull(identityId, "identityId cannot be null");
         Assert.notNull(updateRequest, "updateRequest cannot be null");
         logger.debug("Updating identity by id {}", identityId);
-        Identity identity = get(identityId);
-
-        identity.setDescription(updateRequest.getDescription());
+        final Identity identity = get(identityId);
+        if (updateRequest.getDescription() != null) {
+            identity.setDescription(updateRequest.getDescription());
+        }
         // Change secret
-        chkSecretCorrectAndIdentityActive(identity, updateRequest.getSecret());
-        changeSecret(identity, updateRequest.getNewSecret());
+        if (updateRequest.getSecret() != null) {
+            chkSecretCorrectAndIdentityActive(identity, updateRequest.getSecret());
+            changeSecret(identity, updateRequest.getNewSecret());
+        }
 
         identity.setContactMethod(updateRequest.getContactMethod());
 
@@ -249,17 +252,7 @@ public class IdentityServiceImpl implements IdentityService {
         entityManager.flush();
 
         // add roles
-        for (RoleAdditionRequest request : addRequest.getRoles()) {
-            final IdentityResourceRoleCreationRequest identityResourceRoleCreationRequest;
-            final Role role = roleService.getByName(request.getName());
-            if (request.getResource() != null) {
-                final Resource resource = resourceService.get(request.getResource().getType(), request.getResource().getIdentifier());
-                identityResourceRoleCreationRequest = new IdentityResourceRoleCreationRequest(identity.getId(), role.getId(), resource.getId());
-            } else {
-                identityResourceRoleCreationRequest = new IdentityResourceRoleCreationRequest(identity.getId(), role.getId());
-            }
-            identityResourceRoleService.create(identityResourceRoleCreationRequest);
-        }
+        this.setRoles(identity.getId(), addRequest.getRoles());
 
         // add tokens
         final CredentialCreation credentialCreation = new CredentialCreation();
@@ -286,6 +279,32 @@ public class IdentityServiceImpl implements IdentityService {
         identity.setStatus(IdentityStatus.DISABLED);
         credentialService.delete(identity.getId());
         logger.debug("Deleting identity Identity:'{}'.", id);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    @Transactional
+    public void setRoles(final String identityId, final Set<RoleAdditionRequest> additionRequests) {
+        Assert.notNull(additionRequests, "additionRequest cannot be null");
+        Assert.notEmpty(additionRequests, "additionRequest cannot be null");
+        logger.trace("Adding roles for identity:{}...", identityId);
+        // add roles
+        for (RoleAdditionRequest request : additionRequests) {
+            final IdentityResourceRoleCreationRequest identityResourceRoleCreationRequest;
+            final Role role = roleService.getByName(request.getName());
+            if (request.getResource() != null) {
+                final Resource resource = resourceService.get(request.getResource().getType(), request.getResource().getIdentifier());
+                identityResourceRoleService.deleteByIdentityAndResource(identityId, resource.getId());
+                identityResourceRoleCreationRequest = new IdentityResourceRoleCreationRequest(identityId, role.getId(), resource.getId());
+            } else {
+                identityResourceRoleService.deleteByIdentityAndResource(identityId, null);
+                identityResourceRoleCreationRequest = new IdentityResourceRoleCreationRequest(identityId, role.getId());
+            }
+            identityResourceRoleService.create(identityResourceRoleCreationRequest);
+        }
+        logger.debug("Done adding roles for identity:{}", identityId);
     }
 
     @Override

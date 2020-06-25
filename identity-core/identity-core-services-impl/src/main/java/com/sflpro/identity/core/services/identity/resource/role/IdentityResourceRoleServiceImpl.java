@@ -59,4 +59,17 @@ public class IdentityResourceRoleServiceImpl implements IdentityResourceRoleServ
         logger.debug("Done getting the identity resource roles for identityId - {} and resourceId - {}", identityId, resourceId);
         return response;
     }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    @Transactional(readOnly = true)
+    public void deleteByIdentityAndResource(final String identityId, final Long resourceId) {
+        Assert.hasText(identityId, "The identityId should not be null or empty");
+        logger.trace("Getting the identity resource roles for identityId - {} and resourceId - {}", identityId, resourceId);
+        final Set<IdentityResourceRole> response = identityResourceRoleRepository.findAllByDeletedIsNullAndIdentityIdAndResourceId(identityId, resourceId);
+        identityResourceRoleRepository.deleteAll(response);
+        logger.debug("Done getting the identity resource roles for identityId - {} and resourceId - {}", identityId, resourceId);
+    }
 }
