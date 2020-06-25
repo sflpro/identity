@@ -32,7 +32,7 @@ once the identity microservice has been started.
 ## Deployment
 
 Identity is dockerized and is easy to deploy as a docker container. For more details, see the images on docker hub:  
-https://hub.docker.com/r/sflpro/identity
+https://hub.docker.com/r/sflpro/identity-service
 
 ## Running the application locally
 
@@ -54,7 +54,7 @@ server.port=8080
 ```
 
 #### 3. Run identity-api
-Running [Identity-API](https://hub.docker.com/r/sflpro/identity) docker images.
+Running [Identity-API](https://hub.docker.com/r/sflpro/identity-service) docker images.
 ```bash
 docker run -p 8080:8080 -v {IDENTITY_-_PROPERTIES_PATH}:/etc/identity/identity.properties sflpro/identity-api:0.1.0 --spring.config.location=etc/identity/identity.properties
 ```
