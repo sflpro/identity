@@ -29,5 +29,15 @@ public interface IdentityResourceRoleService {
      * @param resourceId
      * @return
      */
+    @Transactional(readOnly = true)
     Set<IdentityResourceRole> getAllByIdentityIdAndResourceId(final String identityId, final Long resourceId);
+
+    /**
+     * Deleted identtity resource role for provided ids
+     *
+     * @param identityId
+     * @param resourceIds
+     */
+    @Transactional
+    void deleteByIdentityAndResource(String identityId, Long resourceIds);
 }

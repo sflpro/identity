@@ -7,22 +7,14 @@ import com.sflpro.identity.api.common.dtos.identity.*;
 import com.sflpro.identity.api.common.dtos.identity.reset.RequestSecretResetRequestDto;
 import com.sflpro.identity.api.common.dtos.identity.reset.SecretResetRequestDto;
 import com.sflpro.identity.api.common.dtos.resource.ResourceDto;
-import com.sflpro.identity.api.common.dtos.token.TokenDto;
 import com.sflpro.identity.api.mapper.BeanMapper;
-import com.sflpro.identity.core.datatypes.CredentialType;
-import com.sflpro.identity.core.datatypes.IdentityStatus;
-import com.sflpro.identity.core.datatypes.TokenType;
-import com.sflpro.identity.core.db.entities.*;
+import com.sflpro.identity.core.db.entities.Identity;
+import com.sflpro.identity.core.db.entities.Resource;
 import com.sflpro.identity.core.services.auth.AuthenticationServiceException;
-import com.sflpro.identity.core.services.credential.CredentialCreation;
-import com.sflpro.identity.core.services.credential.CredentialService;
 import com.sflpro.identity.core.services.identity.*;
 import com.sflpro.identity.core.services.identity.reset.RequestSecretResetRequest;
 import com.sflpro.identity.core.services.identity.reset.SecretResetRequest;
-import com.sflpro.identity.core.services.resource.ResourceRequest;
 import com.sflpro.identity.core.services.resource.ResourceService;
-import com.sflpro.identity.core.services.token.TokenRequest;
-import com.sflpro.identity.core.services.token.TokenService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.SwaggerDefinition;
@@ -41,7 +33,7 @@ import javax.validation.constraints.NotNull;
 import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
 import java.util.List;
-import java.util.Optional;
+import java.util.Set;
 
 /**
  * Company: SFL LLC
@@ -73,12 +65,6 @@ public class IdentityEndpoint {
 
     @Autowired
     private ResourceService resourceService;
-
-    @Autowired
-    private TokenService tokenService;
-
-    @Autowired
-    private CredentialService credentialService;
 
     @ApiOperation("Returns identity's details")
     @GET
@@ -158,6 +144,19 @@ public class IdentityEndpoint {
         final IdentityWithTokenDto result = mapper.map(identity, IdentityWithTokenDto.class);
         logger.info("Done creating identity with data :{}....", creationRequest);
         return result;
+    }
+
+    @ApiOperation("Add role to identity")
+    @PUT
+    @Path("/{identityId}/roles")
+    @Transactional
+    public ApiResponseDto setRoles(@NotNull @PathParam("identityId") final String identityId,
+                                   @NotNull @Valid final Set<RoleAdditionRequestDto> additionRequests) {
+        logger.debug("Adding roles identity  with data :{}...", additionRequests);
+        final Set<RoleAdditionRequest> roleAdditionRequests = mapper.mapAsSet(additionRequests, RoleAdditionRequest.class);
+        identityService.setRoles(identityId, roleAdditionRequests);
+        logger.info("Done adding roles:{} to identity:{}", additionRequests, identityId);
+        return new ApiResponseDto();
     }
 
     @ApiOperation("Lists identity's all resources")
