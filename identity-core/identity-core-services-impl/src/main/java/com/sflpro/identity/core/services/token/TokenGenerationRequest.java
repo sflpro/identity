@@ -1,5 +1,6 @@
 package com.sflpro.identity.core.services.token;
 
+import com.sflpro.identity.core.services.resource.ResourceRequest;
 import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
 import org.apache.commons.lang3.builder.ToStringBuilder;
@@ -20,7 +21,7 @@ public class TokenGenerationRequest {
     private Long expiresIn;
     private Set<String> roles;
     private Set<String> permissions;
-    private Long resourceId;
+    private ResourceRequest resourceRole;
     private Map<String, List<String>> resources;
 
     public String getIdentityId() {
@@ -63,12 +64,12 @@ public class TokenGenerationRequest {
         this.permissions = permissions;
     }
 
-    public Long getResourceId() {
-        return resourceId;
+    public ResourceRequest getResourceRole() {
+        return resourceRole;
     }
 
-    public void setResourceId(final Long resourceId) {
-        this.resourceId = resourceId;
+    public void setResourceRole(ResourceRequest resourceRole) {
+        this.resourceRole = resourceRole;
     }
 
     @Override
@@ -84,7 +85,7 @@ public class TokenGenerationRequest {
                 .append(expiresIn, that.expiresIn)
                 .append(roles, that.roles)
                 .append(permissions, that.permissions)
-                .append(resourceId, that.resourceId)
+                .append(resourceRole, that.resourceRole)
                 .append(resources, that.resources)
                 .isEquals();
     }
@@ -96,7 +97,7 @@ public class TokenGenerationRequest {
                 .append(expiresIn)
                 .append(roles)
                 .append(permissions)
-                .append(resourceId)
+                .append(resourceRole)
                 .append(resources)
                 .toHashCode();
     }
@@ -108,7 +109,7 @@ public class TokenGenerationRequest {
                 .append("expiresIn", expiresIn)
                 .append("roles", roles)
                 .append("permissions", permissions)
-                .append("resourceId", resourceId)
+                .append("resourceRequest", resourceRole)
                 .append("resources", resources)
                 .toString();
     }
