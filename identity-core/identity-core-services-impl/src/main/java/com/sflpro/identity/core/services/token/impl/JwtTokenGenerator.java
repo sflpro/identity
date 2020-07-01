@@ -107,7 +107,7 @@ public class JwtTokenGenerator implements TokenGenerator {
                 .claim("identity_id", tokenGenerationRequest.getIdentityId())
                 .claim("roles", tokenGenerationRequest.getRoles())
                 .claim("permissions", tokenGenerationRequest.getPermissions())
-                .claim("customer_id", tokenGenerationRequest.getResourceId())
+                .claim("resource", tokenGenerationRequest.getResourceRole())
                 .issuer(jwtIssuer)
                 .issueTime(issuedAt)
                 .expirationTime(expirationTime);

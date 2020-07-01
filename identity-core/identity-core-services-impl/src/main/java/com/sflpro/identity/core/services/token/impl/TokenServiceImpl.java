@@ -102,7 +102,7 @@ public class TokenServiceImpl implements TokenService {
                 .map(Role::getName)
                 .collect(Collectors.toUnmodifiableSet())
         );
-        optionalResource.ifPresent(resource -> tokenGenerationRequest.setResourceId(resource.getId()));
+        optionalResource.ifPresent(resource -> tokenGenerationRequest.setResourceRole(new ResourceRequest(resource.getType(), resource.getIdentifier())));
         tokenGenerationRequest.setPermissions(roles.stream()
                 .map(Role::getPermissions)
                 .flatMap(Collection::stream)
