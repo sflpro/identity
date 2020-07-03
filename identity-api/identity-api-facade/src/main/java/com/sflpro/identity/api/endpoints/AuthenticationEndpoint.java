@@ -16,10 +16,7 @@ import com.sflpro.identity.core.services.token.TokenExpiredException;
 import com.sflpro.identity.core.services.token.TokenInvalidationRequest;
 import com.sflpro.identity.core.services.token.TokenService;
 import com.sflpro.identity.core.services.token.TokenServiceException;
-import io.swagger.annotations.Api;
-import io.swagger.annotations.ApiOperation;
-import io.swagger.annotations.SwaggerDefinition;
-import io.swagger.annotations.Tag;
+import io.swagger.v3.oas.annotations.Operation;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -38,8 +35,6 @@ import java.util.Set;
  *
  * @author Davit Harutyunyan
  */
-@SwaggerDefinition(tags = {@Tag(name = "auth", description = "Authorization & related")})
-@Api(tags = {"auth"})
 @Component
 @Path("/auth")
 @Produces(MediaType.APPLICATION_JSON)
@@ -57,7 +52,7 @@ public class AuthenticationEndpoint {
     @Autowired
     private TokenService tokenService;
 
-    @ApiOperation("Authenticating by credential type")
+    @Operation(tags = {"authentication"}, summary = "Authenticating by credential type")
     @POST
     @Path("/authenticate")
     @Transactional(noRollbackFor = {IdentityApiExceptionDto.class})
@@ -87,7 +82,7 @@ public class AuthenticationEndpoint {
         }
     }
 
-    @ApiOperation("Invalidate token")
+    @Operation(tags = {"authentication"}, summary = "Invalidate token")
     @POST
     @Path("/invalidate-token")
     @Transactional
@@ -109,7 +104,7 @@ public class AuthenticationEndpoint {
         }
     }
 
-    @ApiOperation("Roteate token")
+    @Operation(tags = {"authentication"}, summary = "Rotate token")
     @POST
     @Path("/rotate-token")
     @Transactional
@@ -131,7 +126,7 @@ public class AuthenticationEndpoint {
         }
     }
 
-    @ApiOperation("Invalidate token")
+    @Operation(tags = {"authentication"}, summary = "Invalidate token")
     @GET
     @Path("/.well-known/jwks.json")
     public JwksResponseDto wellKnownJwks() {

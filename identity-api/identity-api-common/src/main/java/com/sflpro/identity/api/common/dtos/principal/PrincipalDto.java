@@ -4,7 +4,6 @@ import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import com.sflpro.identity.api.common.dtos.credential.CredentialDto;
 import com.sflpro.identity.core.datatypes.PrincipalStatus;
 import com.sflpro.identity.core.datatypes.PrincipalType;
-import io.swagger.annotations.ApiModel;
 
 /**
  * Company: SFL LLC
@@ -12,7 +11,6 @@ import io.swagger.annotations.ApiModel;
  *
  * @author Davit Harutyunyan
  */
-@ApiModel(value = "Principal details", parent = CredentialDto.class)
 @JsonPropertyOrder({"name", "principalType", "principalStatus"})
 public class PrincipalDto extends CredentialDto {
 

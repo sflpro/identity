@@ -5,7 +5,6 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import com.sflpro.identity.api.common.dtos.auth.AuthenticationRequestDetailsDto;
 import com.sflpro.identity.core.datatypes.CredentialType;
 import com.sflpro.identity.core.datatypes.PrincipalType;
-import io.swagger.annotations.ApiModel;
 
 import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
@@ -17,7 +16,6 @@ import javax.validation.constraints.NotNull;
  *
  * @author Davit Harutyunyan
  */
-@ApiModel(value = "PrincipalDetails", parent = AuthenticationRequestDetailsDto.class)
 public final class PrincipalAuthenticationRequestDetailsDto extends AuthenticationRequestDetailsDto {
 
     @NotNull

@@ -9,10 +9,7 @@ import com.sflpro.identity.core.db.entities.Principal;
 import com.sflpro.identity.core.services.auth.AuthenticationServiceException;
 import com.sflpro.identity.core.services.principal.PrincipalService;
 import com.sflpro.identity.core.services.principal.PrincipalUpdateRequest;
-import io.swagger.annotations.Api;
-import io.swagger.annotations.ApiOperation;
-import io.swagger.annotations.SwaggerDefinition;
-import io.swagger.annotations.Tag;
+import io.swagger.v3.oas.annotations.Operation;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -31,8 +28,6 @@ import java.util.List;
  *
  * @author Davit Harutyunyan
  */
-@SwaggerDefinition(tags = {@Tag(name = "principals", description = "Principal CRUD operations")})
-@Api(tags = {"principals"})
 @Component
 @Path("/principals")
 @Produces(MediaType.APPLICATION_JSON)
@@ -47,7 +42,7 @@ public class PrincipalEndpoint {
     @Autowired
     private PrincipalService principalService;
 
-    @ApiOperation("Gets principals details")
+    @Operation(tags = {"principals"}, summary = "Gets principals details")
     @GET
     @Path("/{identityId}")
     public ApiGenericListResponse<PrincipalDto> getByIdentity(@NotNull @PathParam("identityId") final String identityId) {
@@ -59,7 +54,7 @@ public class PrincipalEndpoint {
         return new ApiGenericListResponse<>(result.size(), result);
     }
 
-    @ApiOperation("Updates principal's details")
+    @Operation(tags = {"principals"}, summary = "Updates principal's details")
     @PUT
     @Path("/{identityId}")
     public ApiGenericListResponse<PrincipalDto> update(@NotNull @PathParam("identityId") final String identityId,

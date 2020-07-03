@@ -132,11 +132,12 @@
         <javax.validation.version>2.0.0.Final</javax.validation.version>
         <orika.core.version>1.5.2</orika.core.version>
         <jbcrypt.version>0.4</jbcrypt.version>
-        <swagger.version>1.5.17</swagger.version>
+        <swagger.version>2.1.2</swagger.version>
         <hibernate.validator.version>6.0.5.Final</hibernate.validator.version>
         <commons.lang3.version>3.7</commons.lang3.version>
         <tomakehurst.wiremock.version>2.14.0</tomakehurst.wiremock.version>
         <google.java.cloud.version>0.117.0-alpha</google.java.cloud.version>
+        <com.nimbusds.oauth2-oidc-sdk>8.5</com.nimbusds.oauth2-oidc-sdk>
 
         <!-- DB -->
         <hibernate.version>5.2.12.Final</hibernate.version>
@@ -442,14 +443,8 @@
             </dependency>
 
             <dependency>
-                <groupId>io.swagger</groupId>
-                <artifactId>swagger-jersey2-jaxrs</artifactId>
-                <version>${swagger.version}</version>
-            </dependency>
-
-            <dependency>
-                <groupId>io.swagger</groupId>
-                <artifactId>swagger-models</artifactId>
+                <groupId>io.swagger.core.v3</groupId>
+                <artifactId>swagger-jaxrs2</artifactId>
                 <version>${swagger.version}</version>
             </dependency>
 
@@ -465,6 +460,12 @@
                 <version>${google.java.cloud.version}</version>
                 <type>pom</type>
                 <scope>import</scope>
+            </dependency>
+
+            <dependency>
+                <groupId>com.nimbusds</groupId>
+                <artifactId>oauth2-oidc-sdk</artifactId>
+                <version>${com.nimbusds.oauth2-oidc-sdk}</version>
             </dependency>
         </dependencies>
     </dependencyManagement>

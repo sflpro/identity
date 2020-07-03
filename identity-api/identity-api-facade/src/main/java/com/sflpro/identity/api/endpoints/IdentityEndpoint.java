@@ -15,10 +15,7 @@ import com.sflpro.identity.core.services.identity.*;
 import com.sflpro.identity.core.services.identity.reset.RequestSecretResetRequest;
 import com.sflpro.identity.core.services.identity.reset.SecretResetRequest;
 import com.sflpro.identity.core.services.resource.ResourceService;
-import io.swagger.annotations.Api;
-import io.swagger.annotations.ApiOperation;
-import io.swagger.annotations.SwaggerDefinition;
-import io.swagger.annotations.Tag;
+import io.swagger.v3.oas.annotations.Operation;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -41,8 +38,6 @@ import java.util.Set;
  *
  * @author Davit Harutyunyan
  */
-@SwaggerDefinition(tags = {@Tag(name = "identities", description = "Identity CRUD operations")})
-@Api(tags = {"identities"})
 @Component
 @Path("/identities")
 @Produces(MediaType.APPLICATION_JSON)
@@ -66,7 +61,7 @@ public class IdentityEndpoint {
     @Autowired
     private ResourceService resourceService;
 
-    @ApiOperation("Returns identity's details")
+    @Operation(tags = {"identities"}, summary = "Returns identity's details")
     @GET
     @Path("/{identityId}")
     @Transactional(readOnly = true)
@@ -76,7 +71,7 @@ public class IdentityEndpoint {
         return mapper.map(identity, IdentityDto.class);
     }
 
-    @ApiOperation("Updates identity's details")
+    @Operation(tags = {"identities"}, summary = "Updates identity's details")
     @PUT
     @Path("/{identityId}")
     @Transactional
@@ -95,7 +90,7 @@ public class IdentityEndpoint {
         }
     }
 
-    @ApiOperation("Delete identity")
+    @Operation(tags = {"identities"}, summary = "Delete identity")
     @DELETE
     @Path("/{identityId}")
     @Transactional
@@ -104,7 +99,7 @@ public class IdentityEndpoint {
         return new ApiResponseDto();
     }
 
-    @ApiOperation("Request for secret reset")
+    @Operation(tags = {"identities"}, summary = "Request for secret reset")
     @PUT
     @Path("/secret-reset/request-token")
     @Transactional
@@ -121,7 +116,7 @@ public class IdentityEndpoint {
         return new ApiResponseDto();
     }
 
-    @ApiOperation("Set new secret")
+    @Operation(tags = {"identities"}, summary = "Set new secret")
     @PUT
     @Path("/secret-reset/secret")
     @Transactional
@@ -132,7 +127,7 @@ public class IdentityEndpoint {
         return new ApiResponseDto();
     }
 
-    @ApiOperation("Creates identity's details")
+    @Operation(tags = {"identities"}, summary = "Creates identity's details")
     @PUT
     @Path("/")
     @Transactional
@@ -146,7 +141,7 @@ public class IdentityEndpoint {
         return result;
     }
 
-    @ApiOperation("Add role to identity")
+    @Operation(tags = {"identities"}, summary = "Add role to identity")
     @PUT
     @Path("/{identityId}/roles")
     @Transactional
@@ -159,7 +154,7 @@ public class IdentityEndpoint {
         return new ApiResponseDto();
     }
 
-    @ApiOperation("Lists identity's all resources")
+    @Operation(tags = {"identities"}, summary = "Lists identity's all resources")
     @GET
     @Path("/{identityId}/resources")
     @Transactional(readOnly = true)
@@ -173,7 +168,7 @@ public class IdentityEndpoint {
         return new ApiGenericListResponse<>(result.size(), result);
     }
 
-    @ApiOperation("Update resources of identity")
+    @Operation(tags = {"identities"}, summary = "Update resources of identity")
     @PUT
     @Path("/{identityId}/resources")
     @Transactional

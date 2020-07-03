@@ -1,14 +1,14 @@
 package com.sflpro.identity.api.endpoints;
 
-import com.sflpro.identity.api.common.dtos.role.*;
+import com.sflpro.identity.api.common.dtos.role.RoleCreationRequestDto;
+import com.sflpro.identity.api.common.dtos.role.RoleDto;
+import com.sflpro.identity.api.common.dtos.role.RoleUpdateRequestDto;
+import com.sflpro.identity.api.common.dtos.role.RoleUpdateResponseDto;
 import com.sflpro.identity.api.mapper.BeanMapper;
 import com.sflpro.identity.core.db.entities.Role;
 import com.sflpro.identity.core.services.role.RoleRequest;
 import com.sflpro.identity.core.services.role.RoleService;
-import io.swagger.annotations.Api;
-import io.swagger.annotations.ApiOperation;
-import io.swagger.annotations.SwaggerDefinition;
-import io.swagger.annotations.Tag;
+import io.swagger.v3.oas.annotations.Operation;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -27,8 +27,6 @@ import javax.ws.rs.core.MediaType;
  *
  * @author Davit Harutyunyan
  */
-@SwaggerDefinition(tags = {@Tag(name = "roles", description = "Role CRUD operations")})
-@Api(tags = {"roles"})
 @Component
 @Path("/role")
 @Produces(MediaType.APPLICATION_JSON)
@@ -43,7 +41,7 @@ public class RoleEndpoint {
     @Autowired
     private RoleService roleService;
 
-    @ApiOperation("Creates role")
+    @Operation(tags = {"roles"}, summary = "Creates role")
     @PUT
     @Transactional
     public RoleDto create(@NotNull @Valid final RoleCreationRequestDto creationRequestDto) {
@@ -56,7 +54,7 @@ public class RoleEndpoint {
         return mapper.map(role, RoleDto.class);
     }
 
-    @ApiOperation("Updates role's details")
+    @Operation(tags = {"roles"}, summary = "Updates role's details")
     @PUT
     @Path("/{roleId}")
     @Transactional
@@ -72,7 +70,7 @@ public class RoleEndpoint {
         return mapper.map(role, RoleUpdateResponseDto.class);
     }
 
-    @ApiOperation("Returns role's details")
+    @Operation(tags = {"roles"}, summary = "Returns role's details")
     @GET
     @Path("/{roleId}")
     @Transactional(readOnly = true)
