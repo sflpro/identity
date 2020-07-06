@@ -26,59 +26,59 @@ import javax.ws.rs.client.WebTarget;
 public class IdentityApiClientImpl implements IdentityApiClient {
 
     private final Client client;
-    private final WebTarget rootTarget;
 
     private final AuthResource authResource;
     private final IdentityResource identityResource;
     private final PrincipalResource principalResource;
     private final ResourceResource resourceResource;
 
-    private final ObjectMapper mapper = new ObjectMapper();
-
     /**
      * @param apiUrl The fully qualified URL of the internal API (e.g. http://10.89.1.7:89/rest )
      */
-    public IdentityApiClientImpl(String apiUrl) {
-        mapper.registerModule(new JavaTimeModule());
-
-        SimpleModule module = new SimpleModule("apiErrorMapper", Version.unknownVersion());
+    public IdentityApiClientImpl(final String apiUrl) {
+        final SimpleModule module = new SimpleModule("apiErrorMapper", Version.unknownVersion());
         module.addAbstractTypeMapping(ApiError.class, IdentityApiError.class);
-        mapper.registerModule(module);
-        mapper.configure(MapperFeature.INFER_CREATOR_FROM_CONSTRUCTOR_PROPERTIES, false);
-
-        ClientConfig cc = new ClientConfig();
-        cc.property(CommonProperties.FEATURE_AUTO_DISCOVERY_DISABLE, true);
-
-        cc.register(GZipEncoder.class);
-        cc.register(EncodingFilter.class);
-        cc.register(new JacksonJsonProvider(mapper));
-
+        final ObjectMapper mapper = new ObjectMapper().registerModules(new JavaTimeModule(), module)
+                .configure(MapperFeature.INFER_CREATOR_FROM_CONSTRUCTOR_PROPERTIES, false);
+        final ClientConfig cc = new ClientConfig().property(CommonProperties.FEATURE_AUTO_DISCOVERY_DISABLE, true)
+                .register(GZipEncoder.class)
+                .register(EncodingFilter.class)
+                .register(new JacksonJsonProvider(mapper));
         client = ClientBuilder.newClient(cc);
-
-        rootTarget = client.target(apiUrl);
-
+        final WebTarget rootTarget = client.target(apiUrl);
         authResource = new AuthResource(client, rootTarget);
         identityResource = new IdentityResource(client, rootTarget);
         principalResource = new PrincipalResource(client, rootTarget);
         resourceResource = new ResourceResource(client, rootTarget);
     }
 
-
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public AuthResource auth() {
         return authResource;
     }
 
-
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public IdentityResource identity() {
         return identityResource;
     }
 
+    /**
+     * {@inheritDoc}
+     */
+    @Override
     public PrincipalResource principal() {
         return principalResource;
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public ResourceResource resource() {
         return resourceResource;

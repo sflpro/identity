@@ -10,8 +10,23 @@ import java.io.Closeable;
  */
 public interface IdentityApiClient extends Closeable {
 
+    /**
+     * @return the {@link AuthResource} instance
+     */
     AuthResource auth();
+
+    /**
+     * @return the {@link IdentityResource} instance
+     */
     IdentityResource identity();
+
+    /**
+     * @return the {@link PrincipalResource} instance
+     */
     PrincipalResource principal();
+
+    /**
+     * @return the {@link ResourceResource} instance
+     */
     ResourceResource resource();
 }
