@@ -10,6 +10,7 @@ import com.sflpro.identity.api.common.dtos.resource.ResourceUpdateRequestDto;
 import javax.ws.rs.client.Client;
 import javax.ws.rs.client.WebTarget;
 import javax.ws.rs.core.GenericType;
+import java.util.Map;
 
 /**
  * Company: SFL LLC
@@ -22,23 +23,24 @@ public class ResourceResource extends AbstractApiResource {
         super(client, rootTarget, "/resources");
     }
 
-    public ResourceDto create(final ResourceCreationRequestDto creationRequestDto) {
-        return doPut("", creationRequestDto, ResourceDto.class);
+    public ResourceDto create(final ResourceCreationRequestDto creationRequestDto, final Map<String, String> headers) {
+        return doPutWithHeaders(URI_DELIMITER, creationRequestDto, headers, ResourceDto.class);
     }
 
-    public ResourceDto get(final long resourceId) {
-        return doGet(Long.toString(resourceId), ResourceDto.class);
+    public ResourceDto get(final long resourceId, final Map<String, String> headers) {
+        return doGetWithHeaders(Long.toString(resourceId), headers, ResourceDto.class);
     }
 
-    public ResourceDto update(final long resourceId, final ResourceUpdateRequestDto updateRequestDto) {
-        return doPut(Long.toString(resourceId), updateRequestDto, ResourceDto.class);
+    public ResourceDto update(final long resourceId, final ResourceUpdateRequestDto updateRequestDto, final Map<String, String> headers) {
+        return doPutWithHeaders(Long.toString(resourceId), updateRequestDto, headers, ResourceDto.class);
     }
 
-    public ApiResponseDto delete(final long resourceId) {
-        return doDelete(Long.toString(resourceId), ApiResponseDto.class);
+    public ApiResponseDto delete(final long resourceId, final Map<String, String> headers) {
+        return doDeleteWithHeaders(Long.toString(resourceId), headers, ApiResponseDto.class);
     }
 
-    public ApiGenericListResponse<IdentityDto> listIdentities(final long resourceId){
-        return doGet(String.format("/%s/identities", resourceId), new GenericType<ApiGenericListResponse<IdentityDto>>() {});
+    public ApiGenericListResponse<IdentityDto> listIdentities(final long resourceId, final Map<String, String> headers) {
+        return doGetWithHeaders(String.format("/%s/identities", resourceId), headers, new GenericType<>() {
+        });
     }
 }

@@ -7,6 +7,7 @@ import com.sflpro.identity.api.common.dtos.principal.PrincipalUpdateRequestDto;
 import javax.ws.rs.client.Client;
 import javax.ws.rs.client.WebTarget;
 import javax.ws.rs.core.GenericType;
+import java.util.Map;
 
 /**
  * Company: SFL LLC
@@ -20,13 +21,13 @@ public class PrincipalResource extends AbstractApiResource {
         super(client, rootTarget, "/principals");
     }
 
-    public ApiGenericListResponse<PrincipalDto> getAllByIdentity(final String identityId) {
-        return doGet("/" + identityId, new GenericType<ApiGenericListResponse<PrincipalDto>>() {
+    public ApiGenericListResponse<PrincipalDto> getAllByIdentity(final String identityId, final Map<String, String> headers) {
+        return doGetWithHeaders(URI_DELIMITER + identityId, headers, new GenericType<>() {
         });
     }
 
-    public ApiGenericListResponse<PrincipalDto> update(final String identityId, final PrincipalUpdateRequestDto requestDto) {
-        return doPut("/" + identityId, requestDto, new GenericType<ApiGenericListResponse<PrincipalDto>>() {
+    public ApiGenericListResponse<PrincipalDto> update(final String identityId, final PrincipalUpdateRequestDto requestDto, final Map<String, String> headers) {
+        return doPutWithHeaders(URI_DELIMITER + identityId, requestDto, headers, new GenericType<>() {
         });
     }
 }

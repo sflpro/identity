@@ -17,11 +17,11 @@ import javax.ws.rs.client.WebTarget;
  */
 public class AuthResource extends AbstractApiResource {
 
-    AuthResource(Client client, WebTarget rootTarget) {
+    protected AuthResource(final Client client, final WebTarget rootTarget) {
         super(client, rootTarget, "/auth");
     }
 
-    public <T extends AuthenticationRequestDetailsDto> AuthenticationResponseDto authenticate(AuthenticationRequestDto<T> requestDto) {
+    public <T extends AuthenticationRequestDetailsDto> AuthenticationResponseDto authenticate(final AuthenticationRequestDto<T> requestDto) {
         return doPost("/authenticate", requestDto, AuthenticationResponseDto.class);
     }
 
