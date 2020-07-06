@@ -5,7 +5,6 @@ import com.fasterxml.jackson.annotation.JsonTypeInfo;
 import com.sflpro.identity.api.common.dtos.auth.mechanism.PrincipalAuthenticationRequestDetailsDto;
 import com.sflpro.identity.api.common.dtos.auth.mechanism.TokenAuthenticationRequestDetailsDto;
 import com.sflpro.identity.core.datatypes.CredentialType;
-import io.swagger.annotations.ApiModel;
 
 import javax.validation.constraints.NotNull;
 
@@ -15,7 +14,7 @@ import javax.validation.constraints.NotNull;
  *
  * @author Davit Harutyunyan
  */
-@ApiModel(value = "Details", subTypes = {PrincipalAuthenticationRequestDetailsDto.class, TokenAuthenticationRequestDetailsDto.class}, discriminator = "credentialType")
+
 @JsonTypeInfo(use=JsonTypeInfo.Id.NAME, include = JsonTypeInfo.As.EXISTING_PROPERTY, property = "credentialType", visible = true)
 @JsonSubTypes({
         @JsonSubTypes.Type(value=PrincipalAuthenticationRequestDetailsDto.class, name="PRINCIPAL"),

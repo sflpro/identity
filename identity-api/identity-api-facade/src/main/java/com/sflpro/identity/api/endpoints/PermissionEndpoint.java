@@ -3,11 +3,9 @@ package com.sflpro.identity.api.endpoints;
 import com.sflpro.identity.api.common.dtos.permission.*;
 import com.sflpro.identity.api.mapper.BeanMapper;
 import com.sflpro.identity.core.db.entities.Permission;
-import com.sflpro.identity.core.services.permission.*;
-import io.swagger.annotations.Api;
-import io.swagger.annotations.ApiOperation;
-import io.swagger.annotations.SwaggerDefinition;
-import io.swagger.annotations.Tag;
+import com.sflpro.identity.core.services.permission.PermissionRequest;
+import com.sflpro.identity.core.services.permission.PermissionService;
+import io.swagger.v3.oas.annotations.Operation;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -26,8 +24,6 @@ import javax.ws.rs.core.MediaType;
  *
  * @author Davit Harutyunyan
  */
-@SwaggerDefinition(tags = {@Tag(name = "permissions", description = "Permission CRUD operations")})
-@Api(tags = {"permissions"})
 @Component
 @Path("/permissions")
 @Produces(MediaType.APPLICATION_JSON)
@@ -42,7 +38,7 @@ public class PermissionEndpoint {
     @Autowired
     private PermissionService permissionService;
 
-    @ApiOperation("Creates permission")
+    @Operation(tags = {"permissions"}, summary = "Creates permission")
     @PUT
     @Transactional
     public PermissionCreationResponseDto create(@NotNull @Valid final PermissionCreationRequestDto creationRequestDto) {
@@ -55,7 +51,7 @@ public class PermissionEndpoint {
         return mapper.map(permission, PermissionCreationResponseDto.class);
     }
 
-    @ApiOperation("Updates permission's details")
+    @Operation(tags = {"permissions"}, summary = "Updates permission's details")
     @PUT
     @Path("/{permissionId}")
     @Transactional
@@ -71,7 +67,7 @@ public class PermissionEndpoint {
         return mapper.map(permission, PermissionUpdateResponseDto.class);
     }
 
-    @ApiOperation("Returns permission's details")
+    @Operation(tags = {"permissions"}, summary = "Returns permission's details")
     @GET
     @Path("/{permissionId}")
     @Transactional(readOnly = true)

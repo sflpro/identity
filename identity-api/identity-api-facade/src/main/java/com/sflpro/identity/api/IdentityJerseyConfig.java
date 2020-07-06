@@ -1,8 +1,9 @@
 package com.sflpro.identity.api;
 
 import com.sflpro.identity.api.config.GenericJerseyConfig;
-import com.sflpro.identity.api.config.errorhandling.*;
+import com.sflpro.identity.api.config.errorhandling.ResourceNotFoundExceptionMapper;
 import com.sflpro.identity.api.endpoints.*;
+import io.swagger.v3.jaxrs2.integration.resources.AcceptHeaderOpenApiResource;
 
 /**
  * Company: SFL LLC
@@ -27,6 +28,9 @@ public class IdentityJerseyConfig extends GenericJerseyConfig {
         register(PermissionEndpoint.class);
         register(ResourceEndpoint.class);
 
+        // Swagger specific settings
+        register(AcceptHeaderOpenApiResource.class);
+        
         // Filters
         register(IdentityJerseyConfig.class);
     }
