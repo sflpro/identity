@@ -22,12 +22,12 @@ public class PrincipalResource extends AbstractApiResource {
     }
 
     public ApiGenericListResponse<PrincipalDto> getAllByIdentity(final String identityId, final Map<String, String> headers) {
-        return doGetWithHeaders(URI_DELIMITER + identityId, headers, new GenericType<>() {
+        return doGetWithHeaders(URI_DELIMITER + identityId, headers, new GenericType<ApiGenericListResponse<PrincipalDto>>() {
         });
     }
 
     public ApiGenericListResponse<PrincipalDto> update(final String identityId, final PrincipalUpdateRequestDto requestDto, final Map<String, String> headers) {
-        return doPutWithHeaders(URI_DELIMITER + identityId, requestDto, headers, new GenericType<>() {
+        return doPutWithHeaders(URI_DELIMITER + identityId, requestDto, headers, new GenericType<ApiGenericListResponse<PrincipalDto>>() {
         });
     }
 }

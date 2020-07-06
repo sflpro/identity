@@ -48,12 +48,12 @@ public class IdentityResource extends AbstractApiResource {
                 .ifPresent(t -> params.put("resourceType", resourceType));
         Optional.ofNullable(resourceIdentifier)
                 .ifPresent(i -> params.put("resourceIdentifier", resourceIdentifier));
-        return doGetWithQueryParamsAndHeaders(String.format("/%s/resources", identityId), params, headers, new GenericType<>() {
+        return doGetWithQueryParamsAndHeaders(String.format("/%s/resources", identityId), params, headers, new GenericType<ApiGenericListResponse<ResourceDto>>() {
         });
     }
 
     public ApiGenericListResponse<ResourceDto> updateIdentityResources(final String identityId, final IdentityResourceUpdateRequestDto updateRequestDto, final Map<String, String> headers) {
-        return doPutWithHeaders(String.format("/%s/resources", identityId), updateRequestDto, headers, new GenericType<>() {
+        return doPutWithHeaders(String.format("/%s/resources", identityId), updateRequestDto, headers, new GenericType<ApiGenericListResponse<ResourceDto>>() {
         });
     }
 

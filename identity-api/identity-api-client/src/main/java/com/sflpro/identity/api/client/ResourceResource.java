@@ -40,7 +40,7 @@ public class ResourceResource extends AbstractApiResource {
     }
 
     public ApiGenericListResponse<IdentityDto> listIdentities(final long resourceId, final Map<String, String> headers) {
-        return doGetWithHeaders(String.format("/%s/identities", resourceId), headers, new GenericType<>() {
+        return doGetWithHeaders(String.format("/%s/identities", resourceId), headers, new GenericType<ApiGenericListResponse<IdentityDto>>() {
         });
     }
 }
