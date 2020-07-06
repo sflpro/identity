@@ -49,7 +49,7 @@ public class OAuth2ResourceServerSecurityConfiguration extends WebSecurityConfig
                         authorizeRequests
                                 .antMatchers(HttpMethod.GET, "/openapi.json").permitAll()
                                 .antMatchers(HttpMethod.GET, "/status").permitAll()
-                                .antMatchers(HttpMethod.GET, "/auth/.well-known/jwks.json").permitAll()
+                                .antMatchers("/auth/**").permitAll()
                                 .anyRequest().authenticated()
                 )
                 .oauth2ResourceServer(oauth2ResourceServer -> oauth2ResourceServer.authenticationManagerResolver(identityAuthenticationManagerResolver));
