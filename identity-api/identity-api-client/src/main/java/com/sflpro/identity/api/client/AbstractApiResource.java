@@ -219,7 +219,7 @@ public class AbstractApiResource {
                                      final Map<String, String> queryParams,
                                      final Map<String, String> headers,
                                      final MediaType... mediaType) {
-        Assert.hasText(path, "The path should not be null or empty");
+        Assert.notNull(path, "The path should not be null or empty");
         Assert.notNull(queryParams, "The queryParams should not be null");
         Assert.notNull(headers, "The headers should not be null");
         Assert.notNull(mediaType, "The mediaType should not be null");
@@ -247,7 +247,7 @@ public class AbstractApiResource {
     private Response doPostInternally(final String path,
                                       final Object data,
                                       final Map<String, String> headers) {
-        Assert.hasText(path, "The path should not be null or empty");
+        Assert.notNull(path, "The path should not be null or empty");
         Assert.notNull(data, "The data should not be null");
         Assert.notNull(headers, "The headers should not be null");
         logger.trace("Prepare doPost request to path - {}, with parameters in header...", path);
@@ -272,7 +272,7 @@ public class AbstractApiResource {
     private Response doPutInternally(final String path,
                                      final Object data,
                                      final Map<String, String> headers) {
-        Assert.hasText(path, "The path should not be null or empty");
+        Assert.notNull(path, "The path should not be null or empty");
         Assert.notNull(data, "The data should not be null");
         Assert.notNull(headers, "The headers should not be null");
         logger.trace("Prepare doPut request to path - {}, with parameters in header...", path);
@@ -293,7 +293,7 @@ public class AbstractApiResource {
      * @return
      */
     private Response doDeleteInternally(final String path, final Map<String, String> headers) {
-        Assert.hasText(path, "The path should not be null or empty");
+        Assert.notNull(path, "The path should not be null or empty");
         Assert.notNull(headers, "The request headers should not be null");
         logger.trace("Prepare doPut request to path - {}, with parameters in header...", path);
         final WebTarget target = rootTarget.path(path);

@@ -24,7 +24,7 @@ public class ResourceResource extends AbstractApiResource {
     }
 
     public ResourceDto create(final ResourceCreationRequestDto creationRequestDto, final Map<String, String> headers) {
-        return doPutWithHeaders(URI_DELIMITER, creationRequestDto, headers, ResourceDto.class);
+        return doPutWithHeaders("", creationRequestDto, headers, ResourceDto.class);
     }
 
     public ResourceDto get(final long resourceId, final Map<String, String> headers) {
