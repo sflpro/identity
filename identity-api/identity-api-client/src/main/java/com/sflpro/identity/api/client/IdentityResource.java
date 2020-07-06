@@ -13,6 +13,7 @@ import javax.ws.rs.core.GenericType;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
+import java.util.Set;
 
 /**
  * Company: SFL LLC
@@ -55,6 +56,10 @@ public class IdentityResource extends AbstractApiResource {
     public ApiGenericListResponse<ResourceDto> updateIdentityResources(final String identityId, final IdentityResourceUpdateRequestDto updateRequestDto, final Map<String, String> headers) {
         return doPutWithHeaders(String.format("/%s/resources", identityId), updateRequestDto, headers, new GenericType<ApiGenericListResponse<ResourceDto>>() {
         });
+    }
+
+    public ApiResponseDto updateIdentityRoles(final String identityId, final Set<RoleAdditionRequestDto> roleAdditionRequestDtos, final Map<String, String> headers) {
+        return doPutWithHeaders(String.format("/%s/roles", identityId), roleAdditionRequestDtos, headers, ApiResponseDto.class);
     }
 
     public ApiResponseDto secretReset(final SecretResetRequestDto secretResetRequestDto) {
