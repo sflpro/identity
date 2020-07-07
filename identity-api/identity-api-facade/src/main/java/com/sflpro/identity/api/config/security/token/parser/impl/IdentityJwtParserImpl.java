@@ -6,6 +6,7 @@ import com.sflpro.identity.api.config.security.token.model.IdentityTokenModel;
 import com.sflpro.identity.api.config.security.token.model.TokenModel;
 import com.sflpro.identity.api.config.security.token.parser.JwtParser;
 import net.minidev.json.JSONObject;
+import org.apache.commons.lang3.ArrayUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
@@ -15,7 +16,6 @@ import java.text.ParseException;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.util.Date;
-import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
 
@@ -43,8 +43,10 @@ public class IdentityJwtParserImpl implements JwtParser {
             return new IdentityTokenModel(
                     claims.getStringClaim("identity_id"),
                     mapCustomerId(resource),
-                    Set.of(Objects.requireNonNull(claims.getStringArrayClaim("customer"))),
-                    Set.of(Objects.requireNonNull(claims.getStringArrayClaim("permissions"))),
+                    Set.of(Optional.ofNullable(claims.getStringArrayClaim("customer"))
+                            .orElse(ArrayUtils.EMPTY_STRING_ARRAY)),
+                    Set.of(Optional.ofNullable(claims.getStringArrayClaim("permissions"))
+                            .orElse(ArrayUtils.EMPTY_STRING_ARRAY)),
                     mapExpirationLocalToDateTime(claims.getExpirationTime())
             );
         } catch (final ParseException e) {
