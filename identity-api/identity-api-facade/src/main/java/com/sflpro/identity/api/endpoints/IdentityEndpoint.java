@@ -141,7 +141,7 @@ public class IdentityEndpoint {
         return result;
     }
 
-    @Operation(tags = {"identities"}, summary = "Add role to identity")
+    @Operation(tags = {"identities"}, summary = "Set roles for provided identity")
     @PUT
     @Path("/{identityId}/roles")
     @Transactional
