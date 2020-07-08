@@ -70,6 +70,7 @@ public class IdentityResourceRoleServiceImpl implements IdentityResourceRoleServ
         logger.trace("Getting the identity resource roles for identityId - {} and resourceId - {}", identityId, resourceId);
         final Set<IdentityResourceRole> response = identityResourceRoleRepository.findAllByDeletedIsNullAndIdentityIdAndResourceId(identityId, resourceId);
         identityResourceRoleRepository.deleteAll(response);
+        em.flush();
         logger.debug("Done getting the identity resource roles for identityId - {} and resourceId - {}", identityId, resourceId);
     }
 }
