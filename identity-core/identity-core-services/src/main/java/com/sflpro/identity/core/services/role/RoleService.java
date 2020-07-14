@@ -2,6 +2,7 @@ package com.sflpro.identity.core.services.role;
 
 import com.sflpro.identity.core.db.entities.Permission;
 import com.sflpro.identity.core.db.entities.Role;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Set;
 
@@ -35,6 +36,15 @@ public interface RoleService {
      * @return details of the permission
      */
     Role get(final Long roleId);
+
+    /**
+     * Gets roles by name
+     *
+     * @param name
+     * @return
+     */
+    @Transactional(readOnly = true)
+    Role getByName(String name);
 
     /**
      * Gets permissions for provided roles

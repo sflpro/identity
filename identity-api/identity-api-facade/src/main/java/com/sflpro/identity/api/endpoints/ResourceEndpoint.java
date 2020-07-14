@@ -13,10 +13,7 @@ import com.sflpro.identity.core.services.identity.IdentityService;
 import com.sflpro.identity.core.services.resource.ResourceCreationRequest;
 import com.sflpro.identity.core.services.resource.ResourceService;
 import com.sflpro.identity.core.services.resource.ResourceUpdateRequest;
-import io.swagger.annotations.Api;
-import io.swagger.annotations.ApiOperation;
-import io.swagger.annotations.SwaggerDefinition;
-import io.swagger.annotations.Tag;
+import io.swagger.v3.oas.annotations.Operation;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -35,8 +32,6 @@ import java.util.List;
  *
  * @author Taron Petrosyan
  */
-@SwaggerDefinition(tags = {@Tag(name = "resources", description = "Resource CRUD operations")})
-@Api(tags = {"resources"})
 @Component
 @Path("/resources")
 @Produces(MediaType.APPLICATION_JSON)
@@ -53,7 +48,7 @@ public class ResourceEndpoint {
     @Autowired
     private IdentityService identityService;
     
-    @ApiOperation("Creates resource")
+    @Operation(tags = {"resources"}, summary = "Creates resource")
     @PUT
     @Transactional
     public ResourceDto create(@NotNull @Valid final ResourceCreationRequestDto creationRequestDto) {
@@ -65,7 +60,7 @@ public class ResourceEndpoint {
         return mapper.map(resource, ResourceDto.class);
     }
 
-    @ApiOperation("Returns resource's details")
+    @Operation(tags = {"resources"}, summary = "Returns resource's details")
     @GET
     @Path("/{resourceId}")
     @Transactional(readOnly = true)
@@ -76,7 +71,7 @@ public class ResourceEndpoint {
         return mapper.map(resource, ResourceDto.class);
     }
 
-    @ApiOperation("Updates resource's details")
+    @Operation(tags = {"resources"}, summary = "Updates resource's details")
     @PUT
     @Path("/{resourceId}")
     @Transactional
@@ -91,7 +86,7 @@ public class ResourceEndpoint {
         return mapper.map(resource, ResourceDto.class);
     }
 
-    @ApiOperation("Deletes resource")
+    @Operation(tags = {"resources"}, summary = "Deletes resource")
     @DELETE
     @Path("/{resourceId}")
     @Transactional
@@ -102,7 +97,7 @@ public class ResourceEndpoint {
         return new ApiResponseDto();
     }
 
-    @ApiOperation("Lists resource's identities")
+    @Operation(tags = {"resources"}, summary = "Lists resource's identities")
     @GET
     @Path("/{resourceId}/identities")
     @Transactional(readOnly = true)

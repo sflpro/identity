@@ -2,6 +2,7 @@ package com.sflpro.identity.core.services.credential;
 
 import com.sflpro.identity.core.db.entities.Credential;
 import com.sflpro.identity.core.db.entities.Identity;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
@@ -20,6 +21,16 @@ public interface CredentialService {
      * @return credential entity
      */
     Credential getCredentialById(String id);
+
+    /**
+     * Stores credential for provided identity
+     *
+     * @param identity
+     * @param credentialCreationRequest
+     * @return
+     */
+    @Transactional
+    Credential store(Identity identity, CredentialCreation credentialCreationRequest);
 
     /**
      * Stores credential and identity

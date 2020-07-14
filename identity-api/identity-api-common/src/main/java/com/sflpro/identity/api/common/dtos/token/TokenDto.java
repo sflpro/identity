@@ -5,7 +5,9 @@ import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.fasterxml.jackson.datatype.jsr310.deser.LocalDateTimeDeserializer;
 import com.fasterxml.jackson.datatype.jsr310.ser.LocalDateTimeSerializer;
+import com.sflpro.identity.api.common.dtos.AbstractApiResponse;
 import com.sflpro.identity.api.common.dtos.credential.CredentialDto;
+import com.sflpro.identity.api.common.dtos.resource.ResourceDto;
 
 import java.time.LocalDateTime;
 
@@ -15,11 +17,13 @@ import java.time.LocalDateTime;
  *
  * @author Davit Harutyunyan
  */
-public class TokenDto {
+public class TokenDto extends AbstractApiResponse {
 
     private String value;
 
     private String tokenType;
+
+    private ResourceDto resource;
 
     @JsonFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss")
     @JsonSerialize(using = LocalDateTimeSerializer.class)
@@ -42,6 +46,14 @@ public class TokenDto {
 
     public void setTokenType(String tokenType) {
         this.tokenType = tokenType;
+    }
+
+    public ResourceDto getResource() {
+        return resource;
+    }
+
+    public void setResource(ResourceDto resource) {
+        this.resource = resource;
     }
 
     public LocalDateTime getExpirationDate() {

@@ -1,6 +1,7 @@
 package com.sflpro.identity.core.services.token;
 
 import com.sflpro.identity.core.datatypes.TokenType;
+import com.sflpro.identity.core.services.resource.ResourceRequest;
 
 /**
  * Company: SFL LLC
@@ -14,9 +15,18 @@ public class TokenRequest {
 
     private Integer expiresInHours;
 
-    public TokenRequest(TokenType tokenType, Integer expiresInHours) {
+    private ResourceRequest roleResource;
+
+    public TokenRequest(TokenType tokenType, final ResourceRequest roleResource) {
+        this.tokenType = tokenType;
+        this.expiresInHours = null;
+        this.roleResource = roleResource;
+    }
+
+    public TokenRequest(TokenType tokenType, Integer expiresInHours, final ResourceRequest roleResource) {
         this.tokenType = tokenType;
         this.expiresInHours = expiresInHours;
+        this.roleResource = roleResource;
     }
 
     public TokenType getTokenType() {
@@ -33,5 +43,13 @@ public class TokenRequest {
 
     public void setExpiresInHours(Integer expiresInHours) {
         this.expiresInHours = expiresInHours;
+    }
+
+    public ResourceRequest getRoleResource() {
+        return roleResource;
+    }
+
+    public void setRoleResource(final ResourceRequest roleResource) {
+        this.roleResource = roleResource;
     }
 }

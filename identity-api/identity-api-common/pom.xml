@@ -3,7 +3,7 @@
 	<parent>
 		<groupId>com.sflpro.identity</groupId>
 		<artifactId>identity-api</artifactId>
-		<version>0.1.0</version>
+		<version>0.2.0</version>
 	</parent>
 
 	<modelVersion>4.0.0</modelVersion>
@@ -74,7 +74,7 @@
         <dependency>
             <groupId>com.sflpro.identity</groupId>
             <artifactId>identity-core-datatypes</artifactId>
-            <version>0.1.0</version>
+            <version>0.2.0</version>
         </dependency>
 
 
@@ -112,11 +112,5 @@
 			<groupId>org.apache.commons</groupId>
 			<artifactId>commons-lang3</artifactId>
 		</dependency>
-
-		<dependency>
-			<groupId>io.swagger</groupId>
-			<artifactId>swagger-models</artifactId>
-		</dependency>
-    </dependencies>
-
+	</dependencies>
 </project>

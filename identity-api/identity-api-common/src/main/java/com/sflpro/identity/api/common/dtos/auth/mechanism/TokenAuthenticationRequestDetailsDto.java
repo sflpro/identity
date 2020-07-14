@@ -5,7 +5,6 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import com.sflpro.identity.api.common.dtos.auth.AuthenticationRequestDetailsDto;
 import com.sflpro.identity.core.datatypes.CredentialType;
 import com.sflpro.identity.core.datatypes.TokenType;
-import io.swagger.annotations.ApiModel;
 
 import javax.validation.constraints.NotEmpty;
 
@@ -15,7 +14,6 @@ import javax.validation.constraints.NotEmpty;
  *
  * @author Davit Harutyunyan
  */
-@ApiModel(value = "TokenDetails", parent = AuthenticationRequestDetailsDto.class)
 public final class TokenAuthenticationRequestDetailsDto extends AuthenticationRequestDetailsDto {
 
     @NotEmpty

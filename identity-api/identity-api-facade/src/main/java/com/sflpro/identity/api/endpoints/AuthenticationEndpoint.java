@@ -4,17 +4,19 @@ import com.sflpro.identity.api.common.dtos.ApiResponseDto;
 import com.sflpro.identity.api.common.dtos.IdentityApiExceptionDto;
 import com.sflpro.identity.api.common.dtos.auth.*;
 import com.sflpro.identity.api.common.dtos.identity.InactiveIdentityExceptionDtoDto;
+import com.sflpro.identity.api.common.dtos.token.TokenDto;
 import com.sflpro.identity.api.common.dtos.token.TokenInvalidationRequestDto;
+import com.sflpro.identity.api.common.dtos.token.TokenRotationRequestDetailsDto;
 import com.sflpro.identity.api.mapper.BeanMapper;
+import com.sflpro.identity.core.db.entities.Token;
 import com.sflpro.identity.core.services.auth.*;
+import com.sflpro.identity.core.services.auth.mechanism.token.TokenAuthenticationRequestDetails;
 import com.sflpro.identity.core.services.identity.InactiveIdentityException;
 import com.sflpro.identity.core.services.token.TokenExpiredException;
 import com.sflpro.identity.core.services.token.TokenInvalidationRequest;
+import com.sflpro.identity.core.services.token.TokenService;
 import com.sflpro.identity.core.services.token.TokenServiceException;
-import io.swagger.annotations.Api;
-import io.swagger.annotations.ApiOperation;
-import io.swagger.annotations.SwaggerDefinition;
-import io.swagger.annotations.Tag;
+import io.swagger.v3.oas.annotations.Operation;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -23,11 +25,9 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.Assert;
 
 import javax.validation.Valid;
-import javax.ws.rs.Consumes;
-import javax.ws.rs.POST;
-import javax.ws.rs.Path;
-import javax.ws.rs.Produces;
+import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
+import java.util.Set;
 
 /**
  * Company: SFL LLC
@@ -35,8 +35,6 @@ import javax.ws.rs.core.MediaType;
  *
  * @author Davit Harutyunyan
  */
-@SwaggerDefinition(tags = {@Tag(name = "auth", description = "Authorization & related")})
-@Api(tags = {"auth"})
 @Component
 @Path("/auth")
 @Produces(MediaType.APPLICATION_JSON)
@@ -51,7 +49,10 @@ public class AuthenticationEndpoint {
     @Autowired
     private AuthenticationService authService;
 
-    @ApiOperation("Authenticating by credential type")
+    @Autowired
+    private TokenService tokenService;
+
+    @Operation(tags = {"authentication"}, summary = "Authenticating by credential type")
     @POST
     @Path("/authenticate")
     @Transactional(noRollbackFor = {IdentityApiExceptionDto.class})
@@ -60,7 +61,7 @@ public class AuthenticationEndpoint {
         Assert.notNull(requestDto.getDetails(), "request details cannot be null");
         logger.debug("Authenticating by credential type: {}...", requestDto.getDetails().getCredentialType());
         //Compose authentication request
-        AuthenticationRequest authRequest = mapper.map(requestDto, AuthenticationRequest.class);
+        AuthenticationRequest<?, ?, ?> authRequest = mapper.map(requestDto, AuthenticationRequest.class);
         //Try to authenticate
         try {
             AuthenticationResponse authResponse = authService.authenticate(authRequest);
@@ -81,7 +82,7 @@ public class AuthenticationEndpoint {
         }
     }
 
-    @ApiOperation("Invalidate token")
+    @Operation(tags = {"authentication"}, summary = "Invalidate token")
     @POST
     @Path("/invalidate-token")
     @Transactional
@@ -101,5 +102,37 @@ public class AuthenticationEndpoint {
             logger.warn("Invalidating token failed for request:'{}'.", requestDto);
             throw new AuthenticationExceptionDto(e.getMessage(), e);
         }
+    }
+
+    @Operation(tags = {"authentication"}, summary = "Rotate token")
+    @POST
+    @Path("/rotate-token")
+    @Transactional
+    public TokenDto rotateToken(@Valid TokenRotationRequestDetailsDto requestDto) {
+        Assert.notNull(requestDto, "request cannot be null");
+        Assert.notNull(requestDto.getToken(), "request token cannot be null");
+        Assert.notNull(requestDto.getTokenType(), "request token type cannot be null");
+        logger.debug("Rotating token:{}...", requestDto.getToken());
+        //Compose authentication request
+        final TokenAuthenticationRequestDetails request = mapper.map(requestDto, TokenAuthenticationRequestDetails.class);
+        //Try to invalidate token
+        try {
+            final Token token = tokenService.rotateToken(request);
+            logger.info("Done rotating token:'{}'.", requestDto.getToken());
+            return mapper.map(token, TokenDto.class);
+        } catch (TokenServiceException e) {
+            logger.warn("Rotating token failed for request:{}.", requestDto);
+            throw new AuthenticationExceptionDto(e.getMessage(), e);
+        }
+    }
+
+    @Operation(tags = {"authentication"}, summary = "Invalidate token")
+    @GET
+    @Path("/.well-known/jwks.json")
+    public JwksResponseDto wellKnownJwks() {
+        logger.debug("Getting well known jwks...");
+        final Object jwk = tokenService.wellKnownJwks();
+        logger.info("Done getting well known jwks...");
+        return new JwksResponseDto(Set.of(jwk));
     }
 }

@@ -1,43 +1,70 @@
-[![Build status](https://api.travis-ci.org/sflpro/identity.svg?branch=develop)](https://travis-ci.org/sflpro/identity) [![Quality Gate](https://sonarcloud.io/api/badges/gate?key=com.sflpro.identity:identity)](https://sonarcloud.io/dashboard?id=com.sflpro.identity:identity)
+[![Build Status](https://travis-ci.org/sflpro/identity.svg?branch=master)](https://travis-ci.org/sflpro/identity)
+[![Quality Gate Status](https://sonarcloud.io/api/project_badges/measure?project=com.sflpro.identity%3Aidentity&metric=alert_status)](https://sonarcloud.io/dashboard?id=com.sflpro.identity%3Aidentity)
+[![Maven Central](https://maven-badges.herokuapp.com/maven-central/com.sflpro.identity/identity/badge.svg)](https://maven-badges.herokuapp.com/maven-central/com.sflpro.identity/identity/)
+[![License: APACHE](https://img.shields.io/badge/license-Apache%20License%202.0-b)](https://opensource.org/licenses/Apache-2.0)
 
-# Docker build
 
-To run docker build specify the context.
+# Identity Microservice
+The identity microservice is an independently deployable component intended for managing various types of principals for identities.
 
-`docker build . -f docker\Dockerfile`
+## Supported principal types
+Identity supports the most common principal types. 
+* Mail
+* Phone
+* User name
+* Token
 
-# Identity
+## Integration
 
-According to the official documentation (https://docs.oracle.com/javase/9/migrate/toc.htm#JSMIG-GUID-954372A5-5954-4075-A1AF-6A9168371246), 
-we need to specify some modules manually as a jar command line parameters
- 
-`--add-modules java.xml.bind` 
+You can call the identity's REST API directly or use the provided Java client library. To use the client library add the 
+following maven dependency:
+```xml
+<dependency>
+    <groupId>com.sflpro.identity</groupId>
+    <artifactId>identity-api-client</artifactId>
+    <version>0.1.0</version>
+</dependency>
+```
 
-## Quote from the link above
+The API is documented using OpenAPI Specification(Swagger) and the documentation JSON is available under `/swagger.json` 
+once the identity microservice has been started. 
 
-### Modules Shared with Java EE Not Resolved by Default
-In JDK 9, the modules that contain CORBA or the APIs shared between Java SE and Java EE are not resolved by default when you compile or run code on the class path. These are:
+## Deployment
 
-- java.corba — CORBA
-- java.transaction — The subset of the Java Transaction API defined by Java SE to support CORBA Object Transaction Services
-- java.activation — JavaBeans Activation Framework
-- java.xml.bind — Java Architecture for XML Binding (JAXB)
-- java.xml.ws — Java API for XML Web Services (JAX-WS), Web Services Metadata for the Java Platform, and SOAP with Attachments for Java (SAAJ)
-- java.xml.ws.annotation — The subset of the JSR-250 Common Annotations defined by Java SE to support web services
+Identity is dockerized and is easy to deploy as a docker container. For more details, see the images on docker hub:  
+https://hub.docker.com/r/sflpro/identity-service
 
-Existing code with references to classes in these APIs will not compile without changes to the build. Similarly, code on the class path with references to classes in these APIs will fail with NoDefClassFoundError or ClassNotFoundException unless changes are made in how the application is deployed. 
+## Running the application locally
 
-The code for these APIs was not removed in JDK 9, although the modules are deprecated for removal. The policy of not resolving these modules is a first step toward removing these APIs from Java SE and the JDK in a future release.
+#### 1. Configure POSTGRES datasource
+The postgres has official images in [docker hub](https://hub.docker.com/_/postgres).
+```bash
+docker run --name identity-postgres -e POSTGRES_PASSWORD=identity -e POSTGRES_USER=identity -e POSTGRES_DB=identity -p 5432:5432 -d postgres:11
+```
 
-The migration options for libraries or applications that use these APIs are:
+#### 2. Prepare properties file for identity images
+```properties
+# Postgres
+spring.datasource.url=jdbc:postgresql://{HOST_IP}:5432/POSTGRES_DB
+spring.datasource.username=POSTGRES_USER
+spring.datasource.password=POSTGRES_PASSWORD
 
-- Use the --add-modules command-line option to ensure that the module with the API is resolved at startup. For example, specify --add-module java.xml.bind to ensure that the java.xml.bind module is resolved. This allows existing code that uses the JAXB API and implementation to work as it did in JDK 8.
+# Container port
+server.port=8080
+```
 
-  This is a temporary workaround because eventually these modules will be removed from the JDK.
+#### 3. Run identity-api
+Running [Identity-API](https://hub.docker.com/r/sflpro/identity-service) docker images.
+```bash
+docker run -p 8080:8080 -v {IDENTITY_-_PROPERTIES_PATH}:/etc/identity/identity.properties sflpro/identity-api:0.1.0 --spring.config.location=etc/identity/identity.properties
+```
 
-  Using --add-modules java.se.ee or --add-modules ALL-SYSTEM as a workaround is not recommended. These options will resolve all Java EE modules, which is problematic in environments that are also using the standalone versions of APIs.
+#### 4. Testing setup
+```curl
+curl -X GET "https://localhost:8080/status" -H "accept: application/json"
+```
 
-- Deploy the standalone version of the API (and implementation if needed) on the class path. Each of the Java EE APIs are standalone technologies with projects published in Maven Central.
-
-- Deploy the standalone version of these modules on the upgrade module path. The standalone versions are provided by the Java EE project. 
- 
+#### 5. Release new version
+```mvn
+mvn gitflow:release -DgpgSignTag=true -DgpgSignCommit=true
+```

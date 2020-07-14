@@ -51,7 +51,7 @@ public class TokenAuthenticatorImpl extends AbstractAuthenticatorImpl<Token, Tok
         final Identity identity = token.getIdentity();
         logger.trace("Found identity {}.", identity);
         AuthenticationResponse authenticationResponse = new AuthenticationResponse(token, identity);
-        if (token.getExpirationDate().isBefore(LocalDateTime.now())) {
+        if (token.getExpirationDate() != null && token.getExpirationDate().isBefore(LocalDateTime.now())) {
             throw new TokenExpiredException(authenticationRequestDetails.getToken());
         } else if (!identityService.isIdentityActive(identity)) {
             throw new InactiveIdentityException(identity);

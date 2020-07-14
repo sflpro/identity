@@ -1,9 +1,6 @@
 package com.sflpro.identity.core.services.identity;
 
-import com.sflpro.identity.core.datatypes.IdentityContactMethod;
-import com.sflpro.identity.core.datatypes.IdentityStatus;
-import com.sflpro.identity.core.datatypes.PrincipalType;
-import com.sflpro.identity.core.datatypes.TokenType;
+import com.sflpro.identity.core.datatypes.*;
 import com.sflpro.identity.core.db.entities.*;
 import com.sflpro.identity.core.db.repositories.IdentityRepository;
 import com.sflpro.identity.core.db.repositories.IdentityResourceRepository;
@@ -11,14 +8,18 @@ import com.sflpro.identity.core.services.ResourceNotFoundException;
 import com.sflpro.identity.core.services.auth.AuthenticationServiceException;
 import com.sflpro.identity.core.services.auth.InvalidCredentialsException;
 import com.sflpro.identity.core.services.auth.SecretHashHelper;
+import com.sflpro.identity.core.services.credential.CredentialCreation;
 import com.sflpro.identity.core.services.credential.CredentialService;
 import com.sflpro.identity.core.services.identity.reset.RequestSecretResetRequest;
 import com.sflpro.identity.core.services.identity.reset.SecretResetRequest;
+import com.sflpro.identity.core.services.identity.resource.role.IdentityResourceRoleCreationRequest;
+import com.sflpro.identity.core.services.identity.resource.role.IdentityResourceRoleService;
 import com.sflpro.identity.core.services.notification.NotificationCommunicationService;
 import com.sflpro.identity.core.services.notification.SecretResetNotificationRequest;
 import com.sflpro.identity.core.services.principal.PrincipalService;
 import com.sflpro.identity.core.services.resource.ResourceCreationRequest;
 import com.sflpro.identity.core.services.resource.ResourceService;
+import com.sflpro.identity.core.services.role.RoleService;
 import com.sflpro.identity.core.services.token.*;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
@@ -34,10 +35,7 @@ import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import javax.validation.constraints.NotNull;
 import java.time.LocalDateTime;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
-import java.util.Optional;
+import java.util.*;
 import java.util.stream.Collectors;
 
 /**
@@ -50,6 +48,12 @@ import java.util.stream.Collectors;
 public class IdentityServiceImpl implements IdentityService {
 
     private static final Logger logger = LoggerFactory.getLogger(IdentityServiceImpl.class);
+
+    @Value("${email.token.key}")
+    private String emailTokenKey;
+
+    @Value("${email.redirect.uri.key}")
+    private String emailRedirectUriKey;
 
     @PersistenceContext
     private EntityManager entityManager;
@@ -73,16 +77,16 @@ public class IdentityServiceImpl implements IdentityService {
     private IdentityResourceRepository identityResourceRepository;
 
     @Autowired
+    private RoleService roleService;
+
+    @Autowired
+    private IdentityResourceRoleService identityResourceRoleService;
+
+    @Autowired
     private ResourceService resourceService;
 
     @Autowired
     private CredentialService credentialService;
-
-    @Value("${email.token.key}")
-    private String emailTokenKey;
-
-    @Value("${email.redirect.uri.key}")
-    private String emailRedirectUriKey;
 
     /**
      * {@inheritDoc}
@@ -110,12 +114,15 @@ public class IdentityServiceImpl implements IdentityService {
         Assert.notNull(identityId, "identityId cannot be null");
         Assert.notNull(updateRequest, "updateRequest cannot be null");
         logger.debug("Updating identity by id {}", identityId);
-        Identity identity = get(identityId);
-
-        identity.setDescription(updateRequest.getDescription());
+        final Identity identity = get(identityId);
+        if (updateRequest.getDescription() != null) {
+            identity.setDescription(updateRequest.getDescription());
+        }
         // Change secret
-        chkSecretCorrectAndIdentityActive(identity, updateRequest.getSecret());
-        changeSecret(identity, updateRequest.getNewSecret());
+        if (updateRequest.getSecret() != null) {
+            chkSecretCorrectAndIdentityActive(identity, updateRequest.getSecret());
+            changeSecret(identity, updateRequest.getNewSecret());
+        }
 
         identity.setContactMethod(updateRequest.getContactMethod());
 
@@ -139,10 +146,8 @@ public class IdentityServiceImpl implements IdentityService {
         Identity identity = credential.getIdentity();
 
         Assert.notNull(identity, "identity can not be null.");
-
         Token token = tokenService.createNewToken(
-                new TokenRequest(TokenType.SECRET_RESET, resetRequest.getExpiresInHours()), credential
-        );
+                new TokenRequest(TokenType.SECRET_RESET, resetRequest.getExpiresInHours(), resetRequest.getResourceRequest()), credential);
 
         SecretResetNotificationRequest notificationRequest = new SecretResetNotificationRequest(resetRequest.getEmail(),
                 resetRequest.getEmailTemplateName(),
@@ -220,13 +225,20 @@ public class IdentityServiceImpl implements IdentityService {
         return Objects.isNull(identity.getDeleted()) && identity.getStatus() == IdentityStatus.ACTIVE;
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
-    public Identity add(IdentityCreationRequest addRequest) {
+    public IdentityResponse add(final IdentityCreationRequest addRequest) {
         Assert.notNull(addRequest, "addRequest cannot be null");
         logger.debug("Creating identity  {}", addRequest);
+
+        // create identity
         final Identity identity = new Identity();
         identity.setContactMethod(IdentityContactMethod.valueOf(addRequest.getContactMethod()));
-        identity.setSecret(secretHashHelper.hashSecret(addRequest.getSecret()));
+        if (StringUtils.isNotBlank(addRequest.getSecret())) {
+            identity.setSecret(secretHashHelper.hashSecret(addRequest.getSecret()));
+        }
         identity.setDescription(addRequest.getDescription());
         identity.setStatus(IdentityStatus.ACTIVE);
         if (!addRequest.getStatus().isEmpty()) {
@@ -237,8 +249,25 @@ public class IdentityServiceImpl implements IdentityService {
             identity.setCreatorId(identityById.get());
         }
         final Identity createdIdentity = identityRepository.save(identity);
-        logger.trace("Complete adding identity - {}", createdIdentity);
-        return createdIdentity;
+        entityManager.flush();
+
+        // add roles
+        this.setRoles(identity.getId(), addRequest.getRoles());
+
+        // add tokens
+        final CredentialCreation credentialCreation = new CredentialCreation();
+        credentialCreation.setCredentialType(CredentialType.DEFAULT);
+        credentialCreation.setDetails("No credential, default token");
+        final Credential credential = credentialService.store(identity, credentialCreation);
+        final Set<Token> tokens = new HashSet<>();
+        for (TokenRequest tokenRequest : addRequest.getTokenRequests()) {
+            tokens.add(tokenService.createNewToken(new TokenRequest(TokenType.REFRESH, tokenRequest.getRoleResource()), credential));
+        }
+        final IdentityResponse identityResponse = new IdentityResponse(createdIdentity.getId(),
+                createdIdentity.getDescription(), createdIdentity.getContactMethod(),
+                createdIdentity.getStatus(), tokens);
+        logger.trace("Complete adding identity - {} with result - {}", createdIdentity, identityResponse);
+        return identityResponse;
     }
 
     @Override
@@ -250,6 +279,32 @@ public class IdentityServiceImpl implements IdentityService {
         identity.setStatus(IdentityStatus.DISABLED);
         credentialService.delete(identity.getId());
         logger.debug("Deleting identity Identity:'{}'.", id);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    @Transactional
+    public void setRoles(final String identityId, final Set<RoleAdditionRequest> additionRequests) {
+        Assert.notNull(additionRequests, "additionRequest cannot be null");
+        Assert.notEmpty(additionRequests, "additionRequest cannot be null");
+        logger.trace("Adding roles for identity:{}...", identityId);
+        // add roles
+        for (RoleAdditionRequest request : additionRequests) {
+            final IdentityResourceRoleCreationRequest identityResourceRoleCreationRequest;
+            final Role role = roleService.getByName(request.getName());
+            if (request.getResource() != null) {
+                final Resource resource = resourceService.get(request.getResource().getType(), request.getResource().getIdentifier());
+                identityResourceRoleService.deleteByIdentityAndResource(identityId, resource.getId());
+                identityResourceRoleCreationRequest = new IdentityResourceRoleCreationRequest(identityId, role.getId(), resource.getId());
+            } else {
+                identityResourceRoleService.deleteByIdentityAndResource(identityId, null);
+                identityResourceRoleCreationRequest = new IdentityResourceRoleCreationRequest(identityId, role.getId());
+            }
+            identityResourceRoleService.create(identityResourceRoleCreationRequest);
+        }
+        logger.debug("Done adding roles for identity:{}", identityId);
     }
 
     @Override

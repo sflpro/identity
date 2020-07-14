@@ -20,7 +20,7 @@ public class AuthenticationRequestDto<T extends AuthenticationRequestDetailsDto>
     private List<TokenRequestDto> tokenRequests;
 
     private List<ResourceRequestDto> resourceRequests;
-
+    
     public T getDetails() {
         return details;
     }

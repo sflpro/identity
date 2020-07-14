@@ -38,11 +38,14 @@ public class Token extends Credential {
     @JoinColumn(name = "issued_by")
     private Credential issuedBy;
 
+    @Column(name = "resource_id")
+    private Long resourceId;
+
     public Token() {
         super();
     }
 
-    public Token(/*Credential credential, */String value, TokenType tokenType,
+    public Token(String value, TokenType tokenType,
                  LocalDateTime expirationDate, Credential issuedBy) {
         this();
         this.value = value;
@@ -83,6 +86,14 @@ public class Token extends Credential {
         this.issuedBy = issuedBy;
     }
 
+    public Long getResourceId() {
+        return resourceId;
+    }
+
+    public void setResourceId(final Long resourceId) {
+        this.resourceId = resourceId;
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
@@ -97,6 +108,7 @@ public class Token extends Credential {
                 .append(tokenType, token.tokenType)
                 .append(expirationDate, token.expirationDate)
                 .append(issuedBy, token.issuedBy)
+                .append(resourceId, token.resourceId)
                 .isEquals();
     }
 
@@ -108,6 +120,7 @@ public class Token extends Credential {
                 .append(tokenType)
                 .append(expirationDate)
                 .append(issuedBy)
+                .append(resourceId)
                 .toHashCode();
     }
 
@@ -118,6 +131,7 @@ public class Token extends Credential {
                 .append("tokenType", tokenType)
                 .append("expirationDate", expirationDate)
                 .append("issuedBy", issuedBy)
+                .append("resourceId", resourceId)
                 .toString();
     }
 }

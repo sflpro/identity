@@ -12,6 +12,15 @@ public class ResourceRequest {
 
     private String identifier;
 
+    public ResourceRequest() {
+        super();
+    }
+
+    public ResourceRequest(String type, String identifier) {
+        this.type = type;
+        this.identifier = identifier;
+    }
+
     public String getType() {
         return type;
     }

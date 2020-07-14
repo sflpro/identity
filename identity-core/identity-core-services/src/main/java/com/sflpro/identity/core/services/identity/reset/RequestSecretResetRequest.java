@@ -1,5 +1,7 @@
 package com.sflpro.identity.core.services.identity.reset;
 
+import com.sflpro.identity.core.services.resource.ResourceRequest;
+
 import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
 
@@ -23,7 +25,8 @@ public class RequestSecretResetRequest {
     @NotEmpty
     private String redirectUri;
 
-
+    private ResourceRequest resourceRequest;
+    
     public String getEmail() {
         return email;
     }
@@ -54,5 +57,13 @@ public class RequestSecretResetRequest {
 
     public void setRedirectUri(String redirectUri) {
         this.redirectUri = redirectUri;
+    }
+
+    public ResourceRequest getResourceRequest() {
+        return resourceRequest;
+    }
+
+    public void setResourceRequest(final ResourceRequest resourceRequest) {
+        this.resourceRequest = resourceRequest;
     }
 }

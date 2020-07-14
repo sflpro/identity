@@ -1,12 +1,10 @@
 package com.sflpro.identity.core.services.auth.impl;
 
 import com.sflpro.identity.core.datatypes.AuthenticationStatus;
-import com.sflpro.identity.core.db.entities.Credential;
-import com.sflpro.identity.core.db.entities.Identity;
-import com.sflpro.identity.core.db.entities.Resource;
-import com.sflpro.identity.core.db.entities.Token;
+import com.sflpro.identity.core.db.entities.*;
 import com.sflpro.identity.core.services.auth.*;
 import com.sflpro.identity.core.services.credential.CredentialService;
+import com.sflpro.identity.core.services.identity.resource.role.IdentityResourceRoleService;
 import com.sflpro.identity.core.services.principal.PrincipalService;
 import com.sflpro.identity.core.services.resource.ResourceService;
 import com.sflpro.identity.core.services.role.RoleService;
@@ -25,6 +23,8 @@ import org.springframework.transaction.annotation.Transactional;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Objects;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 /**
  * Company: SFL LLC
@@ -49,6 +49,8 @@ public class AuthenticationServiceImpl implements AuthenticationService {
 
     private final CredentialService credentialService;
 
+    private final IdentityResourceRoleService identityResourceRoleService;
+
     @Value("${auth.attempts.limitCount}")
     private int authAttemptsLimitCount;
 
@@ -57,13 +59,14 @@ public class AuthenticationServiceImpl implements AuthenticationService {
 
     @Autowired
     public AuthenticationServiceImpl(AuthenticatorRegistry authenticatorRegistry, PrincipalService principalService,
-                                     TokenService tokenService, ResourceService resourceService, RoleService roleService, CredentialService credentialService, PlatformTransactionManager platformTransactionManager) {
+                                     TokenService tokenService, ResourceService resourceService, RoleService roleService, CredentialService credentialService, PlatformTransactionManager platformTransactionManager, final IdentityResourceRoleService identityResourceRoleService) {
         this.authenticatorRegistry = authenticatorRegistry;
         this.principalService = principalService;
         this.tokenService = tokenService;
         this.resourceService = resourceService;
         this.roleService = roleService;
         this.credentialService = credentialService;
+        this.identityResourceRoleService = identityResourceRoleService;
     }
 
     @Override
@@ -75,7 +78,7 @@ public class AuthenticationServiceImpl implements AuthenticationService {
 
         T credential = authenticatorRegistry.getCredentialStore(details.getCredentialIdentifier().getGenericClass()).get(details.getCredentialIdentifier());
 
-        if(credential.getFailedAttempts() > authAttemptsLimitCount
+        if (credential.getFailedAttempts() > authAttemptsLimitCount
                 && Objects.nonNull(credential.getLastFailedAttempt())
                 && LocalDateTime.now().isBefore(credential.getLastFailedAttempt().plusMinutes(authAttemptsLimitMinutes))) {
             credentialService.updateFailedAttempts(credential, credential.getFailedAttempts() + 1);
@@ -87,7 +90,7 @@ public class AuthenticationServiceImpl implements AuthenticationService {
         }
         AuthenticationResponse authenticationResponse;
         try {
-             authenticationResponse = authenticator.authenticate(credential, details);
+            authenticationResponse = authenticator.authenticate(credential, details);
         } catch (InvalidCredentialsException | TokenExpiredException e) {
             credentialService.updateFailedAttempts(credential, credential.getFailedAttempts() + 1);
             throw e;
@@ -95,7 +98,7 @@ public class AuthenticationServiceImpl implements AuthenticationService {
         credentialService.updateFailedAttempts(credential, 0);
         if (authenticationResponse.getStatus() == AuthenticationStatus.AUTHENTICATED) {
             if (!request.getTokenRequests().isEmpty()) {
-                List<Token> tokens = tokenService.createNewTokens(request.getTokenRequests(), credential);
+                List<Token> tokens = tokenService.createNewTokens(request.getTokenRequests(), credential, request.getResourceRequests());
                 authenticationResponse.setTokens(tokens);
             }
             if (!request.getResourceRequests().isEmpty()) {
@@ -107,7 +110,6 @@ public class AuthenticationServiceImpl implements AuthenticationService {
         authenticationResponse.setCredentialTypeUsed(credential.getType());
         authenticationResponse.setIdentity(identity);
         authenticationResponse.setPrincipals(principalService.findAllByIdentity(credential.getIdentity()));
-        authenticationResponse.setPermissions(roleService.getPermissions(identity.getRoles()));
         credentialService.updateFailedAttempts(credential, 0);
         return authenticationResponse;
     }
@@ -116,6 +118,15 @@ public class AuthenticationServiceImpl implements AuthenticationService {
     @Transactional
     public void invalidateToken(TokenInvalidationRequest tokenRequest) throws TokenServiceException {
         tokenService.invalidateToken(tokenRequest);
+    }
+
+    private Set<Permission> getResourceRolesPermissions(final Identity identity, final Long id) {
+        return identityResourceRoleService.getAllByIdentityIdAndResourceId(identity.getId(), id)
+                .stream()
+                .map(IdentityResourceRole::getRoleId)
+                .map(roleService::get)
+                .flatMap(role -> role.getPermissions().stream())
+                .collect(Collectors.toUnmodifiableSet());
     }
 }
 

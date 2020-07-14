@@ -1,0 +1,1 @@
+alter table identity.token alter column value type varchar(32766) using value::varchar(32766);

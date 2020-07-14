@@ -9,7 +9,6 @@ import org.hibernate.annotations.GenericGenerator;
 
 import javax.persistence.*;
 import java.time.LocalDateTime;
-import java.util.Set;
 
 /**
  * Company: SFL LLC
@@ -42,14 +41,7 @@ public class Identity {
     @Enumerated(EnumType.STRING)
     @Column(name = "status")
     private IdentityStatus status;
-
-    @ManyToMany(fetch = FetchType.LAZY)
-    @JoinTable(name = "identity_role",
-            joinColumns = {@JoinColumn(name = "identity_id")},
-            inverseJoinColumns = {@JoinColumn(name = "role_id")}
-    )
-    private Set<Role> roles;
-
+    
     @ManyToOne
     @JoinColumn(name = "creator_id")
     private Identity creatorId;
@@ -102,15 +94,7 @@ public class Identity {
     public void setStatus(IdentityStatus status) {
         this.status = status;
     }
-
-    public Set<Role> getRoles() {
-        return roles;
-    }
-
-    public void setRoles(Set<Role> roles) {
-        this.roles = roles;
-    }
-
+    
     public LocalDateTime getCreated() {
         return created;
     }
@@ -169,7 +153,6 @@ public class Identity {
                 .append(secret, identity.secret)
                 .append(contactMethod, identity.contactMethod)
                 .append(status, identity.status)
-                .append(roles, identity.roles)
                 .append(created, identity.created)
                 .append(updated, identity.updated)
                 .append(deleted, identity.deleted)
@@ -185,7 +168,6 @@ public class Identity {
                 .append(secret)
                 .append(contactMethod)
                 .append(status)
-                .append(roles)
                 .append(created)
                 .append(updated)
                 .append(deleted)
@@ -201,7 +183,6 @@ public class Identity {
                 .append("secret", secret)
                 .append("contactMethod", contactMethod)
                 .append("status", status)
-                .append("roles", roles)
                 .append("created", created)
                 .append("updated", updated)
                 .append("deleted", deleted)

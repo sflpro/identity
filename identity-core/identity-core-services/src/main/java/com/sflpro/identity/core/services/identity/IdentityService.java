@@ -5,8 +5,10 @@ import com.sflpro.identity.core.db.entities.Resource;
 import com.sflpro.identity.core.services.auth.AuthenticationServiceException;
 import com.sflpro.identity.core.services.identity.reset.RequestSecretResetRequest;
 import com.sflpro.identity.core.services.identity.reset.SecretResetRequest;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.Set;
 
 /**
  * Company: SFL LLC
@@ -71,9 +73,23 @@ public interface IdentityService {
      * @param addRequest identity update request model
      * @return id and details of the created identity
      */
-    Identity add(final IdentityCreationRequest addRequest);
+    IdentityResponse add(final IdentityCreationRequest addRequest);
 
+    /**
+     * Deletes identity for provided id
+     * @param id
+     */
     void delete(String id);
+
+    /**
+     * Add roles to identity for provided request
+     *
+     * @param identityId
+     * @param additionRequest
+     * @return
+     */
+    @Transactional
+    void setRoles(String identityId, Set<RoleAdditionRequest> additionRequest);
 
     /**
      *  Lists all identities for specified resource
@@ -88,5 +104,4 @@ public interface IdentityService {
      * @return updated list of identity's resources
      */
     List<Resource> updateIdentityResources(IdentityResourceUpdateRequest updateRequest);
-
 }

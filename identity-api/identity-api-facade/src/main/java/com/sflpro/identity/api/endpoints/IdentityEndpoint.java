@@ -3,10 +3,7 @@ package com.sflpro.identity.api.endpoints;
 import com.sflpro.identity.api.common.dtos.ApiGenericListResponse;
 import com.sflpro.identity.api.common.dtos.ApiResponseDto;
 import com.sflpro.identity.api.common.dtos.auth.AuthenticationExceptionDto;
-import com.sflpro.identity.api.common.dtos.identity.IdentityCreationRequestDto;
-import com.sflpro.identity.api.common.dtos.identity.IdentityDto;
-import com.sflpro.identity.api.common.dtos.identity.IdentityResourceUpdateRequestDto;
-import com.sflpro.identity.api.common.dtos.identity.IdentityUpdateRequestDto;
+import com.sflpro.identity.api.common.dtos.identity.*;
 import com.sflpro.identity.api.common.dtos.identity.reset.RequestSecretResetRequestDto;
 import com.sflpro.identity.api.common.dtos.identity.reset.SecretResetRequestDto;
 import com.sflpro.identity.api.common.dtos.resource.ResourceDto;
@@ -14,17 +11,11 @@ import com.sflpro.identity.api.mapper.BeanMapper;
 import com.sflpro.identity.core.db.entities.Identity;
 import com.sflpro.identity.core.db.entities.Resource;
 import com.sflpro.identity.core.services.auth.AuthenticationServiceException;
-import com.sflpro.identity.core.services.identity.IdentityCreationRequest;
-import com.sflpro.identity.core.services.identity.IdentityResourceUpdateRequest;
-import com.sflpro.identity.core.services.identity.IdentityService;
-import com.sflpro.identity.core.services.identity.IdentityUpdateRequest;
+import com.sflpro.identity.core.services.identity.*;
 import com.sflpro.identity.core.services.identity.reset.RequestSecretResetRequest;
 import com.sflpro.identity.core.services.identity.reset.SecretResetRequest;
 import com.sflpro.identity.core.services.resource.ResourceService;
-import io.swagger.annotations.Api;
-import io.swagger.annotations.ApiOperation;
-import io.swagger.annotations.SwaggerDefinition;
-import io.swagger.annotations.Tag;
+import io.swagger.v3.oas.annotations.Operation;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -39,6 +30,7 @@ import javax.validation.constraints.NotNull;
 import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
 import java.util.List;
+import java.util.Set;
 
 /**
  * Company: SFL LLC
@@ -46,8 +38,6 @@ import java.util.List;
  *
  * @author Davit Harutyunyan
  */
-@SwaggerDefinition(tags = {@Tag(name = "identities", description = "Identity CRUD operations")})
-@Api(tags = {"identities"})
 @Component
 @Path("/identities")
 @Produces(MediaType.APPLICATION_JSON)
@@ -56,6 +46,12 @@ public class IdentityEndpoint {
 
     private static final Logger logger = LoggerFactory.getLogger(IdentityEndpoint.class);
 
+    @Value("${email.default.redirect.uri}")
+    private String emailRedirectUri;
+
+    @Value("${email.default.template.name}")
+    private String emailDefaultTemplateName;
+
     @Autowired
     private BeanMapper mapper;
 
@@ -63,15 +59,9 @@ public class IdentityEndpoint {
     private IdentityService identityService;
 
     @Autowired
-    ResourceService resourceService;
+    private ResourceService resourceService;
 
-    @Value("${email.default.redirect.uri}")
-    private String emailRedirectUri;
-
-    @Value("${email.default.template.name}")
-    private String emailDefaultTemplateName;
-
-    @ApiOperation("Returns identity's details")
+    @Operation(tags = {"identities"}, summary = "Returns identity's details")
     @GET
     @Path("/{identityId}")
     @Transactional(readOnly = true)
@@ -81,7 +71,7 @@ public class IdentityEndpoint {
         return mapper.map(identity, IdentityDto.class);
     }
 
-    @ApiOperation("Updates identity's details")
+    @Operation(tags = {"identities"}, summary = "Updates identity's details")
     @PUT
     @Path("/{identityId}")
     @Transactional
@@ -100,7 +90,7 @@ public class IdentityEndpoint {
         }
     }
 
-    @ApiOperation("Delete identity")
+    @Operation(tags = {"identities"}, summary = "Delete identity")
     @DELETE
     @Path("/{identityId}")
     @Transactional
@@ -109,7 +99,7 @@ public class IdentityEndpoint {
         return new ApiResponseDto();
     }
 
-    @ApiOperation("Request for secret reset")
+    @Operation(tags = {"identities"}, summary = "Request for secret reset")
     @PUT
     @Path("/secret-reset/request-token")
     @Transactional
@@ -126,7 +116,7 @@ public class IdentityEndpoint {
         return new ApiResponseDto();
     }
 
-    @ApiOperation("Set new secret")
+    @Operation(tags = {"identities"}, summary = "Set new secret")
     @PUT
     @Path("/secret-reset/secret")
     @Transactional
@@ -137,21 +127,34 @@ public class IdentityEndpoint {
         return new ApiResponseDto();
     }
 
-    @ApiOperation("Creates identity's details")
+    @Operation(tags = {"identities"}, summary = "Creates identity's details")
     @PUT
     @Path("/")
     @Transactional
-    public IdentityDto createIdentity(
-           @NotNull @Valid final IdentityCreationRequestDto request) {
+    public IdentityWithTokenDto createIdentity(@NotNull @Valid final IdentityCreationRequestDto request) {
         Assert.notNull(request, "request cannot be null");
         logger.debug("Creating identity  with data :{}...", request);
         final IdentityCreationRequest creationRequest = mapper.map(request, IdentityCreationRequest.class);
-        final Identity identity = identityService.add(creationRequest);
+        final IdentityResponse identity = identityService.add(creationRequest);
+        final IdentityWithTokenDto result = mapper.map(identity, IdentityWithTokenDto.class);
         logger.info("Done creating identity with data :{}....", creationRequest);
-        return mapper.map(identity, IdentityDto.class);
+        return result;
     }
 
-    @ApiOperation("Lists identity's all resources")
+    @Operation(tags = {"identities"}, summary = "Set roles for provided identity")
+    @PUT
+    @Path("/{identityId}/roles")
+    @Transactional
+    public ApiResponseDto setRoles(@NotNull @PathParam("identityId") final String identityId,
+                                   @NotNull @Valid final Set<RoleAdditionRequestDto> additionRequests) {
+        logger.debug("Adding roles identity  with data :{}...", additionRequests);
+        final Set<RoleAdditionRequest> roleAdditionRequests = mapper.mapAsSet(additionRequests, RoleAdditionRequest.class);
+        identityService.setRoles(identityId, roleAdditionRequests);
+        logger.info("Done adding roles:{} to identity:{}", additionRequests, identityId);
+        return new ApiResponseDto();
+    }
+
+    @Operation(tags = {"identities"}, summary = "Lists identity's all resources")
     @GET
     @Path("/{identityId}/resources")
     @Transactional(readOnly = true)
@@ -165,7 +168,7 @@ public class IdentityEndpoint {
         return new ApiGenericListResponse<>(result.size(), result);
     }
 
-    @ApiOperation("Update resources of identity")
+    @Operation(tags = {"identities"}, summary = "Update resources of identity")
     @PUT
     @Path("/{identityId}/resources")
     @Transactional
