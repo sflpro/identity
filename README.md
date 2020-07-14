@@ -63,3 +63,8 @@ docker run -p 8080:8080 -v {IDENTITY_-_PROPERTIES_PATH}:/etc/identity/identity.p
 ```curl
 curl -X GET "https://localhost:8080/status" -H "accept: application/json"
 ```
+
+#### 5. Release new version
+```mvn
+mvn gitflow:release -DgpgSignTag=true -DgpgSignCommit=true
+```
