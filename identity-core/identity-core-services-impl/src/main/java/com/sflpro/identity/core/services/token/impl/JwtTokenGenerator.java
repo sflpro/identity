@@ -111,6 +111,7 @@ public class JwtTokenGenerator implements TokenGenerator {
                 .issuer(jwtIssuer)
                 .issueTime(issuedAt)
                 .expirationTime(expirationTime);
+        tokenGenerationRequest.getMetadataPayloads().forEach(metadataPayload -> builder.claim(metadataPayload.getKey(), metadataPayload.getPayloads()));
         if (tokenGenerationRequest.getResources() != null) {
             for (Map.Entry<String, List<String>> resource : tokenGenerationRequest.getResources().entrySet()) {
                 builder.claim(resource.getKey(), resource.getValue());

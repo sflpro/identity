@@ -1,13 +1,17 @@
 package com.sflpro.identity.core.services.token;
 
 import com.sflpro.identity.core.services.resource.ResourceRequest;
+import com.sflpro.identity.core.services.token.metadata.MetadataPayload;
 import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
 import org.apache.commons.lang3.builder.ToStringBuilder;
+import org.springframework.util.Assert;
 
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 /**
  * Company: SFL LLC
@@ -23,6 +27,7 @@ public class TokenGenerationRequest {
     private Set<String> permissions;
     private ResourceRequest resourceRole;
     private Map<String, List<String>> resources;
+    private Set<MetadataPayload<?>> metadataPayloads = Collections.emptySet();
 
     public String getIdentityId() {
         return identityId;
@@ -72,6 +77,25 @@ public class TokenGenerationRequest {
         this.resourceRole = resourceRole;
     }
 
+    public Set<MetadataPayload<?>> getMetadataPayloads() {
+        return Collections.unmodifiableSet(metadataPayloads);
+    }
+
+    public void setMetadataPayloads(final Set<MetadataPayload<?>> metadataPayloads) {
+        assertMetadataPayloads(metadataPayloads);
+        this.metadataPayloads = metadataPayloads;
+    }
+
+    private void assertMetadataPayloads(final Set<MetadataPayload<?>> metadataPayloads) {
+        Assert.notNull(metadataPayloads, "The metadataPayloads should not be null");
+        if (metadataPayloads.size() != metadataPayloads.stream()
+                .map(MetadataPayload::getKey)
+                .collect(Collectors.toUnmodifiableSet())
+                .size()) {
+            throw new IllegalArgumentException("The metadata should not contain duplicate keys");
+        }
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
@@ -87,6 +111,7 @@ public class TokenGenerationRequest {
                 .append(permissions, that.permissions)
                 .append(resourceRole, that.resourceRole)
                 .append(resources, that.resources)
+                .append(metadataPayloads, that.metadataPayloads)
                 .isEquals();
     }
 
@@ -99,6 +124,7 @@ public class TokenGenerationRequest {
                 .append(permissions)
                 .append(resourceRole)
                 .append(resources)
+                .append(metadataPayloads)
                 .toHashCode();
     }
 
@@ -111,6 +137,7 @@ public class TokenGenerationRequest {
                 .append("permissions", permissions)
                 .append("resourceRequest", resourceRole)
                 .append("resources", resources)
+                .append("metadataPayloads", metadataPayloads)
                 .toString();
     }
 }
