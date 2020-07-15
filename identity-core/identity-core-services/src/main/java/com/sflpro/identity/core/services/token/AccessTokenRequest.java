@@ -15,15 +15,15 @@ import java.util.stream.Collectors;
  *
  * @author Manuk Gharslyan
  */
-public class AccessTokenRequest extends TokenRequest {
+public class AccessTokenRequest<T> extends TokenRequest {
 
-    private Set<MetadataPayload<?>> metadataPayloads;
+    private Set<MetadataPayload<T>> metadataPayloads;
 
-    public AccessTokenRequest(final TokenType tokenType, final ResourceRequest roleResource, final Set<MetadataPayload<?>> metadataPayloads) {
+    public AccessTokenRequest(final TokenType tokenType, final ResourceRequest roleResource, final Set<MetadataPayload<T>> metadataPayloads) {
         this(tokenType, null, roleResource, metadataPayloads);
     }
 
-    public AccessTokenRequest(final TokenType tokenType, final Integer expiresInHours, final ResourceRequest roleResource, final Set<MetadataPayload<?>> metadataPayloads) {
+    public AccessTokenRequest(final TokenType tokenType, final Integer expiresInHours, final ResourceRequest roleResource, final Set<MetadataPayload<T>> metadataPayloads) {
         super(tokenType, expiresInHours, roleResource);
         Assert.notNull(metadataPayloads, "The metadataPayloads should not be null");
         this.metadataPayloads = metadataPayloads;
@@ -33,12 +33,12 @@ public class AccessTokenRequest extends TokenRequest {
         return Collections.unmodifiableSet(metadataPayloads);
     }
 
-    public void setMetadataPayloads(final Set<MetadataPayload<?>> metadataPayloads) {
+    public void setMetadataPayloads(final Set<MetadataPayload<T>> metadataPayloads) {
         assertMetadataPayloads(metadataPayloads);
         this.metadataPayloads = metadataPayloads;
     }
 
-    private void assertMetadataPayloads(final Set<MetadataPayload<?>> metadataPayloads) {
+    private void assertMetadataPayloads(final Set<MetadataPayload<T>> metadataPayloads) {
         if (metadataPayloads.size() != metadataPayloads.stream()
                 .map(MetadataPayload::getKey)
                 .collect(Collectors.toUnmodifiableSet())

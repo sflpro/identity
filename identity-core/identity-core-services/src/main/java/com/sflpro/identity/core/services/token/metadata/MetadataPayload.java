@@ -5,9 +5,6 @@ import org.apache.commons.lang3.builder.HashCodeBuilder;
 import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.springframework.util.Assert;
 
-import java.util.Collections;
-import java.util.Set;
-
 /**
  * Company: SFL LLC
  * Created on 7/14/20
@@ -17,13 +14,13 @@ import java.util.Set;
 public final class MetadataPayload<T> {
 
     private String key;
-    private Set<T> payloads;
-    
-    public MetadataPayload(final String key, final Set<T> payloads) {
+    private T payload;
+
+    public MetadataPayload(final String key, final T payload) {
         Assert.hasText(key, "The metadata key should not be null or empty");
-        Assert.notEmpty(payloads, "The metadata payloads should not be null or empty");
+        Assert.notNull(payload, "The metadata payload should not be null or empty");
         this.key = key;
-        this.payloads = payloads;
+        this.payload = payload;
     }
 
     public String getKey() {
@@ -34,12 +31,12 @@ public final class MetadataPayload<T> {
         this.key = key;
     }
 
-    public void setPayloads(final Set<T> payloads) {
-        this.payloads = payloads;
+    public void setPayload(final T payload) {
+        this.payload = payload;
     }
 
-    public Set<T> getPayloads() {
-        return Collections.unmodifiableSet(payloads);
+    public T getPayload() {
+        return payload;
     }
 
     @Override
@@ -52,7 +49,7 @@ public final class MetadataPayload<T> {
 
         return new EqualsBuilder()
                 .append(key, that.key)
-                .append(payloads, that.payloads)
+                .append(payload, that.payload)
                 .isEquals();
     }
 
@@ -60,7 +57,7 @@ public final class MetadataPayload<T> {
     public int hashCode() {
         return new HashCodeBuilder()
                 .append(key)
-                .append(payloads)
+                .append(payload)
                 .toHashCode();
     }
 
@@ -69,7 +66,7 @@ public final class MetadataPayload<T> {
         return new ToStringBuilder(this)
                 .appendSuper(super.toString())
                 .append("key", key)
-                .append("payloads", payloads)
+                .append("payload", payload)
                 .toString();
     }
 }

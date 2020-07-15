@@ -7,9 +7,6 @@ import org.apache.commons.lang3.builder.HashCodeBuilder;
 import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.springframework.util.Assert;
 
-import java.util.Collections;
-import java.util.Set;
-
 /**
  * Company: SFL LLC
  * Created on 7/14/20
@@ -19,27 +16,27 @@ import java.util.Set;
 public final class MetadataPayloadDto<T> {
 
     private final String key;
-    private final Set<T> payloads;
+    private final T payload;
 
     @JsonCreator(mode = JsonCreator.Mode.PROPERTIES)
     private MetadataPayloadDto(@JsonProperty("key") final String key,
-                               @JsonProperty("payloads") final Set<T> payloads) {
+                               @JsonProperty("payload") final T payload) {
         Assert.hasText(key, "The metadata dto key should not be null or empty");
-        Assert.notEmpty(payloads, "The metadata dto payloads should not be null");
+        Assert.notNull(payload, "The metadata dto payload should not be null");
         this.key = key;
-        this.payloads = payloads;
+        this.payload = payload;
     }
 
     /**
      * Create a metadata payload
      *
      * @param key
-     * @param payloads
+     * @param payload
      * @param <T>
      * @return
      */
-    public static <T> MetadataPayloadDto<T> of(final String key, final Set<T> payloads) {
-        return new MetadataPayloadDto<>(key, payloads);
+    public static <T> MetadataPayloadDto<T> of(final String key, final T payload) {
+        return new MetadataPayloadDto<>(key, payload);
     }
 
     @Override
@@ -52,7 +49,7 @@ public final class MetadataPayloadDto<T> {
 
         return new EqualsBuilder()
                 .append(key, that.key)
-                .append(payloads, that.payloads)
+                .append(payload, that.payload)
                 .isEquals();
     }
 
@@ -60,7 +57,7 @@ public final class MetadataPayloadDto<T> {
     public int hashCode() {
         return new HashCodeBuilder()
                 .append(key)
-                .append(payloads)
+                .append(payload)
                 .toHashCode();
     }
 
@@ -69,7 +66,7 @@ public final class MetadataPayloadDto<T> {
         return new ToStringBuilder(this)
                 .appendSuper(super.toString())
                 .append("key", key)
-                .append("payloads", payloads)
+                .append("payload", payload)
                 .toString();
     }
 
@@ -77,7 +74,7 @@ public final class MetadataPayloadDto<T> {
         return key;
     }
 
-    public Set<T> getPayloads() {
-        return Collections.unmodifiableSet(payloads);
+    public T getPayload() {
+        return payload;
     }
 }
