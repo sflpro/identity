@@ -11,9 +11,9 @@ import com.sflpro.identity.core.datatypes.TokenType;
  *
  * @author Davit Harutyunyan
  */
-@JsonTypeInfo(use=JsonTypeInfo.Id.NAME, include = JsonTypeInfo.As.EXISTING_PROPERTY, property = "tokenType", visible = true)
+@JsonTypeInfo(use=JsonTypeInfo.Id.NAME, include = JsonTypeInfo.As.EXISTING_PROPERTY, property = "tokenType", visible = true, defaultImpl = TokenRequestDto.class)
 @JsonSubTypes({
-        @JsonSubTypes.Type(value= AccessTokenRequestDto.class, name="ACCESS"),
+        @JsonSubTypes.Type(value= AccessTokenRequestDto.class, name="ACCESS")
 })
 public class TokenRequestDto {
 
