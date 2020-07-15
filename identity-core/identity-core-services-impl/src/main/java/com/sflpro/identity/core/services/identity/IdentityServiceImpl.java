@@ -288,18 +288,25 @@ public class IdentityServiceImpl implements IdentityService {
     @Transactional
     public void setRoles(final String identityId, final Set<RoleAdditionRequest> additionRequests) {
         Assert.notNull(additionRequests, "additionRequest cannot be null");
-        Assert.notEmpty(additionRequests, "additionRequest cannot be null");
+        Assert.notEmpty(additionRequests, "additionRequest cannot be empty");
         logger.trace("Adding roles for identity:{}...", identityId);
+        // delete roles
+        for (RoleAdditionRequest request : additionRequests) {
+            if (request.getResource() != null) {
+                final Resource resource = resourceService.get(request.getResource().getType(), request.getResource().getIdentifier());
+                identityResourceRoleService.deleteByIdentityAndResource(identityId, resource.getId());
+            } else {
+                identityResourceRoleService.deleteByIdentityAndResource(identityId, null);
+            }
+        }
         // add roles
         for (RoleAdditionRequest request : additionRequests) {
             final IdentityResourceRoleCreationRequest identityResourceRoleCreationRequest;
             final Role role = roleService.getByName(request.getName());
             if (request.getResource() != null) {
                 final Resource resource = resourceService.get(request.getResource().getType(), request.getResource().getIdentifier());
-                identityResourceRoleService.deleteByIdentityAndResource(identityId, resource.getId());
                 identityResourceRoleCreationRequest = new IdentityResourceRoleCreationRequest(identityId, role.getId(), resource.getId());
             } else {
-                identityResourceRoleService.deleteByIdentityAndResource(identityId, null);
                 identityResourceRoleCreationRequest = new IdentityResourceRoleCreationRequest(identityId, role.getId());
             }
             identityResourceRoleService.create(identityResourceRoleCreationRequest);
