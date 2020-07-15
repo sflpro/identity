@@ -118,6 +118,8 @@ public class TokenServiceImpl implements TokenService {
         }
         final String generatedToken;
         if (jwtStrategyEnabled && tokenRequest.getTokenType() == TokenType.ACCESS) {
+            final AccessTokenRequest<?> accessTokenRequest = (AccessTokenRequest<?>) tokenRequest;
+            tokenGenerationRequest.setMetadataPayloads(accessTokenRequest.getMetadataPayloads());
             generatedToken = jwtTokenGenerator.generate(tokenGenerationRequest);
         } else {
             generatedToken = secureRandomTokenGenerator.generate(tokenGenerationRequest);

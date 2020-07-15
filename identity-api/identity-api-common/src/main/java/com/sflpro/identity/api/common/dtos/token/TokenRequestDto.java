@@ -1,5 +1,7 @@
 package com.sflpro.identity.api.common.dtos.token;
 
+import com.fasterxml.jackson.annotation.JsonSubTypes;
+import com.fasterxml.jackson.annotation.JsonTypeInfo;
 import com.sflpro.identity.api.common.dtos.resource.ResourceRequestDto;
 import com.sflpro.identity.core.datatypes.TokenType;
 
@@ -9,6 +11,10 @@ import com.sflpro.identity.core.datatypes.TokenType;
  *
  * @author Davit Harutyunyan
  */
+@JsonTypeInfo(use=JsonTypeInfo.Id.NAME, include = JsonTypeInfo.As.EXISTING_PROPERTY, property = "tokenType", visible = true)
+@JsonSubTypes({
+        @JsonSubTypes.Type(value= AccessTokenRequestDto.class, name="ACCESS"),
+})
 public class TokenRequestDto {
 
     private TokenType tokenType;
