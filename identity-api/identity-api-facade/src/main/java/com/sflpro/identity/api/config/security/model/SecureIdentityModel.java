@@ -1,5 +1,6 @@
 package com.sflpro.identity.api.config.security.model;
 
+import com.sflpro.identity.api.config.security.accessible.feature.GrantedAccessibleFeature;
 import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
 import org.apache.commons.lang3.builder.ToStringBuilder;
@@ -18,8 +19,9 @@ public class SecureIdentityModel extends AbstractSecureIdentityModel {
 
     public SecureIdentityModel(final String identity,
                                final Set<String> accessibleCustomers,
-                               final Set<GrantedAuthority> authorities) {
-        super(accessibleCustomers, authorities);
+                               final Set<GrantedAuthority> authorities,
+                               final Set<GrantedAccessibleFeature> accessibleFeatures) {
+        super(accessibleCustomers, authorities, accessibleFeatures);
         this.identity = identity;
     }
 

@@ -40,6 +40,11 @@ public interface TokenModel {
     Set<String> permissions();
 
     /**
+     * Gets the customer accessible features
+     */
+    Set<String> accessibleFeatures();
+
+    /**
      * Gets token expiration time
      *
      * @return

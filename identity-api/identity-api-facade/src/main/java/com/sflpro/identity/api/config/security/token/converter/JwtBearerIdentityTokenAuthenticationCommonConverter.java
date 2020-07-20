@@ -1,5 +1,6 @@
 package com.sflpro.identity.api.config.security.token.converter;
 
+import com.sflpro.identity.api.config.security.accessible.feature.impl.SimpleIdentityGrantedAccessibleFeature;
 import com.sflpro.identity.api.config.security.model.IdentityAuthenticationModel;
 import com.sflpro.identity.api.config.security.model.SecureIdentityModel;
 import com.sflpro.identity.api.config.security.model.SecureUser;
@@ -42,7 +43,8 @@ public final class JwtBearerIdentityTokenAuthenticationCommonConverter implement
         final SecureUser secureCommonUserModel = new SecureIdentityModel(
                 tokenModel.identityId(),
                 tokenModel.accessibleCustomers(),
-                tokenModel.permissions().stream().map(SimpleGrantedAuthority::new).collect(Collectors.toUnmodifiableSet())
+                tokenModel.permissions().stream().map(SimpleGrantedAuthority::new).collect(Collectors.toUnmodifiableSet()),
+                tokenModel.accessibleFeatures().stream().map(SimpleIdentityGrantedAccessibleFeature::new).collect(Collectors.toUnmodifiableSet())
         );
         final IdentityAuthenticationModel authentication = new IdentityAuthenticationModel(secureCommonUserModel);
         logger.debug("Successfully processed the conversion of IdentityAuthenticationModel from JWT");

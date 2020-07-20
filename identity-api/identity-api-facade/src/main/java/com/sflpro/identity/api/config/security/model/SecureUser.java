@@ -1,7 +1,9 @@
 package com.sflpro.identity.api.config.security.model;
 
+import com.sflpro.identity.api.config.security.accessible.feature.GrantedAccessibleFeature;
 import org.springframework.security.core.userdetails.UserDetails;
 
+import java.util.Collection;
 import java.util.Set;
 
 /**
@@ -25,6 +27,13 @@ public interface SecureUser extends UserDetails {
      * @return
      */
     Set<String> accessibleCustomers();
+
+    /**
+     * Gets the granted accessible features
+     *
+     * @return
+     */
+    Collection<? extends GrantedAccessibleFeature> getAccessibleFeatures();
 
     @Override
     default String getPassword() {

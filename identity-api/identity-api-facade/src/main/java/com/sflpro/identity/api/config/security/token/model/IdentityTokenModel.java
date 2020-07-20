@@ -15,7 +15,8 @@ public class IdentityTokenModel extends AbstractTokenModel {
                               final String customerId,
                               final Set<String> customerIds,
                               final Set<String> permissions,
+                              final Set<String> accessibleFeatures,
                               final LocalDateTime expiration) {
-        super(userId, customerId, customerIds, permissions, expiration);
+        super(userId, customerId, customerIds, permissions, accessibleFeatures, expiration);
     }
 }

@@ -21,13 +21,16 @@ public abstract class AbstractTokenModel implements TokenModel {
     private final String customerId;
     private final Set<String> accessibleCustomers;
     private final Set<String> permissions;
+    private final Set<String> accessibleFeatures;
     private final LocalDateTime expiration;
 
     protected AbstractTokenModel(final String identityId,
                                  final String customerId,
                                  final Set<String> accessibleCustomers,
                                  final Set<String> permissions,
+                                 final Set<String> accessibleFeatures,
                                  final LocalDateTime expiration) {
+        this.accessibleFeatures = accessibleFeatures;
         Assert.hasText(identityId, "The identity id should not be null or empty");
         Assert.notNull(expiration, "The expiration should not be null");
         this.identityId = identityId;
@@ -50,6 +53,7 @@ public abstract class AbstractTokenModel implements TokenModel {
                 .append(customerId, that.customerId)
                 .append(accessibleCustomers, that.accessibleCustomers)
                 .append(permissions, that.permissions)
+                .append(accessibleFeatures, that.accessibleFeatures)
                 .append(expiration, that.expiration)
                 .isEquals();
     }
@@ -61,6 +65,7 @@ public abstract class AbstractTokenModel implements TokenModel {
                 .append(customerId)
                 .append(accessibleCustomers)
                 .append(permissions)
+                .append(accessibleFeatures)
                 .append(expiration)
                 .toHashCode();
     }
@@ -73,6 +78,7 @@ public abstract class AbstractTokenModel implements TokenModel {
                 .append("customerId", customerId)
                 .append("customerIds", accessibleCustomers)
                 .append("permissions", permissions)
+                .append("accessibleFeatures", accessibleFeatures)
                 .append("expiration", expiration)
                 .toString();
     }
@@ -100,5 +106,10 @@ public abstract class AbstractTokenModel implements TokenModel {
     @Override
     public Set<String> permissions() {
         return Collections.unmodifiableSet(permissions);
+    }
+
+    @Override
+    public Set<String> accessibleFeatures() {
+        return Collections.unmodifiableSet(accessibleFeatures);
     }
 }

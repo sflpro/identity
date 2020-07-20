@@ -47,6 +47,8 @@ public class IdentityJwtParserImpl implements JwtParser {
                             .orElse(ArrayUtils.EMPTY_STRING_ARRAY)),
                     Set.of(Optional.ofNullable(claims.getStringArrayClaim("permissions"))
                             .orElse(ArrayUtils.EMPTY_STRING_ARRAY)),
+                    Set.of(Optional.ofNullable(claims.getStringArrayClaim("accessibleFeatures"))
+                            .orElse(ArrayUtils.EMPTY_STRING_ARRAY)),
                     mapExpirationLocalToDateTime(claims.getExpirationTime())
             );
         } catch (final ParseException e) {

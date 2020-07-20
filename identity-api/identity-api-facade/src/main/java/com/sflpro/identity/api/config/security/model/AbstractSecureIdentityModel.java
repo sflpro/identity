@@ -1,5 +1,6 @@
 package com.sflpro.identity.api.config.security.model;
 
+import com.sflpro.identity.api.config.security.accessible.feature.GrantedAccessibleFeature;
 import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
 import org.apache.commons.lang3.builder.ToStringBuilder;
@@ -18,11 +19,14 @@ public abstract class AbstractSecureIdentityModel implements SecureUser {
 
     private final Set<String> accessibleCustomers;
     private final Set<GrantedAuthority> authorities;
+    private final Set<GrantedAccessibleFeature> accessibleFeatures;
 
     protected AbstractSecureIdentityModel(final Set<String> accessibleCustomers,
-                                          final Set<GrantedAuthority> authorities) {
+                                          final Set<GrantedAuthority> authorities,
+                                          final Set<GrantedAccessibleFeature> accessibleFeatures) {
         this.accessibleCustomers = accessibleCustomers;
         this.authorities = authorities;
+        this.accessibleFeatures = accessibleFeatures;
     }
 
     @Override
@@ -36,6 +40,7 @@ public abstract class AbstractSecureIdentityModel implements SecureUser {
         return new EqualsBuilder()
                 .append(accessibleCustomers, that.accessibleCustomers)
                 .append(authorities, that.authorities)
+                .append(accessibleFeatures, that.accessibleFeatures)
                 .isEquals();
     }
 
@@ -44,6 +49,7 @@ public abstract class AbstractSecureIdentityModel implements SecureUser {
         return new HashCodeBuilder(17, 37)
                 .append(accessibleCustomers)
                 .append(authorities)
+                .append(accessibleFeatures)
                 .toHashCode();
     }
 
@@ -51,6 +57,7 @@ public abstract class AbstractSecureIdentityModel implements SecureUser {
     public String toString() {
         return new ToStringBuilder(this)
                 .append("accessibleCustomers", accessibleCustomers)
+                .append("accessibleFeatures", accessibleFeatures)
                 .toString();
     }
 
@@ -62,5 +69,10 @@ public abstract class AbstractSecureIdentityModel implements SecureUser {
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
         return authorities;
+    }
+
+    @Override
+    public Collection<? extends GrantedAccessibleFeature> getAccessibleFeatures() {
+        return accessibleFeatures;
     }
 }
