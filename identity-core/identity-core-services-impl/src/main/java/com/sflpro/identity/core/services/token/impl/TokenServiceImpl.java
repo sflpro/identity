@@ -34,6 +34,9 @@ import java.util.stream.Collectors;
 public class TokenServiceImpl implements TokenService {
 
     private static final Logger logger = LoggerFactory.getLogger(JwtTokenGenerator.class);
+    
+    @Value("${secret.reset.extra.permissions}")
+    private String[] secretResetExtraPermissions;
 
     @Value("${jwt.token.generation.strategy.enabled}")
     private boolean jwtStrategyEnabled;
@@ -103,13 +106,16 @@ public class TokenServiceImpl implements TokenService {
                 .collect(Collectors.toUnmodifiableSet())
         );
         optionalResource.ifPresent(resource -> tokenGenerationRequest.setResourceRole(new ResourceRequest(resource.getType(), resource.getIdentifier())));
-        tokenGenerationRequest.setPermissions(roles.stream()
-                .map(Role::getPermissions)
-                .flatMap(Collection::stream)
-                .map(Permission::getName)
-                .collect(Collectors.toUnmodifiableSet())
-        );
-        
+        if (tokenRequest.getTokenType() == TokenType.SECRET_RESET) {
+            tokenGenerationRequest.setPermissions(Set.of(secretResetExtraPermissions));
+        } else {
+            tokenGenerationRequest.setPermissions(roles.stream()
+                    .map(Role::getPermissions)
+                    .flatMap(Collection::stream)
+                    .map(Permission::getName)
+                    .collect(Collectors.toUnmodifiableSet())
+            );
+        }
         if (resourceRequests != null && !resourceRequests.isEmpty()) {
             List<Resource> resources = resourceService.get(resourceRequests, credential.getIdentity());
             final Map<String, List<String>> resourceMap = resources.stream()
@@ -117,9 +123,11 @@ public class TokenServiceImpl implements TokenService {
             tokenGenerationRequest.setResources(resourceMap);
         }
         final String generatedToken;
-        if (jwtStrategyEnabled && tokenRequest.getTokenType() == TokenType.ACCESS) {
-            final AccessTokenRequest<?> accessTokenRequest = (AccessTokenRequest<?>) tokenRequest;
-            tokenGenerationRequest.setMetadataPayloads(accessTokenRequest.getMetadataPayloads());
+        if (jwtStrategyEnabled && (tokenRequest.getTokenType() == TokenType.ACCESS || tokenRequest.getTokenType() == TokenType.SECRET_RESET)) {
+            if (tokenRequest.getTokenType() == TokenType.ACCESS) {
+                final AccessTokenRequest<?> accessTokenRequest = (AccessTokenRequest<?>) tokenRequest;
+                tokenGenerationRequest.setMetadataPayloads(accessTokenRequest.getMetadataPayloads());
+            }
             generatedToken = jwtTokenGenerator.generate(tokenGenerationRequest);
         } else {
             generatedToken = secureRandomTokenGenerator.generate(tokenGenerationRequest);
