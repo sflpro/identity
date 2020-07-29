@@ -3,7 +3,7 @@
 	<parent>
 		<groupId>com.sflpro.identity</groupId>
 		<artifactId>identity-api</artifactId>
-		<version>0.2.0</version>
+		<version>0.3.0</version>
 	</parent>
 
 	<modelVersion>4.0.0</modelVersion>
@@ -74,7 +74,7 @@
         <dependency>
             <groupId>com.sflpro.identity</groupId>
             <artifactId>identity-core-datatypes</artifactId>
-            <version>0.2.0</version>
+            <version>0.3.0</version>
         </dependency>
 
 
@@ -112,5 +112,9 @@
 			<groupId>org.apache.commons</groupId>
 			<artifactId>commons-lang3</artifactId>
 		</dependency>
-	</dependencies>
+        <dependency>
+            <groupId>org.springframework</groupId>
+            <artifactId>spring-core</artifactId>
+        </dependency>
+    </dependencies>
 </project>

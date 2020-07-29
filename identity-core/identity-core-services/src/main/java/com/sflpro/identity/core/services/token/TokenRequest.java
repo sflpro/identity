@@ -18,9 +18,7 @@ public class TokenRequest {
     private ResourceRequest roleResource;
 
     public TokenRequest(TokenType tokenType, final ResourceRequest roleResource) {
-        this.tokenType = tokenType;
-        this.expiresInHours = null;
-        this.roleResource = roleResource;
+        this(tokenType, null, roleResource);
     }
 
     public TokenRequest(TokenType tokenType, Integer expiresInHours, final ResourceRequest roleResource) {

@@ -2,8 +2,10 @@ package com.sflpro.identity.api.mapper;
 
 import com.sflpro.identity.api.common.dtos.auth.mechanism.PrincipalAuthenticationRequestDetailsDto;
 import com.sflpro.identity.api.common.dtos.auth.mechanism.TokenAuthenticationRequestDetailsDto;
+import com.sflpro.identity.api.common.dtos.token.AccessTokenRequestDto;
 import com.sflpro.identity.core.services.auth.mechanism.principal.PrincipalAuthenticationRequestDetails;
 import com.sflpro.identity.core.services.auth.mechanism.token.TokenAuthenticationRequestDetails;
+import com.sflpro.identity.core.services.token.AccessTokenRequest;
 import ma.glasnost.orika.Converter;
 import ma.glasnost.orika.Mapper;
 import ma.glasnost.orika.MapperFactory;
@@ -54,6 +56,7 @@ public class BeanMapper extends ConfigurableMapper {
 
         factory.classMap(PrincipalAuthenticationRequestDetails.class, PrincipalAuthenticationRequestDetailsDto.class).byDefault().register();
         factory.classMap(TokenAuthenticationRequestDetails.class, TokenAuthenticationRequestDetailsDto.class).byDefault().register();
+        factory.classMap(AccessTokenRequest.class, AccessTokenRequestDto.class).byDefault().register();
 
         addAllSpringBeans();
     }
