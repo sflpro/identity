@@ -125,7 +125,7 @@
         <sonatype.profile.id>1f51d97e92ca91</sonatype.profile.id>
 
         <!-- utilities -->
-        <sfl.notifier.version>1.6.0</sfl.notifier.version>
+        <sfl.notifier.version>1.9.0</sfl.notifier.version>
         <jackson.version>2.9.2</jackson.version>
         <logback.version>1.2.3</logback.version>
         <javax.ws.rs-api.version>2.1</javax.ws.rs-api.version>
