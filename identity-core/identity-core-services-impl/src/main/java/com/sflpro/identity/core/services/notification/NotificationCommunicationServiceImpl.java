@@ -34,7 +34,7 @@ public class NotificationCommunicationServiceImpl implements NotificationCommuni
      * {@inheritDoc}
      */
     @Override
-    public void sendSecretResetEmail(@Valid SecretResetNotificationRequest notificationRequest) {
+    public Long sendSecretResetEmail(@Valid SecretResetNotificationRequest notificationRequest) {
         Assert.notNull(notificationRequest.getEmail(), "email cannot be null");
 
         CreateEmailNotificationRequest emailNotificationRequest = new CreateEmailNotificationRequest();
@@ -49,5 +49,6 @@ public class NotificationCommunicationServiceImpl implements NotificationCommuni
         if (emailNotificationResponse.hasErrors()) {
             throw new IdentityServiceException("Mail was not sent");
         }
+        return emailNotificationResponse.getResponse().getNotification().getId();
     }
 }
