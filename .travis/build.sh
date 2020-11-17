@@ -14,7 +14,7 @@ echo "Proceeding to compilation/check"
 if [ "$TRAVIS_BRANCH" == "develop" ] && [ "$TRAVIS_PULL_REQUEST" == "false" ]
 then
     echo "Running develop branch build and analysis. Snapshots will be published. All issues/stats will be saved to Sonar database."
-    mvn -P snapshot -P central -s settings.xml clean org.jacoco:jacoco-maven-plugin:prepare-agent deploy sonar:sonar -B \
+    mvn -U -P snapshot -P central -s settings.xml clean org.jacoco:jacoco-maven-plugin:prepare-agent deploy sonar:sonar -B \
     -Dsonar.host.url=https://sonarcloud.io \
     -Dsonar.organization=sfl \
     -Dsonar.login=$SONARCLOUD_KEY \
