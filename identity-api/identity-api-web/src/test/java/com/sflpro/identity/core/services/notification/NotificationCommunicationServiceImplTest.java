@@ -1,28 +1,28 @@
 package com.sflpro.identity.core.services.notification;
 
+import com.sflpro.identity.core.services.identity.IdentityServiceException;
 import com.sflpro.notifier.api.client.notification.email.EmailNotificationResourceClient;
+import com.sflpro.notifier.api.model.common.result.ErrorResponseModel;
+import com.sflpro.notifier.api.model.common.result.ErrorType;
 import com.sflpro.notifier.api.model.common.result.ResultResponseModel;
 import com.sflpro.notifier.api.model.email.EmailNotificationModel;
 import com.sflpro.notifier.api.model.email.request.CreateEmailNotificationRequest;
 import com.sflpro.notifier.api.model.email.response.CreateEmailNotificationResponse;
-import org.apache.commons.lang3.RandomStringUtils;
 import org.apache.commons.lang3.RandomUtils;
 import org.apache.commons.lang3.reflect.FieldUtils;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.Mockito;
 import org.mockito.junit.MockitoJUnitRunner;
 
 import java.util.Collections;
 
 import static org.apache.commons.lang3.RandomStringUtils.random;
 import static org.mockito.ArgumentMatchers.eq;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 
 @RunWith(MockitoJUnitRunner.class)
 public class NotificationCommunicationServiceImplTest {
@@ -66,7 +66,31 @@ public class NotificationCommunicationServiceImplTest {
         final Long id = notificationCommunicationService.sendSecretResetEmail(request);
         Assert.assertEquals(notificationId, id);
 
-        Mockito.verify(emailNotificationResourceClient).createEmailNotification(eq(emailNotificationRequest));
+        verify(emailNotificationResourceClient).createEmailNotification(eq(emailNotificationRequest));
+        verifyNoMoreInteractions(emailNotificationResourceClient);
+    }
+
+    @Test(expected = IdentityServiceException.class)
+    public void sendSecretResetEmail_when_error_happen_during_sending() {
+        final String email = random(5);
+        final String emailTemplateName = random(5);
+        final SecretResetNotificationRequest request = new SecretResetNotificationRequest(email, emailTemplateName, Collections.emptyMap());
+        final Long notificationId = RandomUtils.nextLong();
+
+        CreateEmailNotificationRequest emailNotificationRequest = new CreateEmailNotificationRequest();
+        emailNotificationRequest.setRecipientEmail(request.getEmail());
+        emailNotificationRequest.setSenderEmail(SENDER_EMAIL);
+        emailNotificationRequest.setSubject(String.format("%s %s", SUBJECT_PREFIX, request.getEmailTemplateName()));
+        emailNotificationRequest.setProperties(request.getEmailTemplateProperties());
+        emailNotificationRequest.setTemplateName(request.getEmailTemplateName());
+
+        EmailNotificationModel notification = new EmailNotificationModel();
+        notification.setId(notificationId);
+        final ResultResponseModel<CreateEmailNotificationResponse> responseModel = new ResultResponseModel<>(new CreateEmailNotificationResponse(notification));
+        responseModel.setErrors(Collections.singletonList(new ErrorResponseModel(ErrorType.NOTIFICATION_EMAIL_RECIPIENT_ADDRESS_MISSING)));
+        when(emailNotificationResourceClient.createEmailNotification(eq(emailNotificationRequest))).thenReturn(responseModel);
+
+        final Long id = notificationCommunicationService.sendSecretResetEmail(request);
     }
 
 }

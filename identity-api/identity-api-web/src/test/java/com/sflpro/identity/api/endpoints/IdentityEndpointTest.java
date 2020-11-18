@@ -42,7 +42,7 @@ public class IdentityEndpointTest {
         Mockito.when(mapper.map(requestDto, RequestSecretResetRequest.class)).thenReturn(resetRequest);
 
         final SecretResetResponseDto responseDto = identityEndpoint.requestSecretReset(requestDto);
-        Assert.assertEquals(notificationId, response.getNotificationId());
+        Assert.assertEquals(notificationId, responseDto.getNotificationId());
 
         Mockito.verify(identityService).requestSecretReset(resetRequest);
         Mockito.verify(mapper).map(requestDto, RequestSecretResetRequest.class);
