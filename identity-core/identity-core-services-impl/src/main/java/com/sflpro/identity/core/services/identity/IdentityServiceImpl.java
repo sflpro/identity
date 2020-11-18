@@ -137,7 +137,7 @@ public class IdentityServiceImpl implements IdentityService {
      */
     @Override
     @Transactional
-    public void requestSecretReset(RequestSecretResetRequest resetRequest) {
+    public SecretResetResponse requestSecretReset(RequestSecretResetRequest resetRequest) {
         Assert.notNull(resetRequest.getEmail(), "request.id can not be null.");
 
         logger.debug("Reset password requested for user {}", resetRequest.getEmail());
@@ -153,9 +153,10 @@ public class IdentityServiceImpl implements IdentityService {
                 resetRequest.getEmailTemplateName(),
                 Map.of(emailTokenKey, token.getValue(), emailRedirectUriKey, resetRequest.getRedirectUri()));
 
-        notificationCommunicationService.sendSecretResetEmail(notificationRequest);
+        final Long notificationId = notificationCommunicationService.sendSecretResetEmail(notificationRequest);
 
         logger.debug("Email sent to User {} for password reset.", identity);
+        return new SecretResetResponse(notificationId);
     }
 
     /**

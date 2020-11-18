@@ -6,6 +6,7 @@ import com.sflpro.identity.api.common.dtos.auth.AuthenticationExceptionDto;
 import com.sflpro.identity.api.common.dtos.identity.*;
 import com.sflpro.identity.api.common.dtos.identity.reset.RequestSecretResetRequestDto;
 import com.sflpro.identity.api.common.dtos.identity.reset.SecretResetRequestDto;
+import com.sflpro.identity.api.common.dtos.identity.reset.SecretResetResponseDto;
 import com.sflpro.identity.api.common.dtos.resource.ResourceDto;
 import com.sflpro.identity.api.mapper.BeanMapper;
 import com.sflpro.identity.core.db.entities.Identity;
@@ -103,7 +104,7 @@ public class IdentityEndpoint {
     @PUT
     @Path("/secret-reset/request-token")
     @Transactional
-    public ApiResponseDto requestSecretReset(@Valid RequestSecretResetRequestDto requestDto) {
+    public SecretResetResponseDto requestSecretReset(@Valid RequestSecretResetRequestDto requestDto) {
         if (StringUtils.isEmpty(requestDto.getEmailTemplateName())) {
             requestDto.setEmailTemplateName(emailDefaultTemplateName);
         }
@@ -111,9 +112,9 @@ public class IdentityEndpoint {
             requestDto.setRedirectUri(emailRedirectUri);
         }
         RequestSecretResetRequest request = mapper.map(requestDto, RequestSecretResetRequest.class);
-        identityService.requestSecretReset(request);
+        final SecretResetResponse secretResetResponse = identityService.requestSecretReset(request);
         logger.info("Reset password request completed for user:'{}'.", requestDto.getEmail());
-        return new ApiResponseDto();
+        return new SecretResetResponseDto(secretResetResponse.getNotificationId());
     }
 
     @Operation(tags = {"identities"}, summary = "Set new secret")
