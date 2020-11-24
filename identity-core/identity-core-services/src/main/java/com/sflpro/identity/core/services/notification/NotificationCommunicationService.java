@@ -14,6 +14,7 @@ public interface NotificationCommunicationService {
      * Creates new identity
      *
      * @param notificationRequest request
+     * @return  notification id
      */
-    void sendSecretResetEmail(@Valid final SecretResetNotificationRequest notificationRequest);
+    Long sendSecretResetEmail(@Valid final SecretResetNotificationRequest notificationRequest);
 }

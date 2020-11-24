@@ -50,6 +50,7 @@ public class OAuth2ResourceServerSecurityConfiguration extends WebSecurityConfig
                                 .antMatchers(HttpMethod.GET, "/openapi.json").permitAll()
                                 .antMatchers(HttpMethod.GET, "/status").permitAll()
                                 .antMatchers(HttpMethod.PUT, "/identities/secret-reset/secret").permitAll()
+                                .antMatchers(HttpMethod.PUT, "/identities/secret-reset/request-token").permitAll()
                                 .antMatchers("/auth/**").permitAll()
                                 .anyRequest().authenticated()
                 )

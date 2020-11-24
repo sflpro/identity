@@ -39,8 +39,9 @@ public interface IdentityService {
      * Request for secret reset, sending secret request token by other channel to the identity
      *
      * @param resetRequest identity identifier details
+     * @return SecretResetResponse
      */
-    void requestSecretReset(final RequestSecretResetRequest resetRequest);
+    SecretResetResponse requestSecretReset(final RequestSecretResetRequest resetRequest);
 
     /**
      * Reset secret
