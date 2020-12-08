@@ -16,7 +16,7 @@
 
     <groupId>com.sflpro.identity</groupId>
     <artifactId>identity</artifactId>
-    <version>0.4.0-SNAPSHOT</version>
+    <version>0.5.0-SNAPSHOT</version>
     <packaging>pom</packaging>
 
     <!-- Information required by maven central -->
@@ -125,7 +125,7 @@
         <sonatype.profile.id>1f51d97e92ca91</sonatype.profile.id>
 
         <!-- utilities -->
-        <sfl.notifier.version>1.10.0-SNAPSHOT</sfl.notifier.version>
+        <sfl.notifier.version>1.9.1</sfl.notifier.version>
         <jackson.version>2.9.2</jackson.version>
         <logback.version>1.2.3</logback.version>
         <javax.ws.rs-api.version>2.1</javax.ws.rs-api.version>
