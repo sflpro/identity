@@ -5,6 +5,7 @@ import com.sflpro.identity.api.common.dtos.ApiResponseDto;
 import com.sflpro.identity.api.common.dtos.identity.*;
 import com.sflpro.identity.api.common.dtos.identity.reset.RequestSecretResetRequestDto;
 import com.sflpro.identity.api.common.dtos.identity.reset.SecretResetRequestDto;
+import com.sflpro.identity.api.common.dtos.identity.reset.SecretResetResponseDto;
 import com.sflpro.identity.api.common.dtos.resource.ResourceDto;
 
 import javax.ws.rs.client.Client;
@@ -66,7 +67,7 @@ public class IdentityResource extends AbstractApiResource {
         return doPut("/secret-reset/secret", secretResetRequestDto, ApiResponseDto.class);
     }
 
-    public ApiResponseDto requestSecretReset(final RequestSecretResetRequestDto requestSecretResetRequestDto, final Map<String, String> headers) {
-        return doPutWithHeaders("/secret-reset/request-token", requestSecretResetRequestDto, headers, ApiResponseDto.class);
+    public SecretResetResponseDto requestSecretReset(final RequestSecretResetRequestDto requestSecretResetRequestDto, final Map<String, String> headers) {
+        return doPutWithHeaders("/secret-reset/request-token", requestSecretResetRequestDto, headers, SecretResetResponseDto.class);
     }
 }
