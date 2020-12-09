@@ -8,12 +8,15 @@ import com.sflpro.identity.api.common.dtos.ApiResponseDto;
  *
  * @author Norik Aslanyan
  */
-public class SecretResetResponseDto  extends ApiResponseDto {
+public class SecretResetResponseDto extends ApiResponseDto {
 
     private Long notificationId;
 
     public SecretResetResponseDto(Long notificationId) {
         this.notificationId = notificationId;
+    }
+
+    public SecretResetResponseDto() {
     }
 
     public Long getNotificationId() {
