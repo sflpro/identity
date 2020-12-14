@@ -16,7 +16,7 @@
 
     <groupId>com.sflpro.identity</groupId>
     <artifactId>identity</artifactId>
-    <version>0.5.0-SNAPSHOT</version>
+    <version>0.4.1</version>
     <packaging>pom</packaging>
 
     <!-- Information required by maven central -->
