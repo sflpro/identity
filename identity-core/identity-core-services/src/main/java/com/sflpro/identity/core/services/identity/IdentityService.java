@@ -105,4 +105,10 @@ public interface IdentityService {
      * @return updated list of identity's resources
      */
     List<Resource> updateIdentityResources(IdentityResourceUpdateRequest updateRequest);
+
+    /**
+     * Search identities by ids
+     * @param ids ids
+     */
+    Set<Identity> getAll(Set<String> ids);
 }

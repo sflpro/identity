@@ -10,12 +10,16 @@ import com.sflpro.identity.api.common.dtos.identity.reset.SecretResetResponseDto
 import com.sflpro.identity.api.common.dtos.resource.ResourceDto;
 import com.sflpro.identity.api.mapper.BeanMapper;
 import com.sflpro.identity.core.db.entities.Identity;
+import com.sflpro.identity.core.db.entities.IdentityResourceRole;
 import com.sflpro.identity.core.db.entities.Resource;
+import com.sflpro.identity.core.db.entities.Role;
 import com.sflpro.identity.core.services.auth.AuthenticationServiceException;
 import com.sflpro.identity.core.services.identity.*;
 import com.sflpro.identity.core.services.identity.reset.RequestSecretResetRequest;
 import com.sflpro.identity.core.services.identity.reset.SecretResetRequest;
+import com.sflpro.identity.core.services.identity.resource.role.IdentityResourceRoleService;
 import com.sflpro.identity.core.services.resource.ResourceService;
+import com.sflpro.identity.core.services.role.RoleService;
 import io.swagger.v3.oas.annotations.Operation;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
@@ -27,11 +31,16 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.Assert;
 
 import javax.validation.Valid;
+import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
 import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
 import java.util.List;
+import java.util.Map;
+import java.util.Objects;
 import java.util.Set;
+import java.util.function.Function;
+import java.util.stream.Collectors;
 
 /**
  * Company: SFL LLC
@@ -61,6 +70,12 @@ public class IdentityEndpoint {
 
     @Autowired
     private ResourceService resourceService;
+
+    @Autowired
+    private RoleService roleService;
+
+    @Autowired
+    private IdentityResourceRoleService identityResourceRoleService;
 
     @Operation(tags = {"identities"}, summary = "Returns identity's details")
     @GET
@@ -181,5 +196,36 @@ public class IdentityEndpoint {
         logger.info("Done updating resources of identity: {}", identityId);
         List<ResourceDto> result = mapper.mapAsList(resources, ResourceDto.class);
         return new ApiGenericListResponse<>(result.size(), result);
+    }
+
+    @Operation(tags = {"identities"}, summary = "Search identities")
+    @GET
+    @Path("/")
+    public ApiGenericListResponse<IdentityDto> search(
+            @QueryParam("ids") @NotEmpty Set<@NotNull String> ids,
+            @QueryParam("provideRoleData") @DefaultValue("false") boolean provideRoleData
+    ) {
+        final Set<Identity> identities = identityService.getAll(ids);
+        final List<IdentityDto> result = mapper.mapAsList(identities, IdentityDto.class);
+        if (provideRoleData) {
+            final Map<Long, Role> roles = roleService.getAll().stream()
+                    .collect(Collectors.toMap(Role::getId, Function.identity()));
+            for (IdentityDto identity : result) {
+                final Set<IdentityResourceRoleDto> identityResourceRoleDtos = identityResourceRoleService.getAllByIdentityId(identity.getId())
+                        .stream()
+                        .map(item -> mapToIdentityResourceRoleDto(item, roles))
+                        .collect(Collectors.toSet());
+                identity.setIdentityResourceRoles(identityResourceRoleDtos);
+            }
+        }
+        return new ApiGenericListResponse<>(result.size(), result);
+    }
+
+    private IdentityResourceRoleDto mapToIdentityResourceRoleDto(final IdentityResourceRole identityResourceRole,
+                                                                 final Map<Long, Role> rolesMap) {
+        final Resource resource = Objects.isNull(identityResourceRole.getResourceId()) ? null : resourceService.get(identityResourceRole.getResourceId());
+        return new IdentityResourceRoleDto(
+                rolesMap.get(identityResourceRole.getRoleId()).getName(),
+                mapper.map(resource, ResourceDto.class));
     }
 }

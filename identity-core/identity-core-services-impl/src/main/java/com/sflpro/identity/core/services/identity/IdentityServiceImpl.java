@@ -349,6 +349,16 @@ public class IdentityServiceImpl implements IdentityService {
         return result;
     }
 
+    @Transactional(readOnly = true)
+    @Override
+    public Set<Identity> getAll(final Set<String> ids) {
+        Assert.notEmpty(ids, "ids can't be empty");
+        logger.trace("Getting identities for ids:{}", ids);
+        final Set<Identity> identities = identityRepository.findAllByDeletedIsNullAndIdIn(ids);
+        logger.debug("Done getting identities for ids:{}", ids);
+        return identities;
+    }
+
     private IdentityResource insert(final Identity identity, final Resource resource) {
         Assert.notNull(identity, "identity cannot be null");
         Assert.notNull(resource, "resource cannot be null");
