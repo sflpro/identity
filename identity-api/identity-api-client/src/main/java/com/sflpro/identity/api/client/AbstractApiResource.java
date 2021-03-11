@@ -91,13 +91,14 @@ public class AbstractApiResource {
      * Makes Get request by specific path, headers and mediaType
      *
      * @param path
+     * @param queryParams
      * @param headers
      * @param responseEntity
      * @param <R>
      * @return a response entity by given responseEntity type
      */
     protected <R> R doGetWithQueryParamsAndHeaders(final String path,
-                                                   final Map<String, Object[]> queryParams,
+                                                   final Map<String, String[]> queryParams,
                                                    final Map<String, String> headers,
                                                    final GenericType<R> responseEntity) {
         Assert.notNull(responseEntity, "The response entity should not be null");
@@ -216,7 +217,7 @@ public class AbstractApiResource {
      * @return a response entity by given {@link javax.ws.rs.core.Response} type
      */
     private Response doGetInternally(final String path,
-                                     final Map<String, Object[]> queryParams,
+                                     final Map<String, String[]> queryParams,
                                      final Map<String, String> headers,
                                      final MediaType... mediaType) {
         Assert.notNull(path, "The path should not be null or empty");
@@ -225,7 +226,7 @@ public class AbstractApiResource {
         Assert.notNull(mediaType, "The mediaType should not be null");
         logger.trace("Prepare doGet request to path - {}, with parameters in header...", path);
         WebTarget target = rootTarget.path(path);
-        for (Map.Entry<String, Object[]> e : queryParams.entrySet())
+        for (Map.Entry<String, String[]> e : queryParams.entrySet())
             target = target.queryParam(e.getKey(), e.getValue());
         logger.debug("Doing GET request to {}", target.getUri());
         final Response response = target.request(mediaType)

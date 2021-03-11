@@ -45,11 +45,11 @@ public class IdentityResource extends AbstractApiResource {
     }
 
     public ApiGenericListResponse<ResourceDto> listResources(final String identityId, final String resourceType, final String resourceIdentifier, final Map<String, String> headers) {
-        final Map<String, Object[]> params = new HashMap<>();
+        final Map<String, String[]> params = new HashMap<>();
         Optional.ofNullable(resourceType)
-                .ifPresent(t -> params.put("resourceType", new Object[]{resourceType}));
+                .ifPresent(t -> params.put("resourceType", new String[]{resourceType}));
         Optional.ofNullable(resourceIdentifier)
-                .ifPresent(i -> params.put("resourceIdentifier", new Object[]{resourceIdentifier}));
+                .ifPresent(i -> params.put("resourceIdentifier", new String[]{resourceIdentifier}));
         return doGetWithQueryParamsAndHeaders(String.format("/%s/resources", identityId), params, headers, new GenericType<ApiGenericListResponse<ResourceDto>>() {
         });
     }
@@ -72,7 +72,7 @@ public class IdentityResource extends AbstractApiResource {
     }
 
     public ApiGenericListResponse<IdentityDto> search(final Set<String> ids, final boolean provideRoleData, final Map<String, String> headers) {
-        final Map<String, Object[]> queryParams = Map.of("ids", ids.toArray(), "provideRoleData", new Object[]{provideRoleData});
+        final Map<String, String[]> queryParams = Map.of("ids", ids.toArray(new String[0]), "provideRoleData", new String[]{String.valueOf(provideRoleData)});
         return doGetWithQueryParamsAndHeaders("/", queryParams, headers, new GenericType<ApiGenericListResponse<IdentityDto>>() {});
     }
 }
