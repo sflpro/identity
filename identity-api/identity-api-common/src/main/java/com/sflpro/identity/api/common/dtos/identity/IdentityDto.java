@@ -1,7 +1,6 @@
 package com.sflpro.identity.api.common.dtos.identity;
 
 import com.sflpro.identity.api.common.dtos.AbstractApiResponse;
-import com.sflpro.identity.api.common.dtos.principal.PrincipalDto;
 import com.sflpro.identity.core.datatypes.IdentityContactMethod;
 import com.sflpro.identity.core.datatypes.IdentityStatus;
 import org.apache.commons.lang3.builder.EqualsBuilder;
@@ -25,6 +24,9 @@ public class IdentityDto extends AbstractApiResponse {
     private IdentityContactMethod contactMethod;
 
     private IdentityStatus status;
+
+    private Set<IdentityResourceRoleDto> identityResourceRoles;
+
 
     public IdentityDto() {
         super();
@@ -62,6 +64,14 @@ public class IdentityDto extends AbstractApiResponse {
         this.status = status;
     }
 
+    public Set<IdentityResourceRoleDto> getIdentityResourceRoles() {
+        return identityResourceRoles;
+    }
+
+    public void setIdentityResourceRoles(Set<IdentityResourceRoleDto> identityResourceRoles) {
+        this.identityResourceRoles = identityResourceRoles;
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
@@ -76,6 +86,7 @@ public class IdentityDto extends AbstractApiResponse {
                 .append(description, that.description)
                 .append(contactMethod, that.contactMethod)
                 .append(status, that.status)
+                .append(identityResourceRoles, that.identityResourceRoles)
                 .isEquals();
     }
 
@@ -87,6 +98,7 @@ public class IdentityDto extends AbstractApiResponse {
                 .append(description)
                 .append(contactMethod)
                 .append(status)
+                .append(identityResourceRoles)
                 .toHashCode();
     }
 
@@ -97,6 +109,7 @@ public class IdentityDto extends AbstractApiResponse {
                 .append("description", description)
                 .append("contactMethod", contactMethod)
                 .append("status", status)
+                .append("roles", identityResourceRoles)
                 .toString();
     }
 }

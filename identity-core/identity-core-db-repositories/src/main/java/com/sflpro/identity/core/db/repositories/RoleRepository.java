@@ -4,6 +4,7 @@ import com.sflpro.identity.core.db.entities.Role;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.Optional;
+import java.util.Set;
 
 /**
  * Company: SFL LLC
@@ -16,4 +17,7 @@ public interface RoleRepository extends JpaRepository<Role, Long> {
     Optional<Role> findByDeletedIsNullAndId(final Long id);
 
     Optional<Role> findByNameAndDeletedIsNull(String name);
+
+    Set<Role> findAllByDeletedIsNull();
+
 }

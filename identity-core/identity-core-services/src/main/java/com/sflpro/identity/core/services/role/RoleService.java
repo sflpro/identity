@@ -52,4 +52,6 @@ public interface RoleService {
      * @return set of permissions
      */
     Set<Permission> getPermissions(Set<Role> roles);
+
+    Set<Role> getAll();
 }
