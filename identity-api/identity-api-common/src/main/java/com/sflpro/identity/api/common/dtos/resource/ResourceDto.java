@@ -13,6 +13,7 @@ import org.apache.commons.lang3.builder.ToStringBuilder;
  */
 public class ResourceDto extends AbstractApiResponse {
 
+    @Deprecated(forRemoval = true)
     private Long id;
 
     private String type;

@@ -4,6 +4,7 @@ import com.sflpro.identity.core.db.entities.Identity;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.Optional;
+import java.util.Set;
 
 /**
  * Company: SFL LLC
@@ -14,4 +15,6 @@ import java.util.Optional;
 public interface IdentityRepository extends JpaRepository<Identity, String> {
 
     Optional<Identity> findByDeletedIsNullAndId(final String id);
+
+    Set<Identity> findAllByDeletedIsNullAndIdIn(Set<String> ids);
 }

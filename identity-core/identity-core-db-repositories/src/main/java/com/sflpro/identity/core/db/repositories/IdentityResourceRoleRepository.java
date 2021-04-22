@@ -14,4 +14,6 @@ import java.util.Set;
 public interface IdentityResourceRoleRepository extends JpaRepository<IdentityResourceRole, Long> {
 
     Set<IdentityResourceRole> findAllByDeletedIsNullAndIdentityIdAndResourceId(final String identityId, final Long resourceId);
+
+    Set<IdentityResourceRole> findAllByIdentityIdAndDeletedIsNull(String identityId);
 }

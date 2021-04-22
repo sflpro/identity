@@ -5,7 +5,7 @@
     <parent>
         <groupId>com.sflpro.identity</groupId>
         <artifactId>identity-core</artifactId>
-        <version>0.4.1</version>
+        <version>0.4.2</version>
     </parent>
 
     <artifactId>identity-core-services-impl</artifactId>
@@ -26,7 +26,7 @@
         <dependency>
             <groupId>com.sflpro.identity</groupId>
             <artifactId>identity-core-services</artifactId>
-            <version>0.4.1</version>
+            <version>0.4.2</version>
         </dependency>
         <dependency>
             <groupId>com.sflpro.notifier</groupId>
@@ -39,7 +39,7 @@
         <dependency>
             <groupId>com.sflpro.identity</groupId>
             <artifactId>identity-core-db-repositories</artifactId>
-            <version>0.4.1</version>
+            <version>0.4.2</version>
         </dependency>
 
         <dependency>

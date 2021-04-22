@@ -73,4 +73,10 @@ public class IdentityResourceRoleServiceImpl implements IdentityResourceRoleServ
         em.flush();
         logger.debug("Done getting the identity resource roles for identityId - {} and resourceId - {}", identityId, resourceId);
     }
+
+    @Transactional
+    @Override
+    public Set<IdentityResourceRole> getAllByIdentityId(final String identityId) {
+        return identityResourceRoleRepository.findAllByIdentityIdAndDeletedIsNull(identityId);
+    }
 }

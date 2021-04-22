@@ -16,7 +16,7 @@
 
     <groupId>com.sflpro.identity</groupId>
     <artifactId>identity</artifactId>
-    <version>0.4.1</version>
+    <version>0.4.2</version>
     <packaging>pom</packaging>
 
     <!-- Information required by maven central -->
@@ -137,7 +137,7 @@
         <commons.lang3.version>3.7</commons.lang3.version>
         <tomakehurst.wiremock.version>2.14.0</tomakehurst.wiremock.version>
         <google.java.cloud.version>0.117.0-alpha</google.java.cloud.version>
-        <com.nimbusds.oauth2-oidc-sdk>8.5</com.nimbusds.oauth2-oidc-sdk>
+        <com.nimbusds.oauth2-oidc-sdk>8.36</com.nimbusds.oauth2-oidc-sdk>
 
         <!-- DB -->
         <hibernate.version>5.2.12.Final</hibernate.version>

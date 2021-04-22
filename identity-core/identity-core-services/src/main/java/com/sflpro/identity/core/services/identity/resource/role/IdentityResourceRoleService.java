@@ -40,4 +40,7 @@ public interface IdentityResourceRoleService {
      */
     @Transactional
     void deleteByIdentityAndResource(String identityId, Long resourceIds);
+
+    @Transactional
+    Set<IdentityResourceRole> getAllByIdentityId(String identityId);
 }

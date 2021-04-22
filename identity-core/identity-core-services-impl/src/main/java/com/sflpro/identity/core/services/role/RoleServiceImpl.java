@@ -100,4 +100,11 @@ public class RoleServiceImpl implements RoleService {
                 .flatMap(role -> role.getPermissions().stream())
                 .collect(Collectors.toSet());
     }
+
+
+    @Transactional(readOnly = true)
+    @Override
+    public Set<Role> getAll() {
+        return roleRepository.findAllByDeletedIsNull();
+    }
 }
