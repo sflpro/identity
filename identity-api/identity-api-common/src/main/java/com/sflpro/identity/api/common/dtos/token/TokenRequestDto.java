@@ -21,6 +21,8 @@ public class TokenRequestDto {
 
     private Integer expiresInHours;
 
+    private Integer expiresInMinutes;
+
     private ResourceRequestDto roleResource;
 
     public TokenType getTokenType() {
@@ -37,6 +39,14 @@ public class TokenRequestDto {
 
     public void setExpiresInHours(Integer expiresInHours) {
         this.expiresInHours = expiresInHours;
+    }
+
+    public Integer getExpiresInMinutes() {
+        return expiresInMinutes;
+    }
+
+    public void setExpiresInMinutes(Integer expiresInMinutes) {
+        this.expiresInMinutes = expiresInMinutes;
     }
 
     public ResourceRequestDto getRoleResource() {

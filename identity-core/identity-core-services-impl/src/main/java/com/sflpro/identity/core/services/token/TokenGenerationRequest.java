@@ -22,7 +22,7 @@ import java.util.stream.Collectors;
 public class TokenGenerationRequest {
 
     private String identityId;
-    private Long expiresIn;
+    private Long expiresInSeconds;
     private Set<String> roles;
     private Set<String> permissions;
     private ResourceRequest resourceRole;
@@ -45,12 +45,12 @@ public class TokenGenerationRequest {
         this.resources = resources;
     }
 
-    public Long getExpiresIn() {
-        return expiresIn;
+    public Long getExpiresInSeconds() {
+        return expiresInSeconds;
     }
 
-    public void setExpiresIn(Long expiresIn) {
-        this.expiresIn = expiresIn;
+    public void setExpiresInSeconds(Long expiresInSeconds) {
+        this.expiresInSeconds = expiresInSeconds;
     }
 
     public Set<String> getRoles() {
@@ -106,7 +106,7 @@ public class TokenGenerationRequest {
 
         return new EqualsBuilder()
                 .append(identityId, that.identityId)
-                .append(expiresIn, that.expiresIn)
+                .append(expiresInSeconds, that.expiresInSeconds)
                 .append(roles, that.roles)
                 .append(permissions, that.permissions)
                 .append(resourceRole, that.resourceRole)
@@ -119,7 +119,7 @@ public class TokenGenerationRequest {
     public int hashCode() {
         return new HashCodeBuilder(17, 37)
                 .append(identityId)
-                .append(expiresIn)
+                .append(expiresInSeconds)
                 .append(roles)
                 .append(permissions)
                 .append(resourceRole)
@@ -132,7 +132,7 @@ public class TokenGenerationRequest {
     public String toString() {
         return new ToStringBuilder(this)
                 .append("identityId", identityId)
-                .append("expiresIn", expiresIn)
+                .append("expiresIn", expiresInSeconds)
                 .append("roles", roles)
                 .append("permissions", permissions)
                 .append("resourceRequest", resourceRole)
