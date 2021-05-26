@@ -75,6 +75,11 @@ public class TokenServiceImpl implements TokenService {
         return createNewToken(tokenRequest, credential, List.of());
     }
 
+    private Long expiresInSeconds(Integer expiresInHour, Integer expiresInMinutes) {
+        return (expiresInHour == null ? 0L : expiresInHour * 3600L) +
+                (expiresInMinutes == null ? 0L : expiresInMinutes * 60L);
+    }
+
     @Override
     public Token createNewToken(final TokenRequest tokenRequest, final Credential credential, final List<ResourceRequest> resourceRequests) {
         LocalDateTime currentLocalDateTime = LocalDateTime.now();
@@ -94,7 +99,7 @@ public class TokenServiceImpl implements TokenService {
         }
 
         final TokenGenerationRequest tokenGenerationRequest = new TokenGenerationRequest();
-        tokenGenerationRequest.setExpiresIn(tokenRequest.getExpiresInHours() == null ? null : tokenRequest.getExpiresInHours() * 3600L);
+        tokenGenerationRequest.setExpiresInSeconds(expiresInSeconds(tokenRequest.getExpiresInHours(), tokenRequest.getExpiresInMinutes()));
         tokenGenerationRequest.setIdentityId(credential.getIdentity().getId());
         final ResourceRequest resourceRequest = tokenRequest.getRoleResource();
         final Optional<Resource> optionalResource = Optional.ofNullable(resourceRequest)

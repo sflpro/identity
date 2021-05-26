@@ -87,7 +87,7 @@ public class JwtTokenGenerator implements TokenGenerator {
     public String generate(final TokenGenerationRequest tokenGenerationRequest) {
         Assert.notNull(tokenGenerationRequest, "tokenGenerationRequest cannot be null");
         Assert.notNull(tokenGenerationRequest.getIdentityId(), "tokenGenerationRequest.identityId cannot be null");
-        Assert.notNull(tokenGenerationRequest.getExpiresIn(), "tokenGenerationRequest.expires cannot be null");
+        Assert.notNull(tokenGenerationRequest.getExpiresInSeconds(), "tokenGenerationRequest.expires cannot be null");
         Assert.notNull(tokenGenerationRequest.getRoles(), "tokenGenerationRequest.permissions cannot be null");
         logger.trace("Generating token for generation request:{}...", tokenGenerationRequest);
         final RSAKey rsaJwk = this.loadRsaKey();
@@ -102,7 +102,7 @@ public class JwtTokenGenerator implements TokenGenerator {
 
         // Prepare JWT with claims set
         final Date issuedAt = Date.from((LocalDateTime.now()).toInstant(ZoneOffset.UTC));
-        final Date expirationTime = Date.from(LocalDateTime.now().plusSeconds(tokenGenerationRequest.getExpiresIn()).toInstant(ZoneOffset.UTC));
+        final Date expirationTime = Date.from(LocalDateTime.now().plusSeconds(tokenGenerationRequest.getExpiresInSeconds()).toInstant(ZoneOffset.UTC));
         final JWTClaimsSet.Builder builder = new JWTClaimsSet.Builder()
                 .claim("identity_id", tokenGenerationRequest.getIdentityId())
                 .claim("roles", tokenGenerationRequest.getRoles())
